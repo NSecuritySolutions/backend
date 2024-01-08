@@ -37,4 +37,12 @@ class Product(models.Model):
         verbose_name_plural = 'Товары'
 
 class PopularSolutions(models.Model):
-    product = models.ManyToManyField(Product)
+    name = models.CharField(verbose_name='Предложение', max_length=100)
+    product = models.ManyToManyField(Product, verbose_name='Популярный продукт')
+
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'Популярные продукты'
+        verbose_name_plural = 'Популярные продукты'
