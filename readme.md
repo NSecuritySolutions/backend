@@ -13,7 +13,7 @@ git clone https://github.com/Maruf995/video-store
 2. Сделать миграции:
 ```
 python manage.py makemigrations
-backend python manage.py migrate
+python manage.py migrate
 ```
 3. Создать суперпользователя:
 ```
