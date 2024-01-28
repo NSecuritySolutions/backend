@@ -1,40 +1,42 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
-from .models import Product, Category, PopularSolutions
-from .serializers import ProductListSerializer, CategoryListSerializer, PopularSolutionsListSerializer
+
+from .models import Product, PopularSolutions, OurService, OurWorks
+from .serializers import ProductListSerializer, PopularSolutionsListSerializer, OurServiceListSerializer, \
+OurWorksListSerializer
 
 # Create your views here.
 
+class OurServiceListView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = OurService.objects.all()
+        serializer = OurServiceListSerializer(queryset, many=True, context={"request":request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ProductListView(APIView):
-    def get(self, request):
-        # Получаем набор всех записей из таблицы Capital
+    def get(self, request, *args, **kwargs):
         queryset = Product.objects.all()
-        # Сериализуем извлечённый набор записей
-        serializer_for_queryset = ProductListSerializer(
-            instance=queryset, # Передаём набор записей
-            many=True # Указываем, что на вход подаётся именно набор записей
-        )
-        return Response(serializer_for_queryset.data)
+        serializer = ProductListSerializer(queryset, many=True, context={"request":request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
-class CategoryListView(APIView):
-    def get(self, request):
-        # Получаем набор всех записей из таблицы Capital
-        queryset = Category.objects.all()
-        # Сериализуем извлечённый набор записей
-        serializer_for_queryset = CategoryListSerializer(
-            instance=queryset, # Передаём набор записей
-            many=True # Указываем, что на вход подаётся именно набор записей
-        )
-        return Response(serializer_for_queryset.data)
+
+class OurWorksListView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = OurWorks.objects.all()
+        serializer = OurWorksListSerializer(queryset, many=True, context={"request":request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
     
 class PopularSolutionsListView(APIView):
-    def get(self, request):
-        # Получаем набор всех записей из таблицы Capital
+    def get(self, request, *args, **kwargs):
         queryset = PopularSolutions.objects.all()
-        # Сериализуем извлечённый набор записей
-        serializer_for_queryset = PopularSolutionsListSerializer(
-            instance=queryset, # Передаём набор записей
-            many=True # Указываем, что на вход подаётся именно набор записей
-        )
-        return Response(serializer_for_queryset.data)
+        serializer = PopularSolutionsListSerializer(queryset, many=True, context={"request":request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+

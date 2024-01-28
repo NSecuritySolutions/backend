@@ -26,7 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+TELEGRAM_BOT_TOKEN = '6569715162:AAELzdCadg1BCKpNxNYoplAYzYSKI4CsgFs'
 
 # Application definition
 
@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'product',
-    'application'
+    'application',
+    'reviews',
+    'drf_spectacular'
+
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'main.urls'
+
+REST_FRAMEWORK = {     
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
+}
 
 TEMPLATES = [
     {
@@ -107,11 +114,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
+DATE_INPUT_FORMATS = [
+    '%m.%d.%y',
+    '%m:%d:%y %H:%M',
+    '%m.%d.%y %H.%M',
+    '%m/%d/%y %H:%M',        # '10/25/06 14:30'
+    '%m/%d/%y %H.%M',
+    '%m/%d/%y',              # '10/25/06'
+]
+
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 

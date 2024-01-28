@@ -16,14 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from product import views
+from application.views import create_application
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/main/', views.ProductListView.as_view()),
-    path('api/v1/category/', views.CategoryListView.as_view()),
     path('api/v1/popular/', views.PopularSolutionsListView.as_view()),
+    path('api/v1/out-service/', views.OurServiceListView.as_view()),
+    path('api/v1/our-works/', views.OurWorksListView.as_view()),
 
 
+    path('create-application/', create_application, name='create-application'),
 
+
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
 ]
