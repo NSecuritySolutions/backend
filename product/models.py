@@ -2,10 +2,18 @@ from django.db import models
 from django.utils import timezone
 tz = timezone.get_default_timezone()
 
-import datetime
-
 
 # Create your models here.
+
+class Category(models.Model):
+    title = models.CharField(verbose_name='Категория', max_length=20)
+
+    def __str__(self):
+        return f'{self.title}'
+
+    class Meta:
+        verbose_name = 'Категории'
+        verbose_name_plural = 'Категории'
 
 class Product(models.Model):
     model = models.CharField(verbose_name='Модель',max_length=30)
@@ -21,7 +29,7 @@ class Product(models.Model):
     micro_sd = models.CharField(verbose_name='MicroSD',max_length=30)
     viewing_angle = models.CharField(verbose_name='Угол Обзора',max_length=30)
     focus = models.CharField(verbose_name='Фокус',max_length=30)
-    category = models.CharField(verbose_name='Категория',max_length=30)
+    category = models.ManyToManyField(Category,verbose_name='Категория')
     price = models.IntegerField(verbose_name="Цена", primary_key=True)
 
 
@@ -33,7 +41,7 @@ class Product(models.Model):
         verbose_name_plural = 'Товары'
 
 class PopularSolutions(models.Model):
-    name = models.CharField(verbose_name='Предложение', max_length=100)
+    title = models.CharField(verbose_name='Предложение', max_length=100)
     product = models.ManyToManyField(Product, verbose_name='Популярный продукт')
 
     def __str__(self):
@@ -60,17 +68,22 @@ class Image_Works(models.Model):
     image = models.ImageField(verbose_name="Фотографии",upload_to='media/our_works')
 
     def __str__(self):
-        return f'Image {self.id}'
+        return f'Image {self.image}'
 
 class OurWorks(models.Model):
     image = models.ManyToManyField(Image_Works, verbose_name='Фотография')
     descriptoin = models.TextField(verbose_name='Описание',max_length=500)
+    product = models.ManyToManyField(Product, verbose_name="Используемое оборудование")
     price = models.IntegerField(verbose_name="Цена", primary_key=True)
-    date_works = models.DateTimeField(verbose_name="Дата выполнение проекта")
+    date_works = models.DateTimeField(verbose_name="Дата начало проекта")
+    date_finish = models.DateTimeField(verbose_name="Дата окончание проекта")
     add_date = models.DateTimeField(verbose_name='Дата добавление на сайт')
 
     def date_two(self):
         return self.date_works.strftime('%d.%m.%Y')
+    
+    def date_three(self):
+        return self.date_finish.strftime('%d.%m.%Y')
     
     def date_one(self):
         return self.add_date.strftime('%d.%m.%Y')

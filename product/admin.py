@@ -7,7 +7,7 @@ admin.site.register(PopularSolutions)
 admin.site.register(OurService)
 admin.site.register(OurWorks)
 admin.site.register(Image_Works)
-
+admin.site.register(Category)
 
 
 

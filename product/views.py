@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 
-from .models import Product, PopularSolutions, OurService, OurWorks
+from .models import Product, PopularSolutions, OurService, OurWorks, Category
 from .serializers import ProductListSerializer, PopularSolutionsListSerializer, OurServiceListSerializer, \
-OurWorksListSerializer
+OurWorksListSerializer, CategorySerializer
 
 # Create your views here.
 
@@ -22,7 +22,24 @@ class ProductListView(APIView):
         serializer = ProductListSerializer(queryset, many=True, context={"request":request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+  
+class CategoryView(APIView):
+    def get(self, request, *args, **kwargs):
+        categories = Category.objects.all()
+        category_data = []
+
+        for category in categories:
+            category_serializer = CategorySerializer(category, context={"request": request})
+            products = Product.objects.filter(category=category)
+            product_serializer = ProductListSerializer(products, many=True, context={"request": request})
+            
+            category_data.append({
+                "category": category_serializer.data,
+                "products": product_serializer.data
+            })
+
+        return Response(category_data, status=status.HTTP_200_OK)
 
 class OurWorksListView(APIView):
     def get(self, request, *args, **kwargs):
