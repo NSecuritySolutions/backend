@@ -18,7 +18,7 @@ class Category(models.Model):
 class Product(models.Model):
     model = models.CharField(verbose_name='Модель',max_length=30)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
-    descriptoin = models.TextField(verbose_name='Описание',max_length=500)
+    description = models.CharField(verbose_name='Описание',max_length=200)
     manufacturer = models.CharField(verbose_name='Производитель', max_length=30)
     accommodation = models.CharField(verbose_name='Размещение',max_length=30)
     resolution = models.CharField(verbose_name='Разрешение',max_length=30)
@@ -55,10 +55,10 @@ class PopularSolutions(models.Model):
 
 class OurService(models.Model):
     image = models.ImageField(verbose_name='Фотография',upload_to='media/service')
-    descriptoin = models.TextField(verbose_name='Описание',max_length=500)
+    description = models.TextField(verbose_name='Описание',max_length=500)
 
     def __str__(self):
-        return f'{self.descriptoin}'
+        return f'{self.description}'
 
     class Meta:
         verbose_name = 'Наши услуги'
@@ -69,10 +69,14 @@ class Image_Works(models.Model):
 
     def __str__(self):
         return f'Image {self.image}'
+    
+    class Meta:
+        verbose_name = 'Фотографии'
+        verbose_name_plural = 'Фотографии'
 
 class OurWorks(models.Model):
     image = models.ManyToManyField(Image_Works, verbose_name='Фотография')
-    descriptoin = models.TextField(verbose_name='Описание',max_length=500)
+    description = models.TextField(verbose_name='Описание',max_length=500)
     product = models.ManyToManyField(Product, verbose_name="Используемое оборудование")
     price = models.IntegerField(verbose_name="Цена", primary_key=True)
     date_works = models.DateTimeField(verbose_name="Дата начало проекта")

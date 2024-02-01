@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from .models import *
+from .models import OurService, Product, OurWorks, Image_Works, Category, PopularSolutions
 
-class OurServiceListSerializer(serializers.Serializer):
-    descriptoin = serializers.CharField(required=True)
+class OurServiceListSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(required=True)
     image = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
 
     class Meta:
         model = OurService
-        fields = ['id','image','descriptoin']
+        fields = ['id','image','description']
 
 
 
@@ -17,7 +17,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['model', 'descriptoin', 'category','manufacturer','resolution', 'dark', \
+        fields = ['model', 'description', 'category','manufacturer','resolution', 'dark', \
                   'accommodation','temperature','nutrition', 'microphone', 'micro_sd', \
                     'viewing_angle','focus','price']
 
@@ -25,14 +25,14 @@ class ProductListSerializer(serializers.ModelSerializer):
         return CategorySerializer(obj.category, many=True).data
     
 
-class CategorySerializer(serializers.Serializer):
+class CategorySerializer(serializers.ModelSerializer):
     title = serializers.CharField(required=True)
     
     class Meta:
         model = Category
-        fields = ['title']
+        fields = ['id','title']
 
-class PopularSolutionsListSerializer(serializers.Serializer):
+class PopularSolutionsListSerializer(serializers.ModelSerializer):
     product = serializers.SerializerMethodField(source='get_product')
 
     class Meta:
@@ -43,24 +43,26 @@ class PopularSolutionsListSerializer(serializers.Serializer):
         return ProductListSerializer(obj.product, many=True).data
 
 
-class ImageSerializer(serializers.Serializer):
+class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(max_length=None, use_url=True, allow_null=True, required=False)
 
+    class Meta:
+        model = Image_Works
+        fields = '__all__'
 
-
-class OurWorksListSerializer(serializers.Serializer):
+class OurWorksListSerializer(serializers.ModelSerializer):
     image = ImageSerializer(many=True, required=False)
-    descriptoin = serializers.CharField(required=True)
+    description = serializers.CharField(required=True, max_length=500)
     product = serializers.SerializerMethodField(source='get_product')
     add_date = serializers.DateTimeField(format='%d.%m.%Y')    
     date_works = serializers.DateTimeField(format='%d.%m.%Y')
     date_finish = serializers.DateTimeField(format='%d.%m.%Y')
     price = serializers.IntegerField()
     
-
     class Meta:
         model = OurWorks
         fields = ['image', 'description', 'product','add_date', 'date_works', 'date_finish', 'price']
 
     def get_product(self, obj):
         return ProductListSerializer(obj.product, many=True).data
+    
