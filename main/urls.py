@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from calculator.views import *
 from product import views
 from application.views import create_application
 
@@ -27,6 +28,8 @@ urlpatterns = [
     path('api/v1/our-service/', views.OurServiceListView.as_view()),
     path('api/v1/our-works/', views.OurWorksListView.as_view()),
     path('api/v1/category/', views.CategoryView.as_view()),
+
+    path('api/v1/camera/', CameraView.as_view()),
 
 
     path('create-application/', create_application, name='create-application'),
