@@ -3,6 +3,15 @@ from django.db import models
 # Create your models here.
 
 class Application(models.Model):
+    id = models.AutoField(primary_key=True)
+    # Calculator x
+
+    OCCASION_CHOICES = [
+        ("ONE", "Просто заявка"),
+        ("TWO", "Калькулятор")
+    ]
+
+    occasion = models.CharField(max_length=3,verbose_name="Повод заявки", choices=OCCASION_CHOICES)
     name = models.CharField(verbose_name='ФИО',max_length=20)
     description = models.TextField(verbose_name="Комментарий", max_length=500, null=True, blank=True)
     email = models.EmailField(verbose_name='Почта', blank=True)

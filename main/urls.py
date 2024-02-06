@@ -33,6 +33,8 @@ urlpatterns = [
 
 
     path('create-application/', create_application, name='create-application'),
+    path('create-application/<int:id>/', create_application, name='get_application_by_id'),
+
 
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

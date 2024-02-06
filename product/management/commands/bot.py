@@ -1,60 +1,74 @@
+import requests
+import time
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from telegram import Bot
 from telegram.utils.request import Request
-import requests
-from application.models import Application
 
 class Command(BaseCommand):
     help = "Телеграм-бот"
 
     def handle(self, *args, **options):
+        # Инициализация объекта Request для настройки таймаутов при запросах
         request = Request(
             connect_timeout=0.5,
             read_timeout=1.0,
         )
+        
+        # Инициализация объекта Bot с использованием токена из настроек Django
         bot = Bot(
             request=request,
             token=settings.TOKEN,
         )
+        
+        # Вывод информации о боте
         print(bot.get_me())
 
-        url = 'http://127.0.0.1:8000/create-application/'
+        processed_ids = set()  # Множество для хранения обработанных идентификаторов
 
-        # Отправим POST-запрос на указанный URL с числовым значением для 'number'
-        response = requests.post(url, data={'name': 'John', 'description': 'Some comment', 'email': 'john@example.com', 'number': 123456789})
+        while True:
+            try:
+                # URL для запроса данных у Django-сервера
+                url = "http://127.0.0.1:8000/create-application/"
 
-        # Выведем на экран данные, отправленные и полученные
-        print(f"Отправленные данные: {'name': 'John', 'description': 'Some comment', 'email': 'john@example.com', 'number': 123456789}")
-        print(f"Полученные данные: {response.text}")
+                # Выполнение GET-запроса к Django-серверу
+                response = requests.get(url)
 
-        # Проверим статус ответа
-        if response.status_code == 200:
-            # Если запрос успешен, выведите сообщение
-            print("POST запрос успешно отправлен")
-            
-            # Создайте объект Application из полученных данных
-            application_data = response.json()  # Предполагается, что сервер возвращает данные в формате JSON
-            application = Application.objects.create(
-                name=application_data.get('name', ''),
-                description=application_data.get('description', ''),
-                email=application_data.get('email', ''),
-                number=application_data.get('number', '')
-            )
+                if response.status_code == 200:
+                    # Раскомментировать строку ниже для вывода содержимого ответа
+                    # print(response.content)
+                    data = response.json()
 
-            # Если user_id_to_notify совпадает, отправьте сообщение через бота
-            user_id_to_notify = 1684336348
-            if user_id_to_notify == user_id_to_notify:
-                message = (
-                    f"Новая заявка получена!\n"
-                    f"Имя: {application.name}\n"
-                    f"Комментарий: {application.description}\n"
-                    f"Почта: {application.email}\n"
-                    f"Номер телефона: {application.number}"
-                )
+                    # Проверка, был ли обработан данный идентификатор
+                    if data['id'] not in processed_ids:
+                        processed_ids.add(data['id'])  # Добавление идентификатора в множество обработанных
 
-                bot.send_message(chat_id=user_id_to_notify, text=message)
+                        if data['occasion'] == 'ONE':
+                            occasion = 'Просто заявка'
+                        elif data['occasion'] == 'TWO':
+                            occasion = 'Калькулятор'
+                        else:
+                            occasion = 'Not Found'
 
-        else:
-            # Если запрос неудачен, выведите ошибку
-            print(f"Ошибка при отправке POST запроса: {response.status_code}")
+                        # Формирование сообщения из полученных данных
+                        message = (
+                            f"Новая заявка получена!\n"
+                            f"Имя: {data['name']}\n"
+                            f"Комментарий: {data['description']}\n"
+                            f"Почта: {data['email']}\n"
+                            f"Номер телефона: {data['number']}\n"
+                            f"Повод заявки: {occasion}"
+                        )
+
+                        # Отправка отформатированного сообщения конкретному пользователю
+                        user_id_to_notify = 1684336348
+                        bot.send_message(chat_id=user_id_to_notify, text=message)
+
+                else:
+                    print(f"Ошибка: {response.status_code}")
+
+            except Exception as e:
+                print(f"Произошла ошибка: {e}")
+
+            # Пауза перед следующим запросом
+            time.sleep(5)  # Например, делаем запрос каждые 5 секунд
