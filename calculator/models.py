@@ -6,11 +6,34 @@ from django.db import models
 
 class Camera(models.Model):
     TIME_CHOICES =(
-        ('one', '7'),
-        ('two', '14'),
-        ('three', '30')
+        ('7', '7'),
+        ('14', '14'),
+        ('30', '30')
+    )
+
+    TYPE_SYSTEM_CHOICES = (
+        ('AHD', 'AHD'),
+        ('IP', 'IP')
+    )
+
+    QUALITY_CHOICES = (
+        ('HD', 'HD'),
+        ('FullHD', 'FullHD'),
+        ('2K-4K', '2K-4K')
     )
 
 
-    time = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    time = models.CharField(verbose_name='Время хранение видео',max_length=5, choices=TIME_CHOICES)
+    system_type = models.CharField(verbose_name='Тип системы',max_length=4, choices=TYPE_SYSTEM_CHOICES)
+    quality = models.CharField(verbose_name='Качество изображения',max_length=6, choices=QUALITY_CHOICES)
+    external = models.IntegerField(verbose_name='Внешние',default=0)
+    domestic = models.IntegerField(verbose_name='Внутренние',default=0)
+    total_price = models.IntegerField(verbose_name='Итог')
+
+
+    def __str__(self):
+        return f'Конфигурация {self.id}'
+
+    class Meta:
+        verbose_name = 'Конфигурации камер'
+        verbose_name_plural = 'Конфигурации камер'

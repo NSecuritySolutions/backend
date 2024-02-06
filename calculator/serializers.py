@@ -5,4 +5,4 @@ from .models import Camera
 class CameraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Camera
-        fields = ['id', 'time', 'price']
+        fields = '__all__'
