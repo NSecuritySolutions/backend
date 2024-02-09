@@ -19,7 +19,7 @@ from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from calculator.views import *
 from product import views
-from application.views import create_application
+from application.views import ApplicationView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,10 +30,12 @@ urlpatterns = [
     path('api/v1/category/', views.CategoryView.as_view()),
 
     path('api/v1/camera/', CameraView.as_view()),
+    path('camera-pr/', CameraPriceView.as_view()),
 
 
-    path('create-application/', create_application, name='create-application'),
-    path('create-application/<int:id>/', create_application, name='get_application_by_id'),
+
+    path('application/', ApplicationView.as_view()),
+    path('application/<int:id>/', ApplicationView.as_view()),
 
 
 

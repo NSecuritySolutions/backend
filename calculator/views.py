@@ -1,33 +1,52 @@
 from rest_framework import generics, status
+import requests
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Camera
-from .serializers import CameraSerializer
+from rest_framework import status
+from .models import CameraPrice, Camera
+from .serializers import CameraPriceSerializer, CameraSerializer
+
 
 class CameraView(generics.CreateAPIView, generics.ListAPIView):
     queryset = Camera.objects.all()
     serializer_class = CameraSerializer
 
+
     def create(self, request, *args, **kwargs):
+        url = "http://localhost:8000/camera-pr/"
+
+        # Выполнение GET-запроса к Django-серверу
+        response = requests.get(url)
+
+        # Initialize data variable
+        data = None
+
+        if response.status_code == 200:
+            data = response.json()
+        else:
+            # Handle the case where the response status code is not 200
+            return Response({'error': 'Failed to fetch pricing data'}, status=response.status_code)
+
         # Assume that the price per camera is 500
         TIME_CHOICES = (
-            ('7', 100),
-            ('14', 140),
-            ('30', 250)
+            ('7', data['seven']),
+            ('14', data['fourteen']),
+            ('30', data['thirty'])
         )
 
         TYPE_SYSTEM_CHOICES = (
-            ('AHD', 200),
-            ('IP', 300)
+            ('AHD', data['ahd']),
+            ('IP', data['ip'])
         )
 
         QUALITY_CHOICES = (
-            ('HD', 200),
-            ('FullHD', 500),
-            ('2K-4K', 1000)
+            ('HD', data['hd']),
+            ('FullHD', data['fullhd']),
+            ('2K-4K', data['two_k'])
         )
 
-        external_pr = 3000
-        domestic_pr = 1000
+        external_pr = data['external']
+        domestic_pr = data['domestic']
 
         time = str(request.data.get('time'))
         quality = str(request.data.get('quality'))
@@ -50,7 +69,7 @@ class CameraView(generics.CreateAPIView, generics.ListAPIView):
             system_type=system_type,
             external=external,
             domestic=domestic,
-            total_price=total_price
+            total_price=total_price,
         )
         camera_instance.save()
 
@@ -69,3 +88,18 @@ class CameraView(generics.CreateAPIView, generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = CameraSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CameraPriceView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            # Assume there is only one CameraPrice instance in the database
+            camera_price_instance = CameraPrice.objects.first()
+            
+            # Serialize the data
+            serializer = CameraPriceSerializer(camera_price_instance)
+            
+            # Return the serialized data
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CameraPrice.DoesNotExist:
+            return Response({'error': 'CameraPrice instance not found'}, status=status.HTTP_404_NOT_FOUND)
