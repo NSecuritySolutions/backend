@@ -23,6 +23,14 @@ python manage.py createsuperuser
 ```
 python manage.py runserver
 ```
+5. Запустить бота:
+```
+python manage.py bot
+```
+6. Запустить парсер цен:
+```
+python manage.py update_prices
+```
 
 Бэкенд будет доступен по адресу `http://localhost`
 Админка будет доступена по адресу `http://localhost/admin`
