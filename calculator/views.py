@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CameraPrice, Camera
-from .serializers import CameraPriceSerializer, CameraSerializer
+from .serializers import CameraPriceSerializer, CameraSerializer, CameraApplicationSerializer
 
 
 class CameraView(generics.CreateAPIView, generics.ListAPIView):
@@ -27,7 +27,6 @@ class CameraView(generics.CreateAPIView, generics.ListAPIView):
             # Handle the case where the response status code is not 200
             return Response({'error': 'Failed to fetch pricing data'}, status=response.status_code)
 
-        # Assume that the price per camera is 500
         TIME_CHOICES = (
             ('7', data['seven']),
             ('14', data['fourteen']),
@@ -88,7 +87,6 @@ class CameraView(generics.CreateAPIView, generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = CameraSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 class CameraPriceView(APIView):
     def get(self, request, *args, **kwargs):

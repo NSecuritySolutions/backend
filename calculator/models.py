@@ -31,13 +31,6 @@ class Camera(models.Model):
     domestic = models.IntegerField(verbose_name='Внутренние',default=0)
     total_price = models.IntegerField(verbose_name='Итог', null= True, blank=True)
 
-
-    name = models.CharField(verbose_name='ФИО',max_length=20)
-    description = models.TextField(verbose_name="Комментарий", max_length=500, null=True, blank=True)
-    email = models.EmailField(verbose_name='Почта',blank=True)
-    number = models.IntegerField(verbose_name='Номер телефона',null= True)
-
-
     def __str__(self):
         return f'Конфигурация {self.id}'
 

@@ -16,6 +16,7 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
 class Product(models.Model):
+    url = models.URLField(verbose_name='Ссылка')
     model = models.CharField(verbose_name='Модель',max_length=30)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
     description = models.CharField(verbose_name='Описание',max_length=200)
@@ -30,7 +31,7 @@ class Product(models.Model):
     viewing_angle = models.CharField(verbose_name='Угол Обзора',max_length=30)
     focus = models.CharField(verbose_name='Фокус',max_length=30)
     category = models.ManyToManyField(Category,verbose_name='Категория')
-    price = models.IntegerField(verbose_name="Цена", primary_key=True)
+    price = models.IntegerField(verbose_name="Цена", null= True, blank=True)
 
 
     def __str__(self):
@@ -40,17 +41,19 @@ class Product(models.Model):
         verbose_name = 'Товары'
         verbose_name_plural = 'Товары'
 
-class PopularSolutions(models.Model):
+class ReadySolutions(models.Model):
     title = models.CharField(verbose_name='Предложение', max_length=100)
-    product = models.ManyToManyField(Product, verbose_name='Популярный продукт')
+    product = models.ManyToManyField(Product, verbose_name='Продукт')
+    description = models.TextField(verbose_name ="Полное описание", max_length=300)
+    short_description = models.CharField(verbose_name='Краткое описание', max_length=50)
+    price = models.IntegerField(verbose_name='Итог', null= True, blank=True)
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Готовые решение'
         verbose_name_plural = 'Готовые решение'
-
 
 
 class OurService(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import OurService, Product, OurWorks, Image_Works, Category, PopularSolutions
+from .models import OurService, Product, OurWorks, Image_Works, Category, ReadySolutions
 
 class OurServiceListSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=True)
@@ -16,8 +16,8 @@ class ProductListSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField(source='get_category')
 
     class Meta:
-        model = Product
-        fields = ['model', 'description', 'category','manufacturer','resolution', 'dark', \
+        model = Product 
+        fields = ['url', 'model', 'image','description', 'category','manufacturer','resolution', 'dark', \
                   'accommodation','temperature','nutrition', 'microphone', 'micro_sd', \
                     'viewing_angle','focus','price']
 
@@ -32,11 +32,11 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id','title']
 
-class PopularSolutionsListSerializer(serializers.ModelSerializer):
+class ReadySolutionsListSerializer(serializers.ModelSerializer):
     product = serializers.SerializerMethodField(source='get_product')
 
     class Meta:
-        model = PopularSolutions
+        model = ReadySolutions
         fields = ['id','product']
 
     def get_product(self, obj):
