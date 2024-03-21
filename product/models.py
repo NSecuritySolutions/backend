@@ -16,7 +16,7 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
 class Product(models.Model):
-    url = models.URLField(verbose_name='Ссылка')
+    article = models.CharField(verbose_name='Артикул',max_length=50)
     model = models.CharField(verbose_name='Модель',max_length=30)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
     description = models.CharField(verbose_name='Описание',max_length=200)

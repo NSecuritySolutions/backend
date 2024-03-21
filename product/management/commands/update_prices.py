@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from product.models import Product
 import requests
-import json
 import schedule
 import time
 
@@ -9,7 +8,8 @@ class Command(BaseCommand):
     help = 'Parse data from API and update prices in the database every 24 hours'
 
     def handle(self, *args, **kwargs):
-        schedule.every(10).seconds.do(self.update_prices)
+        # schedule.every(24).hours.do(self.update_prices) 
+        schedule.every(10).seconds.do(self.update_prices) #Закоментировать тест строку
         
         while True:
             schedule.run_pending()
@@ -19,14 +19,14 @@ class Command(BaseCommand):
         products = Product.objects.all()
         for product in products:
             try:
-                response = requests.get(product.url)
+                response = requests.get(f'https://b2b.pro-tek.pro/api/v1/product?filters%5Bkeyword%5D=Аналог%3A{product.article}')
+                # response = (f'https://b2b.pro-tek.pro/api/v1/product?filters%5Bkeyword%5D=Аналог%{url_article}')
                 if response.status_code == 200:
                     data = response.json()
                     price = self.extract_price(data)
-                    image = self.extract_price(data)
                     if price is not None:
                         product_instance, created = Product.objects.get_or_create(
-                            url=product.url,
+                            article=product.article,
                             defaults={'price': price}  # Обновляем цену, если объект существует
                         )
                         if not created:  # Если объект уже существует, обновляем цену
