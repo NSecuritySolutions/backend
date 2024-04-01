@@ -1,18 +1,19 @@
 from django.contrib import admin
 from .models import *
-from django.utils.safestring import mark_safe
 
 # Register your models here.
-admin.site.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    # list_display = ('model','display_category')
+    search_fields = ['model']
+
+
+admin.site.register(Product, ProductAdmin)
 admin.site.register(ReadySolutions)
 admin.site.register(OurService)
 admin.site.register(OurWorks)
 admin.site.register(Category)
 admin.site.register(Image_Works)
-
-
-
-
+admin.site.register(Manufacturer)
 
 
 

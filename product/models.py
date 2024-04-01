@@ -5,6 +5,8 @@ tz = timezone.get_default_timezone()
 
 # Create your models here.
 
+#ответы и вопросы
+
 class Category(models.Model):
     title = models.CharField(verbose_name='Категория', max_length=20)
 
@@ -15,23 +17,50 @@ class Category(models.Model):
         verbose_name = 'Категории'
         verbose_name_plural = 'Категории'
 
+class Manufacturer(models.Model):
+    title = models.CharField(verbose_name='Производитель', max_length=20)
+
+    def __str__(self):
+        return f'{self.title}'
+
+    class Meta:
+        verbose_name = 'Производителя'
+        verbose_name_plural = 'Производители'
+
 class Product(models.Model):
+    FORM_FACTOR_CHOICES = (
+        ('Domed', 'Купольная'),
+        ('Cylindrical', 'Цилиндрическая'),
+    )
+
+    ACCOMMODATION_CHOICES = (
+        ('Street', 'Уличное'),
+        ('Internal', 'Внутренняя'),
+    )
+
+    MICROPHONE_CHOICES = (
+        ('No', 'Нет'),
+        ('Microphone', 'Микрофон'),
+        ('Microphone_speaker', 'Микрофон/Динамик')
+    )
+
     article = models.CharField(verbose_name='Артикул',max_length=50)
-    model = models.CharField(verbose_name='Модель',max_length=30)
+    model = models.CharField(verbose_name='Модель',max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
     description = models.CharField(verbose_name='Описание',max_length=200)
-    manufacturer = models.CharField(verbose_name='Производитель', max_length=30)
-    accommodation = models.CharField(verbose_name='Размещение',max_length=30)
+    form_factor = models.CharField(verbose_name='Форм Фактор', max_length=20, choices=FORM_FACTOR_CHOICES)
+    manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
+    accommodation = models.CharField(verbose_name='Размещение',max_length=30, choices=ACCOMMODATION_CHOICES)
     resolution = models.CharField(verbose_name='Разрешение',max_length=30)
     dark = models.CharField(verbose_name='Съемка в темноте',max_length=30)
     temperature = models.CharField(verbose_name='Температура',max_length=30)
     nutrition = models.CharField(verbose_name='Питание',max_length=30)
-    microphone = models.CharField(verbose_name='Микрофон',max_length=30)
+    microphone = models.CharField(verbose_name='Микрофон',max_length=30, choices=MICROPHONE_CHOICES)
     micro_sd = models.CharField(verbose_name='MicroSD',max_length=30)
     viewing_angle = models.CharField(verbose_name='Угол Обзора',max_length=30)
     focus = models.CharField(verbose_name='Фокус',max_length=30)
     category = models.ManyToManyField(Category,verbose_name='Категория')
-    price = models.IntegerField(verbose_name="Цена", null= True, blank=True)
+    price = models.IntegerField(verbose_name="Цена", default=0)
 
 
     def __str__(self):

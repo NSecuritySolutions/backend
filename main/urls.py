@@ -29,16 +29,16 @@ urlpatterns = [
     path('api/v1/our-works/', views.OurWorksListView.as_view()),
     path('api/v1/category/', views.CategoryView.as_view()),
 
-    path('api/v1/camera/', CameraView.as_view()),
-    path('camera-pr/', CameraPriceView.as_view()),
+    #Calculator
+    path('api/v1/cal/camera/', CameraView.as_view()),
+    path('api/v1/cal/camera-pr/', CameraPriceView.as_view()),
 
-
-
+    #application
     path('application/', ApplicationView.as_view()),
     path('application/<int:id>/', ApplicationView.as_view()),
 
 
-
+    #Swagger
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
 ]
