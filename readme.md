@@ -7,7 +7,7 @@ Python 3.11, Django, DRF, Postgres, Docker
 ### Запустить проект локально
 1. Скопировать проект
 ```python
-git clone https://github.com/Maruf995/video-store
+git clone https://github.com/Maruf995/video.store
 ```
 
 2. Сделать миграции:

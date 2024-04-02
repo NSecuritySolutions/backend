@@ -1,30 +1,19 @@
-version: '3'
-
+version: "3"
 services:
-  django:
+  db:
+    image: postgres
+    volumes:
+      - /app
+    environment:
+      - POSTGRES_DB=video.store
+      - POSTGRES_USER=video.storeuser
+      - POSTGRES_PASSWORD=admin123
+  web:
     build: .
-    container_name: django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/code
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
-      - pgdb
-    environment:
-      - POSTGRES_DB=videostore
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-
-  pgdb:
-    image: postgres
-    container_name: pgdb
-    environment:
-      - POSTGRES_DB=videostore
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-    volumes:
-      - pgdbdata:/var/lib/postgresql/data/
-
-volumes:
-  pgdbdata: null
+      - db

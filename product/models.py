@@ -109,7 +109,7 @@ class Image_Works(models.Model):
 class OurWorks(models.Model):
     image = models.ManyToManyField(Image_Works, verbose_name='Фотография')
     description = models.TextField(verbose_name='Описание',max_length=500)
-    product = models.ManyToManyField(Product, verbose_name="Используемое оборудование")
+    product = models.TextField(verbose_name='Продукт',max_length=500)
     price = models.IntegerField(verbose_name="Цена", primary_key=True)
     date_works = models.DateTimeField(verbose_name="Дата начало проекта")
     date_finish = models.DateTimeField(verbose_name="Дата окончание проекта")
