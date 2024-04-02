@@ -14,6 +14,7 @@ admin.site.register(OurWorks)
 admin.site.register(Category)
 admin.site.register(Image_Works)
 admin.site.register(Manufacturer)
+admin.site.register(Questions)
 
 
 

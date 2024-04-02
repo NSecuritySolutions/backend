@@ -5,7 +5,13 @@ tz = timezone.get_default_timezone()
 
 # Create your models here.
 
-#ответы и вопросы
+class Questions(models.Model):
+    questions = models.CharField(verbose_name='Вопрос', max_length=200)
+    answer = models.TextField(verbose_name='Ответ', max_length=500)
+
+    class Meta:
+        verbose_name = 'Вопрос/Ответ'
+        verbose_name_plural = 'Вопрос/Ответ'
 
 class Category(models.Model):
     title = models.CharField(verbose_name='Категория', max_length=20)
@@ -71,11 +77,12 @@ class Product(models.Model):
         verbose_name_plural = 'Товары'
 
 class ReadySolutions(models.Model):
+    image = models.ImageField(verbose_name='Фотография', upload_to='media/ready')
     title = models.CharField(verbose_name='Предложение', max_length=100)
-    product = models.ManyToManyField(Product, verbose_name='Продукт')
-    description = models.TextField(verbose_name ="Полное описание", max_length=300)
+    description = models.TextField(verbose_name ="Описание", max_length=300)
     short_description = models.CharField(verbose_name='Краткое описание', max_length=50)
-    price = models.IntegerField(verbose_name='Итог', null= True, blank=True)
+    price = models.IntegerField(verbose_name='Цена', null= True, blank=True)
+    category = models.ManyToManyField(Category,verbose_name='Категории')
 
     def __str__(self):
         return f'{self.title}'
@@ -107,25 +114,24 @@ class Image_Works(models.Model):
         verbose_name_plural = 'Фотографии'
 
 class OurWorks(models.Model):
-    image = models.ManyToManyField(Image_Works, verbose_name='Фотография')
+    title = models.CharField(verbose_name='Предложение', max_length=400)
+    main_image = models.ImageField(verbose_name='Фотография', upload_to='media/ourworks')
+    image = models.ManyToManyField(Image_Works, verbose_name='Фотографии')
+    product = models.TextField(verbose_name='Используемое оборудование',max_length=500)
     description = models.TextField(verbose_name='Описание',max_length=500)
-    product = models.TextField(verbose_name='Продукт',max_length=500)
     price = models.IntegerField(verbose_name="Цена", primary_key=True)
-    date_works = models.DateTimeField(verbose_name="Дата начало проекта")
-    date_finish = models.DateTimeField(verbose_name="Дата окончание проекта")
     add_date = models.DateTimeField(verbose_name='Дата добавление на сайт')
+    deadline = models.CharField(verbose_name='Сроки',max_length=50)
+    budget = models.CharField(verbose_name='Бюджет',max_length=50)
+    equipped = models.CharField(verbose_name='Оборудовано',max_length=50)
 
-    def date_two(self):
-        return self.date_works.strftime('%d.%m.%Y')
-    
-    def date_three(self):
-        return self.date_finish.strftime('%d.%m.%Y')
+
     
     def date_one(self):
         return self.add_date.strftime('%d.%m.%Y')
     
     def __str__(self):
-        return f'{self.descriptoin}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Примеры работ'

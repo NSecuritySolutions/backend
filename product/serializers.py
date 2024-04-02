@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import OurService, Product, OurWorks, Image_Works, Category, ReadySolutions, Manufacturer
+from .models import OurService, Product, OurWorks, Image_Works, Category, ReadySolutions, Manufacturer, \
+    Questions
 
 class OurServiceListSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=True)
@@ -44,14 +45,14 @@ class ManufacturerSerializer(serializers.ModelSerializer):
         fields = ['id','title']
 
 class ReadySolutionsListSerializer(serializers.ModelSerializer):
-    product = serializers.SerializerMethodField(source='get_product')
+    category = serializers.SerializerMethodField(source='get_category')
 
     class Meta:
         model = ReadySolutions
-        fields = ['id','product']
+        fields = ['id','title','image','description', 'short_description','price', 'category']
 
-    def get_product(self, obj):
-        return ProductListSerializer(obj.product, many=True).data
+    def get_category(self, obj):
+        return CategorySerializer(obj.category, many=True).data
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -63,17 +64,24 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class OurWorksListSerializer(serializers.ModelSerializer):
     image = ImageSerializer(many=True, required=False)
-    description = serializers.CharField(required=True, max_length=500)
-    product = serializers.SerializerMethodField(source='get_product')
+    # description = serializers.CharField(required=True, max_length=500)
+    # product = serializers.TimeField(required=True, max_length=500)
+    # deadline = serializers.CharField(required=True, max_length=50)
+    # budget = serializers.CharField(required=True, max_length=50)
+    # equipped = serializers.CharField(required=True, max_length=50)
+
     add_date = serializers.DateTimeField(format='%d.%m.%Y')    
-    date_works = serializers.DateTimeField(format='%d.%m.%Y')
-    date_finish = serializers.DateTimeField(format='%d.%m.%Y')
     price = serializers.IntegerField()
     
     class Meta:
         model = OurWorks
-        fields = ['image', 'description', 'product','add_date', 'date_works', 'date_finish', 'price']
+        fields = ['title','main_image','image', 'description', 'product','deadline','budget','equipped','add_date', 'price']
 
     def get_product(self, obj):
         return ProductListSerializer(obj.product, many=True).data
     
+
+class QuestionsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Questions
+        fields = '__all__'

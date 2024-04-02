@@ -28,6 +28,8 @@ urlpatterns = [
     path('api/v1/our-service/', views.OurServiceListView.as_view()),
     path('api/v1/our-works/', views.OurWorksListView.as_view()),
     path('api/v1/category/', views.CategoryView.as_view()),
+    path('api/v1/questions/', views.QuestionsListView.as_view()),
+
 
     #Calculator
     path('api/v1/cal/camera/', CameraView.as_view()),
