@@ -32,8 +32,8 @@ urlpatterns = [
 
 
     #Calculator
-    path('api/v1/cal/camera/', CameraView.as_view()),
-    path('api/v1/cal/camera-pr/', CameraPriceView.as_view()),
+    path('cal/camera/', CameraView.as_view()),
+    path('cal/camera-pr/', CameraPriceView.as_view()),
 
     #application
     path('application/', ApplicationView.as_view()),
