@@ -8,6 +8,7 @@ services:
       - POSTGRES_DB=video.store
       - POSTGRES_USER=video.storeuser
       - POSTGRES_PASSWORD=admin123
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -15,5 +16,21 @@ services:
       - .:/code
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+
+  update_prices:
+    build: .
+    command: python manage.py update_prices
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
+  bot:
+    build: .
+    command: python manage.py bot
+    volumes:
+      - .:/code
     depends_on:
       - db

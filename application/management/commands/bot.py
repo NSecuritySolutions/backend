@@ -1,9 +1,9 @@
-import requests
 import time
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from telegram import Bot
 from telegram.utils.request import Request
+from application.models import Application
 
 class Command(BaseCommand):
     help = "Телеграм-бот"
@@ -24,42 +24,29 @@ class Command(BaseCommand):
         # Вывод информации о боте
         print(bot.get_me())
 
-        processed_ids = set()  # Множество для хранения обработанных идентификаторов
-
         while True:
             try:
-                # URL для запроса данных у Django-сервера
-                url = "http://localhost:8000/application/"
+                # Получение данных напрямую из базы данных Django
+                queryset = Application.objects.filter(processed=False)  # Предполагается, что у вас есть модель с полями, подобными данным вашего запроса
 
-                # Выполнение GET-запроса к Django-серверу
-                response = requests.get(url)
+                for data in queryset:
+                    # Формирование сообщения из полученных данных
+                    message = (
+                        f"Новая заявка получена!\n"
+                        f"Имя: {data.name}\n"
+                        f"Комментарий: {data.description}\n"
+                        f"Почта: {data.email}\n"
+                        f"Номер телефона: {data.number}\n"
+                        f"Повод заявки: Просто Заявка"
+                    )
 
-                if response.status_code == 200:
-                    # Раскомментировать строку ниже для вывода содержимого ответа
-                    # print(response.content)
-                    data = response.json()
+                    # Отправка отформатированного сообщения конкретному пользователю
+                    user_id_to_notify = 1684336348
+                    bot.send_message(chat_id=user_id_to_notify, text=message)
 
-                    # Проверка, был ли обработан данный идентификатор
-                    if data['id'] not in processed_ids:
-                        processed_ids.add(data['id'])  # Добавление идентификатора в множество обработанных
-
-                        # Формирование сообщения из полученных данных
-                        message = (
-                            f"Новая заявка получена!\n"
-                            f"Имя: {data['name']}\n"
-                            f"Комментарий: {data['description']}\n"
-                            f"Почта: {data['email']}\n"
-                            f"Номер телефона: {data['number']}\n"
-                            f"Повод заявки: Просто Заявка"
-                        )
-
-                        # Отправка отформатированного сообщения конкретному пользователю
-                        user_id_to_notify = 1684336348
-                        bot.send_message(chat_id=user_id_to_notify, text=message)
-
-                else:
-                    print(f"Ошибка: {response.status_code}")
-
+                    # Помечаем данные как обработанные
+                    data.processed = True
+                    data.save()
 
             except Exception as e:
                 print(f"Произошла ошибка: {e}")

@@ -8,8 +8,8 @@ class Command(BaseCommand):
     help = 'Parse data from API and update prices in the database every 24 hours'
 
     def handle(self, *args, **kwargs):
-        # schedule.every(24).hours.do(self.update_prices) 
-        schedule.every(10).seconds.do(self.update_prices) #Закоментировать тест строку
+        schedule.every(24).hours.do(self.update_prices) 
+        # schedule.every(10).seconds.do(self.update_prices) #Закоментировать тест строку
         
         while True:
             schedule.run_pending()

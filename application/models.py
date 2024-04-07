@@ -8,6 +8,7 @@ class Application(models.Model):
     description = models.TextField(verbose_name="Комментарий", max_length=500, null=True, blank=True)
     email = models.EmailField(verbose_name='Почта', blank=True)
     number = models.IntegerField(verbose_name='Номер телефона')
+    processed = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name}'
