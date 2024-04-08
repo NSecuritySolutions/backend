@@ -64,18 +64,12 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class OurWorksListSerializer(serializers.ModelSerializer):
     image = ImageSerializer(many=True, required=False)
-    # description = serializers.CharField(required=True, max_length=500)
-    # product = serializers.TimeField(required=True, max_length=500)
-    # deadline = serializers.CharField(required=True, max_length=50)
-    # budget = serializers.CharField(required=True, max_length=50)
-    # equipped = serializers.CharField(required=True, max_length=50)
+    date = serializers.DateTimeField(format='%d.%m.%Y')
 
-    add_date = serializers.DateTimeField(format='%d.%m.%Y')    
-    price = serializers.IntegerField()
-    
     class Meta:
         model = OurWorks
-        fields = ['title','main_image','image', 'description', 'product','deadline','budget','equipped','add_date', 'price']
+        # fields = '__all__'
+        fields = ['id','title', 'main_image', 'image', 'description', 'product', 'deadline', 'budget', 'equipped', 'date']
 
     def get_product(self, obj):
         return ProductListSerializer(obj.product, many=True).data
