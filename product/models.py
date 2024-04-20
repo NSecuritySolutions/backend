@@ -90,6 +90,41 @@ class Product(models.Model):
         verbose_name = 'Товары'
         verbose_name_plural = 'Товары'
 
+
+class Register(models.Model):
+    article = models.CharField(verbose_name='Артикул',max_length=50)
+    model = models.CharField(verbose_name='Модель',max_length=300)
+    description = models.CharField(verbose_name='Описание',max_length=200)
+    manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
+    max_resolution = models.CharField(verbose_name='Максимально разрешение',max_length=30)
+    quantity_сam = models.IntegerField(verbose_name='Количество камер')
+    quantity_hdd = models.IntegerField(verbose_name='Количество hhd')
+    max_quantity_hdd = models.IntegerField(verbose_name='Макс объем HDD Тб')
+    nutrition = models.CharField(verbose_name='Питание',max_length=30)
+    price = models.IntegerField(verbose_name="Цена", default=0)
+
+    def __str__(self):
+        return f'{self.model}'
+    
+    class Meta:
+        verbose_name = 'Регистраторы'
+        verbose_name_plural = 'Регистраторы'
+
+
+class HDD(models.Model):
+    model = models.CharField(verbose_name='Модель',max_length=300)
+    description = models.CharField(verbose_name='Описание',max_length=200)
+    manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
+    price = models.IntegerField(verbose_name="Цена", default=0)
+
+    def __str__(self):
+        return f'{self.model}'
+    
+    class Meta:
+        verbose_name = 'HDD'
+        verbose_name_plural = 'HDD'
+
+
 class ReadySolutions(models.Model):
     image = models.ImageField(verbose_name='Фотография', upload_to='media/ready')
     title = models.CharField(verbose_name='Предложение', max_length=100)

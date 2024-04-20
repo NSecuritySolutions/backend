@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from product.models import Product
+from product.models import Product, Register, HDD
 import requests
 import schedule
 import time
@@ -8,8 +8,8 @@ class Command(BaseCommand):
     help = 'Parse data from API and update prices in the database every 24 hours'
 
     def handle(self, *args, **kwargs):
-        schedule.every(24).hours.do(self.update_prices) 
-        # schedule.every(10).seconds.do(self.update_prices) #Закоментировать тест строку
+        # schedule.every(24).hours.do(self.update_prices) 
+        schedule.every(10).seconds.do(self.update_prices) #Закоментировать тест строку
         
         while True:
             schedule.run_pending()
@@ -20,7 +20,6 @@ class Command(BaseCommand):
         for product in products:
             try:
                 response = requests.get(f'https://b2b.pro-tek.pro/api/v1/product?filters%5Bkeyword%5D=Аналог%3A{product.article}')
-                # response = (f'https://b2b.pro-tek.pro/api/v1/product?filters%5Bkeyword%5D=Аналог%{url_article}')
                 if response.status_code == 200:
                     data = response.json()
                     price = self.extract_price(data)
@@ -34,6 +33,25 @@ class Command(BaseCommand):
                             product_instance.save()
             except Exception as e:
                 print(f"Error updating price for product {product.model}: {str(e)}")
+
+        registers = Register.objects.all()
+
+        for register in registers:
+            try:
+                response = requests.get(f'https://b2b.pro-tek.pro/api/v1/product?filters%5Bkeyword%5D=Аналог%3A{register.article}')
+                if response.status_code == 200:
+                    data = response.json()
+                    price = self.extract_price(data)
+                    if price is not None:
+                        register_instance, created = Register.objects.get_or_create(
+                            article=register.article,
+                            defaults={'price': price}  # Обновляем цену, если объект существует
+                        )
+                        if not created:  # Если объект уже существует, обновляем цену
+                            register_instance.price = price
+                            register_instance.save()
+            except Exception as e:
+                print(f"Error updating price for register {register.model}: {str(e)}")
 
     def extract_price(self, data):
         try:

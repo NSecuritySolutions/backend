@@ -12,26 +12,18 @@ git clone https://github.com/Maruf995/video.store
 
 2. Сделать миграции:
 ```
-python manage.py makemigrations
-python manage.py migrate
+docker-compose web run python manage.py makemigrations
+docker-compose web run python manage.py migrate
 ```
 3. Создать суперпользователя:
 ```
-python manage.py createsuperuser
+docker-compose web run python manage.py createsuperuser
 ```
 4. Запустить проект:
 ```
-python manage.py runserver
-```
-5. Запустить бота:
-```
-python manage.py bot
-```
-6. Запустить парсер цен:
-```
-python manage.py update_prices
+docker-compose up
 ```
 
-Бэкенд будет доступен по адресу `http://localhost`
+Бэкенд будет доступен по адресу `http://localhost`, `http://127.0.0.1`
 Админка будет доступена по адресу `http://localhost/admin`
 

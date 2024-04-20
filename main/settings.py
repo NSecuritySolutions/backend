@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-shp-qj=((702t^_b%g*+05pwwja=t!j7kv7*ge1y0l)h$#xk)3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','*', 'https://opticontrol.ru/', 'opticontrol.ru']
 
 
 # Application definition
@@ -149,4 +149,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #Telegram Bot
 
+'''
+    Тестовый Токен
+'''
 TOKEN = '6569715162:AAELzdCadg1BCKpNxNYoplAYzYSKI4CsgFs'
+
+
+# TOKEN = '7034168607:AAFNEDYk68IINEcHGW-5nrqLrL-LitcnYFw'
