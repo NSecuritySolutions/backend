@@ -28,7 +28,7 @@ class Questions(models.Model):
 
 
 class Category(models.Model):
-    title = models.CharField(verbose_name='Категория', max_length=20)
+    title = models.CharField(verbose_name='Категория', max_length=50)
 
     def __str__(self):
         return f'{self.title}'
@@ -38,7 +38,7 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
 class Manufacturer(models.Model):
-    title = models.CharField(verbose_name='Производитель', max_length=20)
+    title = models.CharField(verbose_name='Производитель', max_length=50)
 
     def __str__(self):
         return f'{self.title}'
@@ -64,10 +64,10 @@ class Product(models.Model):
         ('Microphone_speaker', 'Микрофон/Динамик')
     )
 
-    article = models.CharField(verbose_name='Артикул',max_length=50)
+    article = models.CharField(verbose_name='Артикул',max_length=100)
     model = models.CharField(verbose_name='Модель',max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
-    description = models.CharField(verbose_name='Описание',max_length=200)
+    description = models.CharField(verbose_name='Описание',max_length=5000)
     form_factor = models.CharField(verbose_name='Форм Фактор', max_length=20, choices=FORM_FACTOR_CHOICES)
     manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
     accommodation = models.CharField(verbose_name='Размещение',max_length=30, choices=ACCOMMODATION_CHOICES)
@@ -92,15 +92,15 @@ class Product(models.Model):
 
 
 class Register(models.Model):
-    article = models.CharField(verbose_name='Артикул',max_length=50)
+    article = models.CharField(verbose_name='Артикул',max_length=100)
     model = models.CharField(verbose_name='Модель',max_length=300)
-    description = models.CharField(verbose_name='Описание',max_length=200)
+    description = models.CharField(verbose_name='Описание',max_length=5000)
     manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
-    max_resolution = models.CharField(verbose_name='Максимально разрешение',max_length=30)
+    max_resolution = models.CharField(verbose_name='Максимально разрешение',max_length=50)
     quantity_сam = models.IntegerField(verbose_name='Количество камер')
     quantity_hdd = models.IntegerField(verbose_name='Количество hhd')
     max_quantity_hdd = models.IntegerField(verbose_name='Макс объем HDD Тб')
-    nutrition = models.CharField(verbose_name='Питание',max_length=30)
+    nutrition = models.CharField(verbose_name='Питание',max_length=50)
     price = models.IntegerField(verbose_name="Цена", default=0)
 
     def __str__(self):
@@ -127,9 +127,9 @@ class HDD(models.Model):
 
 class ReadySolutions(models.Model):
     image = models.ImageField(verbose_name='Фотография', upload_to='media/ready')
-    title = models.CharField(verbose_name='Предложение', max_length=100)
-    description = models.TextField(verbose_name ="Описание", max_length=300)
-    short_description = models.CharField(verbose_name='Краткое описание', max_length=50)
+    title = models.CharField(verbose_name='Предложение', max_length=300)
+    description = models.TextField(verbose_name ="Описание", max_length=5000)
+    short_description = models.CharField(verbose_name='Краткое описание', max_length=200)
     price = models.IntegerField(verbose_name='Цена', null= True, blank=True)
     category = models.ManyToManyField(Category,verbose_name='Категории')
 
@@ -144,7 +144,7 @@ class ReadySolutions(models.Model):
 class OurService(models.Model):
     image = models.ImageField(verbose_name='Фотография',upload_to='media/service')
     title = models.CharField(verbose_name='название', max_length=400)
-    description = models.TextField(verbose_name='Описание',max_length=500)
+    description = models.TextField(verbose_name='Описание',max_length=5000)
 
     def __str__(self):
         return f'{self.title}'
@@ -165,11 +165,11 @@ class Image_Works(models.Model):
 
 class OurWorks(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(verbose_name='Предложение', max_length=400)
+    title = models.CharField(verbose_name='Предложение', max_length=300)
     main_image = models.ImageField(verbose_name='Фотография', upload_to='media/ourworks')
     image = models.ManyToManyField(Image_Works, verbose_name='Фотографии')
-    product = models.TextField(verbose_name='Используемое оборудование',max_length=500)
-    description = models.TextField(verbose_name='Описание',max_length=500)
+    product = models.TextField(verbose_name='Используемое оборудование',max_length=5000)
+    description = models.TextField(verbose_name='Описание',max_length=5000)
     add_date = models.DateTimeField(verbose_name='Дата добавление на сайт')
     deadline = models.IntegerField(verbose_name='Сроки')
     budget = models.IntegerField(verbose_name='Бюджет')
