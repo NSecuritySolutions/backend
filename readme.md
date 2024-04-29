@@ -12,12 +12,12 @@ git clone https://github.com/Maruf995/video.store
 
 2. Сделать миграции:
 ```
-docker-compose web run python manage.py makemigrations
-docker-compose web run python manage.py migrate
+docker-compose run web python manage.py makemigrations
+docker-compose run web python manage.py migrate
 ```
 3. Создать суперпользователя:
 ```
-docker-compose web run python manage.py createsuperuser
+docker-compose run web python manage.py createsuperuser
 ```
 4. Запустить проект:
 ```
