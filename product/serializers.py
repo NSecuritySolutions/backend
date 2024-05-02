@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import OurService, Product, OurWorks, Image_Works, Category, ReadySolutions, Manufacturer, \
-    Questions
+    Questions, Register
 
 class OurServiceListSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=True)
@@ -11,6 +11,17 @@ class OurServiceListSerializer(serializers.ModelSerializer):
         model = OurService
         fields = ['id','image', 'title','description']
 
+class RegisterListSerializer(serializers.ModelSerializer):
+    manufacturer = serializers.SerializerMethodField(source='get_manufacturer')
+
+
+    class Meta:
+        model = Register 
+        fields = ['id','article', 'model', 'image','description', 'manufacturer','max_resolution', 'quantity_сam', \
+                  'quantity_hdd','max_quantity_hdd','nutrition', 'price']
+
+    def get_manufacturer(self, obj):
+        return ManufacturerSerializer(obj.manufacturer, many=True).data
 
 
 class ProductListSerializer(serializers.ModelSerializer):

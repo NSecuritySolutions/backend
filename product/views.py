@@ -5,9 +5,9 @@ from rest_framework import status
 
 
 
-from .models import Product, ReadySolutions, OurService, OurWorks, Category, Questions
+from .models import Product, ReadySolutions, OurService, OurWorks, Category, Questions, Register
 from .serializers import ProductListSerializer, ReadySolutionsListSerializer, OurServiceListSerializer, \
-OurWorksListSerializer, CategorySerializer, QuestionsListSerializer
+OurWorksListSerializer, CategorySerializer, QuestionsListSerializer, RegisterListSerializer
 
 
 # Create your views here.
@@ -23,6 +23,16 @@ class ProductListView(APIView):
         serializer = ProductListSerializer(queryset, many=True, context={"request": request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class RegisterListView(APIView):
+    def get(self, request, *args, **kwargs):
+        queryset = Register.objects.all()
+        serializer = RegisterListSerializer(queryset, many=True, context={"request": request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 
 '''
     Вывод остальных функций

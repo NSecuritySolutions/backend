@@ -79,6 +79,7 @@ class Product(models.Model):
 class Register(models.Model):
     article = models.CharField(verbose_name='Артикул',max_length=100)
     model = models.CharField(verbose_name='Модель',max_length=300)
+    image = models.ImageField(verbose_name="Изображение", upload_to="media/register")
     description = models.CharField(verbose_name='Описание',max_length=5000)
     manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
     max_resolution = models.CharField(verbose_name='Максимально разрешение',max_length=50)

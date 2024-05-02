@@ -24,6 +24,7 @@ from application.views import ApplicationView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/product/', views.ProductListView.as_view()),
+    path('api/v1/register/', views.RegisterListView.as_view()),
     path('api/v1/ready/', views.ReadySolutionsListView.as_view()),
     path('api/v1/our-service/', views.OurServiceListView.as_view()),
     path('api/v1/our-works/', views.OurWorksListView.as_view()),
