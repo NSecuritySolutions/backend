@@ -48,34 +48,18 @@ class Manufacturer(models.Model):
         verbose_name_plural = 'Производители'
 
 class Product(models.Model):
-    FORM_FACTOR_CHOICES = (
-        ('Domed', 'Купольная'),
-        ('Cylindrical', 'Цилиндрическая'),
-    )
-
-    ACCOMMODATION_CHOICES = (
-        ('Street', 'Уличное'),
-        ('Internal', 'Внутренняя'),
-    )
-
-    MICROPHONE_CHOICES = (
-        ('No', 'Нет'),
-        ('Microphone', 'Микрофон'),
-        ('Microphone_speaker', 'Микрофон/Динамик')
-    )
-
     article = models.CharField(verbose_name='Артикул',max_length=100)
     model = models.CharField(verbose_name='Модель',max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
     description = models.CharField(verbose_name='Описание',max_length=5000)
-    form_factor = models.CharField(verbose_name='Форм Фактор', max_length=20, choices=FORM_FACTOR_CHOICES)
+    form_factor = models.CharField(verbose_name='Форм Фактор', max_length=20)
     manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
-    accommodation = models.CharField(verbose_name='Размещение',max_length=30, choices=ACCOMMODATION_CHOICES)
+    accommodation = models.CharField(verbose_name='Размещение',max_length=30)
     resolution = models.CharField(verbose_name='Разрешение',max_length=30)
     dark = models.CharField(verbose_name='Съемка в темноте',max_length=30)
     temperature = models.CharField(verbose_name='Температура',max_length=30)
     nutrition = models.CharField(verbose_name='Питание',max_length=30)
-    microphone = models.CharField(verbose_name='Микрофон',max_length=30, choices=MICROPHONE_CHOICES)
+    microphone = models.CharField(verbose_name='Микрофон',max_length=30)
     micro_sd = models.CharField(verbose_name='MicroSD',max_length=30)
     viewing_angle = models.CharField(verbose_name='Угол Обзора',max_length=30)
     focus = models.CharField(verbose_name='Фокус',max_length=30)
