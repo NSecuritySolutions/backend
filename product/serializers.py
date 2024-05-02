@@ -20,7 +20,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product 
-        fields = ['id','article', 'model', 'image','description', 'category','manufacturer','resolution', 'dark', \
+        fields = ['id','article', 'model', 'image','type','description', 'category','manufacturer','resolution', 'dark', \
                   'accommodation','temperature','nutrition', 'microphone', 'micro_sd', \
                     'viewing_angle','focus','price']
 
@@ -68,7 +68,6 @@ class OurWorksListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OurWorks
-        # fields = '__all__'
         fields = ['id','title', 'main_image', 'image', 'description', 'product', 'deadline', 'budget', 'equipped', 'date']
 
     def get_product(self, obj):

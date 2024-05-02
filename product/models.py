@@ -51,6 +51,7 @@ class Product(models.Model):
     article = models.CharField(verbose_name='Артикул',max_length=100)
     model = models.CharField(verbose_name='Модель',max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
+    type = models.CharField(verbose_name='Тип', max_length=20)
     description = models.CharField(verbose_name='Описание',max_length=5000)
     form_factor = models.CharField(verbose_name='Форм Фактор', max_length=20)
     manufacturer = models.ManyToManyField(Manufacturer,verbose_name='Производитель')
