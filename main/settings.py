@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'application',
     'calculator',
     'drf_spectacular',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        }
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
