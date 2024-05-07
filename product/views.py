@@ -10,12 +10,6 @@ from .serializers import ProductListSerializer, ReadySolutionsListSerializer, Ou
 OurWorksListSerializer, CategorySerializer, QuestionsListSerializer, RegisterListSerializer
 
 
-# Create your views here.
-
-'''
-    Вывод каталога
-'''
-
 
 class ProductListView(APIView):
     def get(self, request, *args, **kwargs):
@@ -24,6 +18,7 @@ class ProductListView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class RegisterListView(APIView):
     def get(self, request, *args, **kwargs):
         queryset = Register.objects.all()
@@ -31,12 +26,6 @@ class RegisterListView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
-
-'''
-    Вывод остальных функций
-'''
 
 class OurServiceListView(APIView):
     def get(self, request, *args, **kwargs):

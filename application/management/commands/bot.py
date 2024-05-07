@@ -1,9 +1,14 @@
 import time
+import os
+
+from dotenv import load_dotenv
 from django.core.management.base import BaseCommand
-from django.conf import settings
+
 from telegram import Bot
 from telegram.utils.request import Request
 from application.models import Application
+
+load_dotenv()
 
 class Command(BaseCommand):
     help = "Телеграм-бот"
@@ -18,7 +23,7 @@ class Command(BaseCommand):
         # Инициализация объекта Bot с использованием токена из настроек Django
         bot = Bot(
             request=request,
-            token=settings.TOKEN,
+            token=os.getenv('TELEGRAM_TOKEN'),
         )
         
         # Вывод информации о боте
@@ -27,7 +32,8 @@ class Command(BaseCommand):
         while True:
             try:
                 # Получение данных напрямую из базы данных Django
-                queryset = Application.objects.filter(processed=False)  # Предполагается, что у вас есть модель с полями, подобными данным вашего запроса
+                queryset = Application.objects.filter(processed=False)  
+                # Предполагается, что у вас есть модель с полями, подобными данным вашего запроса
 
                 for data in queryset:
                     # Формирование сообщения из полученных данных
