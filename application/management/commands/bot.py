@@ -10,6 +10,7 @@ from application.models import Application
 
 load_dotenv()
 
+
 class Command(BaseCommand):
     help = "Телеграм-бот"
 
@@ -19,20 +20,20 @@ class Command(BaseCommand):
             connect_timeout=0.5,
             read_timeout=1.0,
         )
-        
+
         # Инициализация объекта Bot с использованием токена из настроек Django
         bot = Bot(
             request=request,
-            token=os.getenv('TELEGRAM_TOKEN'),
+            token=os.getenv("TELEGRAM_TOKEN"),
         )
-        
+
         # Вывод информации о боте
         print(bot.get_me())
 
         while True:
             try:
                 # Получение данных напрямую из базы данных Django
-                queryset = Application.objects.filter(processed=False)  
+                queryset = Application.objects.filter(processed=False)
                 # Предполагается, что у вас есть модель с полями, подобными данным вашего запроса
 
                 for data in queryset:

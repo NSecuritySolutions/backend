@@ -14,22 +14,24 @@ class ApplicationView(APIView):
                 serializer = ApplicationSerializer(application)
                 return Response(serializer.data)
             except Application.DoesNotExist:
-                return Response({'status': 'error', 'message': 'Application not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"status": "error", "message": "Application not found"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
         else:
             # Handle GET request to retrieve the latest application data
-            latest_application = Application.objects.order_by('-id').first()
+            latest_application = Application.objects.order_by("-id").first()
             if latest_application:
                 serializer = ApplicationSerializer(latest_application)
                 return Response(serializer.data)
             else:
-                return Response({'status': 'error', 'message': 'No applications found'})
+                return Response({"status": "error", "message": "No applications found"})
 
     def post(self, request, *args, **kwargs):
         # Handle POST request to create a new application
         serializer = ApplicationSerializer(data=request.data)
         if serializer.is_valid():
             application = serializer.save()
-            return Response({'status': 'success', 'id': application.id})
+            return Response({"status": "success", "id": application.id})
         else:
-            return Response({'status': 'error', 'errors': serializer.errors})
-
+            return Response({"status": "error", "errors": serializer.errors})

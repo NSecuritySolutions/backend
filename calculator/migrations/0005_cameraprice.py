@@ -6,22 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('calculator', '0004_alter_camera_email_alter_camera_total_price'),
+        ("calculator", "0004_alter_camera_email_alter_camera_total_price"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CameraPrice',
+            name="CameraPrice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('seven', models.IntegerField()),
-                ('fourteen', models.IntegerField()),
-                ('thirty', models.IntegerField()),
-                ('ahd', models.IntegerField()),
-                ('ip', models.IntegerField()),
-                ('hd', models.IntegerField()),
-                ('fullhd', models.IntegerField()),
-                ('two_k', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("seven", models.IntegerField()),
+                ("fourteen", models.IntegerField()),
+                ("thirty", models.IntegerField()),
+                ("ahd", models.IntegerField()),
+                ("ip", models.IntegerField()),
+                ("hd", models.IntegerField()),
+                ("fullhd", models.IntegerField()),
+                ("two_k", models.IntegerField()),
             ],
         ),
     ]

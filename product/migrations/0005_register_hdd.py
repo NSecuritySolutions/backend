@@ -6,43 +6,83 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0004_alter_questions_category'),
+        ("product", "0004_alter_questions_category"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Register',
+            name="Register",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('article', models.CharField(max_length=50, verbose_name='Артикул')),
-                ('model', models.CharField(max_length=300, verbose_name='Модель')),
-                ('description', models.CharField(max_length=200, verbose_name='Описание')),
-                ('max_resolution', models.CharField(max_length=30, verbose_name='Максимально разрешение')),
-                ('quantity_сam', models.IntegerField(verbose_name='Количество камер')),
-                ('quantity_hdd', models.IntegerField(verbose_name='Количество hhd')),
-                ('max_quantity_hdd', models.IntegerField(verbose_name='Макс объем HDD Тб')),
-                ('nutrition', models.CharField(max_length=30, verbose_name='Питание')),
-                ('price', models.IntegerField(default=0, verbose_name='Цена')),
-                ('manufacturer', models.ManyToManyField(to='product.manufacturer', verbose_name='Производитель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("article", models.CharField(max_length=50, verbose_name="Артикул")),
+                ("model", models.CharField(max_length=300, verbose_name="Модель")),
+                (
+                    "description",
+                    models.CharField(max_length=200, verbose_name="Описание"),
+                ),
+                (
+                    "max_resolution",
+                    models.CharField(
+                        max_length=30, verbose_name="Максимально разрешение"
+                    ),
+                ),
+                ("quantity_сam", models.IntegerField(verbose_name="Количество камер")),
+                ("quantity_hdd", models.IntegerField(verbose_name="Количество hhd")),
+                (
+                    "max_quantity_hdd",
+                    models.IntegerField(verbose_name="Макс объем HDD Тб"),
+                ),
+                ("nutrition", models.CharField(max_length=30, verbose_name="Питание")),
+                ("price", models.IntegerField(default=0, verbose_name="Цена")),
+                (
+                    "manufacturer",
+                    models.ManyToManyField(
+                        to="product.manufacturer", verbose_name="Производитель"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Регистраторы',
-                'verbose_name_plural': 'Регистраторы',
+                "verbose_name": "Регистраторы",
+                "verbose_name_plural": "Регистраторы",
             },
         ),
         migrations.CreateModel(
-            name='HDD',
+            name="HDD",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('article', models.CharField(max_length=50, verbose_name='Артикул')),
-                ('model', models.CharField(max_length=300, verbose_name='Модель')),
-                ('description', models.CharField(max_length=200, verbose_name='Описание')),
-                ('price', models.IntegerField(default=0, verbose_name='Цена')),
-                ('manufacturer', models.ManyToManyField(to='product.manufacturer', verbose_name='Производитель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("article", models.CharField(max_length=50, verbose_name="Артикул")),
+                ("model", models.CharField(max_length=300, verbose_name="Модель")),
+                (
+                    "description",
+                    models.CharField(max_length=200, verbose_name="Описание"),
+                ),
+                ("price", models.IntegerField(default=0, verbose_name="Цена")),
+                (
+                    "manufacturer",
+                    models.ManyToManyField(
+                        to="product.manufacturer", verbose_name="Производитель"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'HDD',
-                'verbose_name_plural': 'HDD',
+                "verbose_name": "HDD",
+                "verbose_name_plural": "HDD",
             },
         ),
     ]

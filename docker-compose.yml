@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:16-alpine
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - pgdbdata:/var/lib/postgresql/data/
       
   web:
     build: .
@@ -30,3 +30,6 @@ services:
       - .:/code
     depends_on:
       - db
+
+volumes:
+  pgdbdata: null

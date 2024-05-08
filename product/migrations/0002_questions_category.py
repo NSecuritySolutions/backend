@@ -6,14 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0001_initial'),
+        ("product", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='questions',
-            name='category',
-            field=models.CharField(choices=[('GENERAL', 'Общие Вопросы'), ('CAMERA', 'Вопросы по видеонаблюдению'), ('INTERCOM', 'Вопросы по домофонии'), ('CONTROL', 'Вопросы по биометрии и системам контроля учёта доступа'), ('BARRIER', 'Вопросы по шлагбаумам и турникетам (в СКУД)'), ('FIRE', 'Вопросы по охранно-пожарной сигнализации')], default='', verbose_name='Категории'),
+            model_name="questions",
+            name="category",
+            field=models.CharField(
+                choices=[
+                    ("GENERAL", "Общие Вопросы"),
+                    ("CAMERA", "Вопросы по видеонаблюдению"),
+                    ("INTERCOM", "Вопросы по домофонии"),
+                    (
+                        "CONTROL",
+                        "Вопросы по биометрии и системам контроля учёта доступа",
+                    ),
+                    ("BARRIER", "Вопросы по шлагбаумам и турникетам (в СКУД)"),
+                    ("FIRE", "Вопросы по охранно-пожарной сигнализации"),
+                ],
+                default="",
+                verbose_name="Категории",
+            ),
             preserve_default=False,
         ),
     ]

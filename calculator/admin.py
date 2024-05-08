@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Camera, CameraPrice
+
 # Register your models here.
 
 

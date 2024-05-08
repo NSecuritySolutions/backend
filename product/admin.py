@@ -1,10 +1,21 @@
 from django.contrib import admin
-from .models import *
+from models import (
+    Product,
+    ReadySolutions,
+    OurService,
+    OurWorks,
+    Category,
+    Image_Works,
+    Manufacturer,
+    Questions,
+    Register,
+    HDD,
+)
+
 
 # Register your models here.
 class ProductAdmin(admin.ModelAdmin):
-    # list_display = ('model','display_category')
-    search_fields = ['model']
+    search_fields = ["model"]
 
 
 admin.site.register(Product, ProductAdmin)
@@ -17,6 +28,3 @@ admin.site.register(Manufacturer)
 admin.site.register(Questions)
 admin.site.register(Register)
 admin.site.register(HDD)
-
-
-

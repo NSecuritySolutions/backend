@@ -6,17 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('calculator', '0006_cameraprice_domestic_cameraprice_external'),
+        ("calculator", "0006_cameraprice_domestic_cameraprice_external"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cameraprice',
-            options={'verbose_name': 'Цены на камеры', 'verbose_name_plural': 'Цены на камеры'},
+            name="cameraprice",
+            options={
+                "verbose_name": "Цены на камеры",
+                "verbose_name_plural": "Цены на камеры",
+            },
         ),
         migrations.AlterField(
-            model_name='cameraprice',
-            name='seven',
-            field=models.IntegerField(verbose_name='Внешние'),
+            model_name="cameraprice",
+            name="seven",
+            field=models.IntegerField(verbose_name="Внешние"),
         ),
     ]

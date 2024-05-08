@@ -6,14 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0006_remove_hdd_article_product_type_alter_category_title_and_more'),
+        (
+            "product",
+            "0006_remove_hdd_article_product_type_alter_category_title_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='register',
-            name='image',
-            field=models.ImageField(default='', upload_to='media/register', verbose_name='Изображение'),
+            model_name="register",
+            name="image",
+            field=models.ImageField(
+                default="", upload_to="media/register", verbose_name="Изображение"
+            ),
             preserve_default=False,
         ),
     ]

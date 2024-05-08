@@ -7,127 +7,296 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=20, verbose_name='Категория')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=20, verbose_name="Категория")),
             ],
             options={
-                'verbose_name': 'Категории',
-                'verbose_name_plural': 'Категории',
+                "verbose_name": "Категории",
+                "verbose_name_plural": "Категории",
             },
         ),
         migrations.CreateModel(
-            name='Image_Works',
+            name="Image_Works",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='media/our_works', verbose_name='Фотографии')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to="media/our_works", verbose_name="Фотографии"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Фотографии',
-                'verbose_name_plural': 'Фотографии',
+                "verbose_name": "Фотографии",
+                "verbose_name_plural": "Фотографии",
             },
         ),
         migrations.CreateModel(
-            name='Manufacturer',
+            name="Manufacturer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=20, verbose_name='Производитель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "title",
+                    models.CharField(max_length=20, verbose_name="Производитель"),
+                ),
             ],
             options={
-                'verbose_name': 'Производителя',
-                'verbose_name_plural': 'Производители',
+                "verbose_name": "Производителя",
+                "verbose_name_plural": "Производители",
             },
         ),
         migrations.CreateModel(
-            name='OurService',
+            name="OurService",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='media/service', verbose_name='Фотография')),
-                ('description', models.TextField(max_length=500, verbose_name='Описание')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to="media/service", verbose_name="Фотография"
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(max_length=500, verbose_name="Описание"),
+                ),
             ],
             options={
-                'verbose_name': 'Наши услуги',
-                'verbose_name_plural': 'Наши услуги',
+                "verbose_name": "Наши услуги",
+                "verbose_name_plural": "Наши услуги",
             },
         ),
         migrations.CreateModel(
-            name='Questions',
+            name="Questions",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('questions', models.CharField(max_length=200, verbose_name='Вопрос')),
-                ('answer', models.TextField(max_length=500, verbose_name='Ответ')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("questions", models.CharField(max_length=200, verbose_name="Вопрос")),
+                ("answer", models.TextField(max_length=500, verbose_name="Ответ")),
             ],
             options={
-                'verbose_name': 'Вопрос/Ответ',
-                'verbose_name_plural': 'Вопрос/Ответ',
+                "verbose_name": "Вопрос/Ответ",
+                "verbose_name_plural": "Вопрос/Ответ",
             },
         ),
         migrations.CreateModel(
-            name='ReadySolutions',
+            name="ReadySolutions",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='media/ready', verbose_name='Фотография')),
-                ('title', models.CharField(max_length=100, verbose_name='Предложение')),
-                ('description', models.TextField(max_length=300, verbose_name='Описание')),
-                ('short_description', models.CharField(max_length=50, verbose_name='Краткое описание')),
-                ('price', models.IntegerField(blank=True, null=True, verbose_name='Цена')),
-                ('category', models.ManyToManyField(to='product.category', verbose_name='Категории')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to="media/ready", verbose_name="Фотография"
+                    ),
+                ),
+                ("title", models.CharField(max_length=100, verbose_name="Предложение")),
+                (
+                    "description",
+                    models.TextField(max_length=300, verbose_name="Описание"),
+                ),
+                (
+                    "short_description",
+                    models.CharField(max_length=50, verbose_name="Краткое описание"),
+                ),
+                (
+                    "price",
+                    models.IntegerField(blank=True, null=True, verbose_name="Цена"),
+                ),
+                (
+                    "category",
+                    models.ManyToManyField(
+                        to="product.category", verbose_name="Категории"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Готовые решение',
-                'verbose_name_plural': 'Готовые решение',
+                "verbose_name": "Готовые решение",
+                "verbose_name_plural": "Готовые решение",
             },
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('article', models.CharField(max_length=50, verbose_name='Артикул')),
-                ('model', models.CharField(max_length=300, verbose_name='Модель')),
-                ('image', models.ImageField(upload_to='media/camera', verbose_name='Изображение')),
-                ('description', models.CharField(max_length=200, verbose_name='Описание')),
-                ('form_factor', models.CharField(choices=[('Domed', 'Купольная'), ('Cylindrical', 'Цилиндрическая')], max_length=20, verbose_name='Форм Фактор')),
-                ('accommodation', models.CharField(choices=[('Street', 'Уличное'), ('Internal', 'Внутренняя')], max_length=30, verbose_name='Размещение')),
-                ('resolution', models.CharField(max_length=30, verbose_name='Разрешение')),
-                ('dark', models.CharField(max_length=30, verbose_name='Съемка в темноте')),
-                ('temperature', models.CharField(max_length=30, verbose_name='Температура')),
-                ('nutrition', models.CharField(max_length=30, verbose_name='Питание')),
-                ('microphone', models.CharField(choices=[('No', 'Нет'), ('Microphone', 'Микрофон'), ('Microphone_speaker', 'Микрофон/Динамик')], max_length=30, verbose_name='Микрофон')),
-                ('micro_sd', models.CharField(max_length=30, verbose_name='MicroSD')),
-                ('viewing_angle', models.CharField(max_length=30, verbose_name='Угол Обзора')),
-                ('focus', models.CharField(max_length=30, verbose_name='Фокус')),
-                ('price', models.IntegerField(default=0, verbose_name='Цена')),
-                ('category', models.ManyToManyField(to='product.category', verbose_name='Категория')),
-                ('manufacturer', models.ManyToManyField(to='product.manufacturer', verbose_name='Производитель')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("article", models.CharField(max_length=50, verbose_name="Артикул")),
+                ("model", models.CharField(max_length=300, verbose_name="Модель")),
+                (
+                    "image",
+                    models.ImageField(
+                        upload_to="media/camera", verbose_name="Изображение"
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(max_length=200, verbose_name="Описание"),
+                ),
+                (
+                    "form_factor",
+                    models.CharField(
+                        choices=[
+                            ("Domed", "Купольная"),
+                            ("Cylindrical", "Цилиндрическая"),
+                        ],
+                        max_length=20,
+                        verbose_name="Форм Фактор",
+                    ),
+                ),
+                (
+                    "accommodation",
+                    models.CharField(
+                        choices=[("Street", "Уличное"), ("Internal", "Внутренняя")],
+                        max_length=30,
+                        verbose_name="Размещение",
+                    ),
+                ),
+                (
+                    "resolution",
+                    models.CharField(max_length=30, verbose_name="Разрешение"),
+                ),
+                (
+                    "dark",
+                    models.CharField(max_length=30, verbose_name="Съемка в темноте"),
+                ),
+                (
+                    "temperature",
+                    models.CharField(max_length=30, verbose_name="Температура"),
+                ),
+                ("nutrition", models.CharField(max_length=30, verbose_name="Питание")),
+                (
+                    "microphone",
+                    models.CharField(
+                        choices=[
+                            ("No", "Нет"),
+                            ("Microphone", "Микрофон"),
+                            ("Microphone_speaker", "Микрофон/Динамик"),
+                        ],
+                        max_length=30,
+                        verbose_name="Микрофон",
+                    ),
+                ),
+                ("micro_sd", models.CharField(max_length=30, verbose_name="MicroSD")),
+                (
+                    "viewing_angle",
+                    models.CharField(max_length=30, verbose_name="Угол Обзора"),
+                ),
+                ("focus", models.CharField(max_length=30, verbose_name="Фокус")),
+                ("price", models.IntegerField(default=0, verbose_name="Цена")),
+                (
+                    "category",
+                    models.ManyToManyField(
+                        to="product.category", verbose_name="Категория"
+                    ),
+                ),
+                (
+                    "manufacturer",
+                    models.ManyToManyField(
+                        to="product.manufacturer", verbose_name="Производитель"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Товары',
-                'verbose_name_plural': 'Товары',
+                "verbose_name": "Товары",
+                "verbose_name_plural": "Товары",
             },
         ),
         migrations.CreateModel(
-            name='OurWorks',
+            name="OurWorks",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=400, verbose_name='Предложение')),
-                ('main_image', models.ImageField(upload_to='media/ourworks', verbose_name='Фотография')),
-                ('product', models.TextField(max_length=500, verbose_name='Используемое оборудование')),
-                ('description', models.TextField(max_length=500, verbose_name='Описание')),
-                ('add_date', models.DateTimeField(verbose_name='Дата добавление на сайт')),
-                ('deadline', models.IntegerField(verbose_name='Сроки')),
-                ('budget', models.IntegerField(verbose_name='Бюджет')),
-                ('equipped', models.IntegerField(verbose_name='Оборудовано')),
-                ('image', models.ManyToManyField(to='product.image_works', verbose_name='Фотографии')),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("title", models.CharField(max_length=400, verbose_name="Предложение")),
+                (
+                    "main_image",
+                    models.ImageField(
+                        upload_to="media/ourworks", verbose_name="Фотография"
+                    ),
+                ),
+                (
+                    "product",
+                    models.TextField(
+                        max_length=500, verbose_name="Используемое оборудование"
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(max_length=500, verbose_name="Описание"),
+                ),
+                (
+                    "add_date",
+                    models.DateTimeField(verbose_name="Дата добавление на сайт"),
+                ),
+                ("deadline", models.IntegerField(verbose_name="Сроки")),
+                ("budget", models.IntegerField(verbose_name="Бюджет")),
+                ("equipped", models.IntegerField(verbose_name="Оборудовано")),
+                (
+                    "image",
+                    models.ManyToManyField(
+                        to="product.image_works", verbose_name="Фотографии"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Примеры работ',
-                'verbose_name_plural': 'Примеры работ',
+                "verbose_name": "Примеры работ",
+                "verbose_name_plural": "Примеры работ",
             },
         ),
     ]

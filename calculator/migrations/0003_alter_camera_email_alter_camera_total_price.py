@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('calculator', '0002_alter_camera_number'),
+        ("calculator", "0002_alter_camera_number"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='camera',
-            name='email',
-            field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Почта'),
+            model_name="camera",
+            name="email",
+            field=models.EmailField(
+                blank=True, max_length=254, null=True, verbose_name="Почта"
+            ),
         ),
         migrations.AlterField(
-            model_name='camera',
-            name='total_price',
-            field=models.IntegerField(blank=True, verbose_name='Итог'),
+            model_name="camera",
+            name="total_price",
+            field=models.IntegerField(blank=True, verbose_name="Итог"),
         ),
     ]
