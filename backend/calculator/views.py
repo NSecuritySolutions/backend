@@ -1,13 +1,15 @@
 from rest_framework import generics, status
 import requests
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CameraPrice, Camera
+from .models import CameraPrice, Camera, PriceList
 from .serializers import (
     CameraPriceSerializer,
     CameraSerializer,
     CameraApplicationSerializer,
+    PriceListSerializer,
 )
 
 
@@ -114,3 +116,10 @@ class CameraPriceView(APIView):
                 {"error": "CameraPrice instance not found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class PriceListView(viewsets.ModelViewSet):
+    """ViewSet для модели PriceList."""
+    queryset = PriceList.objects.all()
+    serializer_class = PriceListSerializer
+    http_method_names = ("get", "post", "patch")

@@ -1,35 +1,36 @@
-version: "3"
+version: '3'
 services:
   db:
     image: postgres:16-alpine
     volumes:
       - pgdbdata:/var/lib/postgresql/data/
-      
+    env_file: .env
+
   web:
-    build: .
-    command: python manage.py runserver localhost:8000
+    build: ./backend/
     volumes:
-      - .:/code
+      - ./backend:/code
     ports:
-      - "8000:8000"
+      - 8001:8000
     depends_on:
       - db
+    env_file: .env
 
-  update_prices:
-    build: .
-    command: python manage.py update_prices
-    volumes:
-      - .:/code
-    depends_on:
-      - db
+  # update_prices:
+  #   build: ./backend
+  #   command: python manage.py update_prices
+  #   volumes:
+  #     - ./backend:/code/
+  #   depends_on:
+  #     - db
 
-  bot:
-    build: .
-    command: python manage.py bot
-    volumes:
-      - .:/code
-    depends_on:
-      - db
+  # bot:
+  #   build: ./backend/
+  #   command: python manage.py bot
+  #   volumes:
+  #     - ./backend:/code
+  #   depends_on:
+  #     - db
 
 volumes:
-  pgdbdata: null
+  pgdbdata:
