@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Camera, CameraPrice
+from .models import Camera, CameraPrice, PriceList
 
 
 class CameraSerializer(serializers.ModelSerializer):
@@ -24,4 +24,11 @@ class CameraApplicationSerializer(serializers.ModelSerializer):
 class CameraPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CameraPrice
+        fields = "__all__"
+
+
+class PriceListSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели PriceList"""
+    class Meta:
+        model = PriceList
         fields = "__all__"

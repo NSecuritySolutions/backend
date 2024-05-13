@@ -1,7 +1,29 @@
 from django.db import models
 
 
-# Create your models here.
+class PriceList(models.Model):
+    """Модель прайс листа."""
+    setup_inner_camera_easy = models.IntegerField("Простая установка внутренней камеры")
+    setup_inner_camera = models.IntegerField("Установка внутренней камеры")
+    setup_inner_camera_hard = models.IntegerField("Сложная установка внутренней камеры")
+    cabel_price_for_inner_cameras_per_meter = models.IntegerField("Цена за 1 метра кабеля для внутренних камер")
+    setup_outer_camera_easy = models.IntegerField("Простая установка внешней камеры")
+    setup_outer_camera = models.IntegerField("Установка внешней камеры")
+    setup_outer_camera_hard = models.IntegerField("Сложная установка внешней камеры")
+    cabel_price_for_outer_cameras_per_meter = models.IntegerField("Цена за 1 метра кабеля для внешних камер")
+    setup_ahd_registery = models.IntegerField("Установка регистратора AHD системы")
+    setup_ip_registery = models.IntegerField("Установка регистратора IP системы")
+    price_multiplier_for_registery_setup = models.IntegerField("Множитель цены установки регистратора если больше 16 камер")
+    registery_4 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    registery_8 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    registery_16 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    registery_20 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    registery_24 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    registery_32 = models.IntegerField("Цена регистратора при 4 и меньше камерах")
+    power_unit = models.IntegerField("Цена блока питания с работой (цена увеличивается каждые 5 камер)")
+
+    class Meta:
+        verbose_name = "Прайс лист"
 
 
 class Camera(models.Model):

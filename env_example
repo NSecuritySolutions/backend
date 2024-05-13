@@ -1,0 +1,4 @@
+POSTGRES_DB=video.store
+POSTGRES_USER=video.storeuser
+POSTGRES_PASSWORD=admin123
+POSTGRES_HOST=db

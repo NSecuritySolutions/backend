@@ -1,28 +1,16 @@
-"""
-URL configuration for main project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
-from calculator.views import *
+from django.urls import path, include
+from calculator.views import PriceListView, CameraView, CameraPriceView
 from product import views
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from rest_framework import permissions
+from rest_framework import permissions, routers
 from application.views import ApplicationView
+
+router_v1 = routers.DefaultRouter()
+router_v1.register("price-list", PriceListView, basename="price-list")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -37,30 +25,46 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+urlpatterns_v1 = [
+    path("product/", views.ProductListView.as_view()),
+    path("register/", views.RegisterListView.as_view()),
+    path("ready/", views.ReadySolutionsListView.as_view()),
+    path("our-service/", views.OurServiceListView.as_view()),
+    path("our-works/", views.OurWorksListView.as_view()),
+    path("category/", views.CategoryView.as_view()),
+    path("questions/", views.QuestionsListView.as_view()),
+    path("", include(router_v1.urls)),
+]
+
+urlpatterns_api = [
+    path("v1/", include(urlpatterns_v1)),
+    path(
+        "swagger<format>/",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    path(
+        "swagger/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+]
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/product/", views.ProductListView.as_view()),
-    path("api/v1/register/", views.RegisterListView.as_view()),
-    path("api/v1/ready/", views.ReadySolutionsListView.as_view()),
-    path("api/v1/our-service/", views.OurServiceListView.as_view()),
-    path("api/v1/our-works/", views.OurWorksListView.as_view()),
-    path("api/v1/category/", views.CategoryView.as_view()),
-    path("api/v1/questions/", views.QuestionsListView.as_view()),
     # Calculator
     path("cal/camera/", CameraView.as_view()),
     path("cal/camera-pr/", CameraPriceView.as_view()),
     # application
     path("application/", ApplicationView.as_view()),
     path("application/<int:id>/", ApplicationView.as_view()),
-    path(
-        "api/swagger<format>/",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
-    ),
-    path(
-        "api/swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
+    path("api/", include(urlpatterns_api))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )
+    urlpatterns += static(
+        settings.STATIC_URL, document_root=settings.STATIC_ROOT
+    )

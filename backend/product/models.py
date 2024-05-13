@@ -96,7 +96,7 @@ class Register(models.Model):
     max_resolution = models.CharField(
         verbose_name="Максимально разрешение", max_length=50
     )
-    quantity_сam = models.IntegerField(verbose_name="Количество камер")
+    quantity_cam = models.IntegerField(verbose_name="Количество камер")
     quantity_hdd = models.IntegerField(verbose_name="Количество hhd")
     max_quantity_hdd = models.IntegerField(verbose_name="Макс объем HDD Тб")
     nutrition = models.CharField(verbose_name="Питание", max_length=50)
