@@ -1,13 +1,8 @@
 from django.db import models
-from django.utils import timezone
-
-tz = timezone.get_default_timezone()
-
-
-# Create your models here.
 
 
 class Questions(models.Model):
+    # TODO docstring
     CATEGORY_CHOICES = (
         ("Общие Вопросы", "Общие Вопросы"),
         ("Вопросы по видеонаблюдению", "Вопросы по видеонаблюдению"),
@@ -38,6 +33,7 @@ class Questions(models.Model):
 
 
 class Category(models.Model):
+    # TODO docstring
     title = models.CharField(verbose_name="Категория", max_length=50)
 
     def __str__(self):
@@ -49,6 +45,7 @@ class Category(models.Model):
 
 
 class Manufacturer(models.Model):
+    # TODO docstring
     title = models.CharField(verbose_name="Производитель", max_length=50)
 
     def __str__(self):
@@ -60,6 +57,7 @@ class Manufacturer(models.Model):
 
 
 class Product(models.Model):
+    # TODO docstring
     article = models.CharField(verbose_name="Артикул", max_length=100)
     model = models.CharField(verbose_name="Модель", max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/camera")
@@ -71,7 +69,7 @@ class Product(models.Model):
     resolution = models.CharField(verbose_name="Разрешение", max_length=30)
     dark = models.CharField(verbose_name="Съемка в темноте", max_length=30)
     temperature = models.CharField(verbose_name="Температура", max_length=30)
-    nutrition = models.CharField(verbose_name="Питание", max_length=30)
+    power_supply = models.CharField(verbose_name="Электропитание", max_length=30)
     microphone = models.CharField(verbose_name="Микрофон", max_length=30)
     micro_sd = models.CharField(verbose_name="MicroSD", max_length=30)
     viewing_angle = models.CharField(verbose_name="Угол Обзора", max_length=30)
@@ -88,6 +86,7 @@ class Product(models.Model):
 
 
 class Register(models.Model):
+    # TODO docstring
     article = models.CharField(verbose_name="Артикул", max_length=100)
     model = models.CharField(verbose_name="Модель", max_length=300)
     image = models.ImageField(verbose_name="Изображение", upload_to="media/register")
@@ -98,8 +97,8 @@ class Register(models.Model):
     )
     quantity_cam = models.IntegerField(verbose_name="Количество камер")
     quantity_hdd = models.IntegerField(verbose_name="Количество hhd")
-    max_quantity_hdd = models.IntegerField(verbose_name="Макс объем HDD Тб")
-    nutrition = models.CharField(verbose_name="Питание", max_length=50)
+    max_size_hdd = models.IntegerField(verbose_name="Макс объем HDD Тб")
+    power_supply = models.CharField(verbose_name="Электропитание", max_length=50)
     price = models.IntegerField(verbose_name="Цена", default=0)
 
     def __str__(self):
@@ -111,8 +110,9 @@ class Register(models.Model):
 
 
 class HDD(models.Model):
+    # TODO docstring
     model = models.CharField(verbose_name="Модель", max_length=300)
-    description = models.CharField(verbose_name="Описание", max_length=200)
+    description = models.CharField(verbose_name="Описание", max_length=5000)
     manufacturer = models.ManyToManyField(Manufacturer, verbose_name="Производитель")
     price = models.IntegerField(verbose_name="Цена", default=0)
 
@@ -125,6 +125,7 @@ class HDD(models.Model):
 
 
 class ReadySolutions(models.Model):
+    # TODO docstring
     image = models.ImageField(verbose_name="Фотография", upload_to="media/ready")
     title = models.CharField(verbose_name="Предложение", max_length=300)
     description = models.TextField(verbose_name="Описание", max_length=5000)
@@ -143,6 +144,7 @@ class ReadySolutions(models.Model):
 
 
 class OurService(models.Model):
+    # TODO docstring
     image = models.ImageField(verbose_name="Фотография", upload_to="media/service")
     title = models.CharField(verbose_name="название", max_length=400)
     description = models.TextField(verbose_name="Описание", max_length=5000)
@@ -156,6 +158,7 @@ class OurService(models.Model):
 
 
 class Image_Works(models.Model):
+    # TODO docstring
     image = models.ImageField(verbose_name="Фотографии", upload_to="media/our_works")
 
     def __str__(self):
@@ -167,6 +170,7 @@ class Image_Works(models.Model):
 
 
 class OurWorks(models.Model):
+    # TODO docstring
     id = models.AutoField(primary_key=True)
     title = models.CharField(verbose_name="Предложение", max_length=300)
     main_image = models.ImageField(
@@ -182,6 +186,7 @@ class OurWorks(models.Model):
     budget = models.IntegerField(verbose_name="Бюджет")
     equipped = models.IntegerField(verbose_name="Оборудовано")
 
+    # TODO так не называют функции
     def date(self):
         return self.add_date.strftime("%d.%m.%Y")
 
