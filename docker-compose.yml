@@ -8,8 +8,11 @@ services:
 
   web:
     build: ./backend/
-    volumes:
-      - ./backend:/code
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /code
     ports:
       - 8000:8000
     depends_on:

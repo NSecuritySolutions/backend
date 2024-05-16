@@ -36,3 +36,64 @@ class PriceList(models.Model):
     class Meta:
         verbose_name = _("Прайс лист")
         verbose_name_plural = _("Прайс листы")
+
+
+class Formula(models.Model):
+    """Модель формулы для калькулятора."""
+    expression = models.CharField(_("Формула"))
+
+    class Meta:
+        verbose_name = _("Формула")
+        verbose_name_plural = _("Формулы")
+
+    def __str__(self) -> str:
+        return self.expression
+
+
+class Calculator(models.Model):
+    """Модель калькулятора."""
+    price_list = models.ForeignKey(PriceList, on_delete=models.SET_NULL, blank=True, null=True)
+    formula = models.ForeignKey(Formula, on_delete=models.SET_NULL, blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Калькулятор")
+        verbose_name_plural = _("Калькуляторы")
+
+    def __str__(self) -> str:
+        return self.pk
+
+
+class CalculatorBlock(models.Model):
+    """Модель блока калькулятора."""
+    calculator = models.ForeignKey(Calculator, on_delete=models.SET_NULL, blank=True, null=True, related_name='blocks')
+    title = models.CharField(_('Название'), max_length=40)
+    image = models.ImageField(_('Значок'), upload_to='media/calculator', blank=True, null=True, default=None)
+
+    class Meta:
+        verbose_name = _("Блок калькулятора")
+        verbose_name_plural = _("Блоки калькулятора")
+
+    def __str__(self) -> str:
+        return f"{self.calculator}-{self.title}"
+
+
+class BlockOption(models.Model):
+    """Модель опции для блока калькулятора."""
+    class OptionTypes(models.TextChoices):
+        NUMBER = ('number', _('Число'))
+        RADIO = ('radio', _('Выбор'))
+        CHECKBOX = ('checkbox', _('Подтверждение'))
+
+    block = models.ForeignKey(CalculatorBlock, on_delete=models.CASCADE, related_name='options')
+    title = models.CharField(_('Название'), max_length=40)
+    description = models.CharField(_('Описание'))
+    option_type = models.CharField(_('Тип опции'), choices=OptionTypes.choices)
+    name = models.CharField(_('Имя'), max_length=40, help_text=_('Имя переменной для формулы'))
+    choices = models.CharField(_('Выбор'), blank=True, null=True, help_text=_("Перечислите варианты через ';'"))
+
+    class Meta:
+        verbose_name = _("Опция для блока")
+        verbose_name_plural = _("Опции блока")
+
+    def __str__(self) -> str:
+        return f"{self.block.calculator}-{self.block.title}. {self.title}"
