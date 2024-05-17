@@ -37,6 +37,9 @@ class PriceList(models.Model):
         verbose_name = _("Прайс лист")
         verbose_name_plural = _("Прайс листы")
 
+    def __str__(self):
+        return f"{self.pk}. Active: {self.is_current}"
+
 
 class Formula(models.Model):
     """Модель формулы для калькулятора."""
@@ -60,7 +63,7 @@ class Calculator(models.Model):
         verbose_name_plural = _("Калькуляторы")
 
     def __str__(self) -> str:
-        return self.pk
+        return f"{self.pk}"
 
 
 class CalculatorBlock(models.Model):
