@@ -26,6 +26,7 @@ class OptionSerializer(serializers.ModelSerializer):
 class BlockSerializer(serializers.ModelSerializer):
     """Сериализатор для модели блока калькулятора."""
     options = OptionSerializer(many=True)
+    formula = FormulaSerializer()
 
     class Meta:
         model = CalculatorBlock
@@ -35,7 +36,6 @@ class BlockSerializer(serializers.ModelSerializer):
 class CalculatorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели калькулятора."""
     blocks = BlockSerializer(many=True)
-    formula = FormulaSerializer()
     price_list = PriceListSerializer()
 
     class Meta:

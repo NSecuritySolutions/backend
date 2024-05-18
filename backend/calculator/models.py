@@ -43,7 +43,7 @@ class PriceList(models.Model):
 
 class Formula(models.Model):
     """Модель формулы для калькулятора."""
-    expression = models.CharField(_("Формула"))
+    expression = models.TextField(_("Формула"))
 
     class Meta:
         verbose_name = _("Формула")
@@ -56,7 +56,6 @@ class Formula(models.Model):
 class Calculator(models.Model):
     """Модель калькулятора."""
     price_list = models.ForeignKey(PriceList, on_delete=models.SET_NULL, blank=True, null=True)
-    formula = models.ForeignKey(Formula, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         verbose_name = _("Калькулятор")
@@ -71,6 +70,7 @@ class CalculatorBlock(models.Model):
     calculator = models.ForeignKey(Calculator, on_delete=models.SET_NULL, blank=True, null=True, related_name='blocks')
     title = models.CharField(_('Название'), max_length=40)
     image = models.ImageField(_('Значок'), upload_to='media/calculator', blank=True, null=True, default=None)
+    formula = models.ForeignKey(Formula, on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         verbose_name = _("Блок калькулятора")
@@ -91,8 +91,10 @@ class BlockOption(models.Model):
     title = models.CharField(_('Название'), max_length=40)
     description = models.CharField(_('Описание'))
     option_type = models.CharField(_('Тип опции'), choices=OptionTypes.choices)
-    name = models.CharField(_('Имя'), max_length=40, help_text=_('Имя переменной для формулы'))
+    name = models.CharField(_('Имя'), max_length=40, help_text=_('Имя переменной для формулы или имя поля модели'))
     choices = models.CharField(_('Выбор'), blank=True, null=True, help_text=_("Перечислите варианты через ';'"))
+    product = models.CharField(_('Продукт для фильтрации'), blank=True, null=True, help_text=_('Название категории'))
+    filters = models.TextField(_('Фильтры для товара'), blank=True, null=True, help_text=_('Фильтры перечисленые через запятую.\nДоступные операторы:\n1. Равенство: ==.\n2. Неравенство: !=.\n3. Больше: >.\n4. Меньше: <.\n5. Больше или равно: >=.\n6. Меньше или равно: <=.\nПример: type == HD, price <= 1000'))
 
     class Meta:
         verbose_name = _("Опция для блока")

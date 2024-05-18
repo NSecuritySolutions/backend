@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import PriceList, Formula, Calculator, CalculatorBlock, BlockOption
 
 
-class BlockOptionInline(admin.TabularInline):
+class BlockOptionInline(admin.StackedInline):
     model = BlockOption
 
 
