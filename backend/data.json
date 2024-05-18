@@ -1,0 +1,424 @@
+[
+  { "model": "product.category", "pk": 1, "fields": { "title": "Камера" } },
+  { "model": "product.category", "pk": 2, "fields": { "title": "Регистратор" } },
+  { "model": "product.manufacturer", "pk": 1, "fields": { "title": "Dahua" } },
+  { "model": "product.manufacturer", "pk": 2, "fields": { "title": "HiWatch" } },
+  {
+    "model": "product.product",
+    "pk": 2,
+    "fields": {
+      "polymorphic_ctype": 23,
+      "article": "УТ-00063990",
+      "model": "DH-IPC-HDPW1431R1P-0360B-S4 Купольная IP-видеокамера Dahua",
+      "image": "media/product/IMG_20231106_221940_NQNqtkW.jpg",
+      "description": "Купольная IP-видеокамера",
+      "manufacturer": 1,
+      "category": 1,
+      "price": 9890
+    }
+  },
+  {
+    "model": "product.product",
+    "pk": 3,
+    "fields": {
+      "polymorphic_ctype": 23,
+      "article": "УТ-00053516",
+      "model": "DH-IPC-HDW1239TP-A-LED-0280B-S5 Уличная купольная IP-видеокамера Full-color Dahua",
+      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5.jpg",
+      "description": "Купольная IP-видеокамера",
+      "manufacturer": 1,
+      "category": 1,
+      "price": 10190
+    }
+  },
+  {
+    "model": "product.product",
+    "pk": 4,
+    "fields": {
+      "polymorphic_ctype": 15,
+      "article": "УТ-00028365",
+      "model": "DS-N204(C) 4-х канальный IP-регистратор HiWatch",
+      "image": "media/product/default_pic.jpeg",
+      "description": "4-х канальный IP-регистратор",
+      "manufacturer": 2,
+      "category": 2,
+      "price": 8690
+    }
+  },
+  {
+    "model": "product.product",
+    "pk": 5,
+    "fields": {
+      "polymorphic_ctype": 15,
+      "article": "УТ-00051004",
+      "model": "DS-H116GA 16-канальный гибридный HD-TVI регистратор HiWatch",
+      "image": "media/product/SSR.jpg",
+      "description": "16-х канальный гибридный HD-TVI",
+      "manufacturer": 2,
+      "category": 2,
+      "price": 16690
+    }
+  },
+  {
+    "model": "product.camera",
+    "pk": 2,
+    "fields": {
+      "type": "IP",
+      "form_factor": "Купольная",
+      "accommodation": "Уличное",
+      "resolution": "4Мп (2560x1440)",
+      "dark": "30 метров",
+      "temperature": "-30/+50",
+      "power_supply": "12В DC; PoE",
+      "microphone": "нет",
+      "micro_sd": "нет",
+      "viewing_angle": "92°",
+      "focus": "3,6мм"
+    }
+  },
+  {
+    "model": "product.camera",
+    "pk": 3,
+    "fields": {
+      "type": "IP",
+      "form_factor": "Купольная",
+      "accommodation": "Уличное",
+      "resolution": "2Мп (1920х1080)",
+      "dark": "30 метров, цветное изображение",
+      "temperature": "-40/+60",
+      "power_supply": "12В DC; PoE",
+      "microphone": "Микроофон",
+      "micro_sd": "нет",
+      "viewing_angle": "105°",
+      "focus": "2,8мм"
+    }
+  },
+  {
+    "model": "product.register",
+    "pk": 4,
+    "fields": {
+      "max_resolution": "до 4Мп",
+      "quantity_cam": 4,
+      "quantity_hdd": 1,
+      "max_size_hdd": 8,
+      "power_supply": "нет"
+    }
+  },
+  {
+    "model": "product.register",
+    "pk": 5,
+    "fields": {
+      "max_resolution": "До 8Мп",
+      "quantity_cam": 16,
+      "quantity_hdd": 1,
+      "max_size_hdd": 1,
+      "power_supply": "нет"
+    }
+  },
+  {
+    "model": "calculator.pricelist",
+    "pk": 1,
+    "fields": {
+      "setup_inner_camera_easy": 1800,
+      "setup_inner_camera": 2300,
+      "setup_inner_camera_hard": 3000,
+      "cabel_price_for_inner_cameras_per_meter": 85,
+      "setup_outer_camera_easy": 2200,
+      "setup_outer_camera": 2700,
+      "setup_outer_camera_hard": 3200,
+      "cabel_price_for_outer_cameras_per_meter": 87,
+      "setup_ahd_registery": 2500,
+      "setup_ip_registery": 3500,
+      "price_multiplier_for_registery_setup": 2,
+      "registery_4": 7590,
+      "registery_8": 10300,
+      "registery_16": 19500,
+      "registery_20": 27090,
+      "registery_24": 29800,
+      "registery_32": 39000,
+      "power_unit": 1500,
+      "is_current": true
+    }
+  },
+  {
+    "model": "calculator.formula",
+    "pk": 1,
+    "fields": {
+      "expression": "outer_camera_len * cabel_price_for_outer_cameras_per_meter + if(camera_sound == true, 2500, 0)"
+    }
+  },
+  { "model": "calculator.formula", "pk": 2, "fields": { "expression": "3000" } },
+  { "model": "calculator.formula", "pk": 3, "fields": { "expression": "25" } },
+  {
+    "model": "calculator.formula",
+    "pk": 4,
+    "fields": {
+      "expression": "inner_camera_len * cabel_price_for_inner_cameras_per_meter + if(camera_sound == true, 2500, 0)"
+    }
+  },
+  { "model": "calculator.calculator", "pk": 1, "fields": { "price_list": 1 } },
+  {
+    "model": "calculator.calculatorblock",
+    "pk": 1,
+    "fields": {
+      "calculator": 1,
+      "title": "Внешние камеры",
+      "image": "media/calculator/camera-white_KdZPOAb.png",
+      "formula": 1
+    }
+  },
+  {
+    "model": "calculator.calculatorblock",
+    "pk": 2,
+    "fields": {
+      "calculator": 1,
+      "title": "Внутренние камеры",
+      "image": "media/calculator/inner-camera_U6YbgZc.png",
+      "formula": 4
+    }
+  },
+  {
+    "model": "calculator.calculatorblock",
+    "pk": 3,
+    "fields": {
+      "calculator": 1,
+      "title": "СКУД",
+      "image": "media/calculator/remote_bAofg86.png",
+      "formula": 2
+    }
+  },
+  {
+    "model": "calculator.calculatorblock",
+    "pk": 4,
+    "fields": {
+      "calculator": 1,
+      "title": "Биометрические сканеры",
+      "image": "media/calculator/fingerprint.png",
+      "formula": 3
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 1,
+    "fields": {
+      "block": 1,
+      "title": "Объем хранилища, tb",
+      "description": "Ну сколько там надо?",
+      "option_type": "radio",
+      "name": "camera_hdd",
+      "choices": "1 tb; 2 tb; 4 tb; 6 tb",
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 2,
+    "fields": {
+      "block": 1,
+      "title": "Настраиваемый объектив",
+      "description": "Ну типо приближает, я хз",
+      "option_type": "checkbox",
+      "name": "camera_obj",
+      "choices": null,
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 3,
+    "fields": {
+      "block": 1,
+      "title": "Тип системы",
+      "description": "Ну тип системы",
+      "option_type": "radio",
+      "name": "type",
+      "choices": "AHD; IP",
+      "product": "Камера",
+      "filters": "accommodation==Уличное"
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 4,
+    "fields": {
+      "block": 1,
+      "title": "Качество изображения",
+      "description": "Ну смотря какой экран, если хотите кино смотреть, то берите 4К",
+      "option_type": "radio",
+      "name": "camera_quality",
+      "choices": "HD; FullHD; 2K-4K",
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 5,
+    "fields": {
+      "block": 1,
+      "title": "Запись звука",
+      "description": "Ну это если у вас есть наушники",
+      "option_type": "checkbox",
+      "name": "camera_sound",
+      "choices": null,
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 6,
+    "fields": {
+      "block": 1,
+      "title": "Длина кабеля, м",
+      "description": "Прикинуться змеей и посчитать расстояние",
+      "option_type": "number",
+      "name": "outer_camera_len",
+      "choices": null,
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 7,
+    "fields": {
+      "block": 2,
+      "title": "Объем хранилища, tb",
+      "description": "Ну сколько там надо?",
+      "option_type": "radio",
+      "name": "camera_hdd",
+      "choices": "1 tb; 2 tb; 4 tb; 6 tb",
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 8,
+    "fields": {
+      "block": 2,
+      "title": "Настраиваемый объектив",
+      "description": "Ну типо приближает, я хз",
+      "option_type": "checkbox",
+      "name": "camera_obj",
+      "choices": null,
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 9,
+    "fields": {
+      "block": 2,
+      "title": "Тип системы",
+      "description": "Ну тип системы",
+      "option_type": "radio",
+      "name": "type",
+      "choices": "AHD; IP",
+      "product": "Камера",
+      "filters": "price <= 10000"
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 10,
+    "fields": {
+      "block": 2,
+      "title": "Качество изображения",
+      "description": "Ну смотря какой экран, если хотите кино смотреть, то берите 4К",
+      "option_type": "radio",
+      "name": "camera_quality",
+      "choices": "HD; FullHD; 2K-4K",
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 11,
+    "fields": {
+      "block": 2,
+      "title": "Запись звука",
+      "description": "Ну это если у вас есть наушники",
+      "option_type": "checkbox",
+      "name": "camera_sound",
+      "choices": null,
+      "product": null,
+      "filters": ""
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 12,
+    "fields": {
+      "block": 2,
+      "title": "Длина кабеля, м",
+      "description": "Прикинуться змеей и посчитать расстояние",
+      "option_type": "number",
+      "name": "inner_camera_len",
+      "choices": null,
+      "product": null,
+      "filters": null
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 13,
+    "fields": {
+      "block": 3,
+      "title": "Учет рабочего времени",
+      "description": "Я хз, наверн фишка для статистики",
+      "option_type": "checkbox",
+      "name": "scud_time",
+      "choices": null,
+      "product": null,
+      "filters": null
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 14,
+    "fields": {
+      "block": 3,
+      "title": "Кол-во считывателей, шт.",
+      "description": "Что-то из прикладной математики похоже",
+      "option_type": "number",
+      "name": "scud_num",
+      "choices": null,
+      "product": null,
+      "filters": null
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 15,
+    "fields": {
+      "block": 3,
+      "title": "Длин кабеля, м",
+      "description": "Прикинуться змеей и посчитать расстояние",
+      "option_type": "number",
+      "name": "scud_len",
+      "choices": null,
+      "product": null,
+      "filters": null
+    }
+  },
+  {
+    "model": "calculator.blockoption",
+    "pk": 16,
+    "fields": {
+      "block": 4,
+      "title": "Биометрический терминал",
+      "description": "Как в кино типо",
+      "option_type": "checkbox",
+      "name": "bio_terminal",
+      "choices": null,
+      "product": null,
+      "filters": null
+    }
+  }
+]

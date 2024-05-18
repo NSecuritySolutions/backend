@@ -1,4 +1,5 @@
 from django.contrib import admin
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 from .models import (
     Product,
     ReadySolutions,
@@ -9,16 +10,27 @@ from .models import (
     Manufacturer,
     Questions,
     Register,
+    Camera,
     HDD,
 )
 
 
-# Register your models here.
-class ProductAdmin(admin.ModelAdmin):
-    search_fields = ["model"]
+@admin.register(Camera)
+class CameraAdmin(PolymorphicChildModelAdmin):
+    base_model = Camera
 
 
-admin.site.register(Product, ProductAdmin)
+@admin.register(Register)
+class RegisterAdmin(PolymorphicChildModelAdmin):
+    base_model = Register
+
+
+@admin.register(Product)
+class ProductAdmin(PolymorphicParentModelAdmin):
+    base_model = Product
+    child_models = (Camera, Register)
+
+
 admin.site.register(ReadySolutions)
 admin.site.register(OurService)
 admin.site.register(OurWorks)
@@ -26,5 +38,4 @@ admin.site.register(Category)
 admin.site.register(Image_Works)
 admin.site.register(Manufacturer)
 admin.site.register(Questions)
-admin.site.register(Register)
 admin.site.register(HDD)

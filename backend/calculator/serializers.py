@@ -1,34 +1,43 @@
 from rest_framework import serializers
-from .models import Camera, CameraPrice, PriceList
-
-
-class CameraSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Camera
-        fields = [
-            "time",
-            "quality",
-            "system_type",
-            "external",
-            "domestic",
-            "total_price",
-        ]
-
-
-class CameraApplicationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Camera
-        fields = ["id", "name", "description", "email", "number"]
-
-
-class CameraPriceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CameraPrice
-        fields = "__all__"
+from .models import PriceList, Formula, Calculator, BlockOption, CalculatorBlock
 
 
 class PriceListSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели PriceList"""
+    """Сериализатор для модели PriceList."""
     class Meta:
         model = PriceList
+        fields = "__all__"
+
+
+class FormulaSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели формулы калькулятора."""
+    class Meta:
+        model = Formula
+        fields = "__all__"
+
+
+class OptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели опции блока калькулятора."""
+    class Meta:
+        model = BlockOption
+        fields = "__all__"
+
+
+class BlockSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели блока калькулятора."""
+    options = OptionSerializer(many=True)
+    formula = FormulaSerializer()
+
+    class Meta:
+        model = CalculatorBlock
+        fields = "__all__"
+
+
+class CalculatorSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели калькулятора."""
+    blocks = BlockSerializer(many=True)
+    price_list = PriceListSerializer()
+
+    class Meta:
+        model = Calculator
         fields = "__all__"

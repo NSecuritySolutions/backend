@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from calculator.views import PriceListView, CameraView, CameraPriceView
+from calculator.views import PriceListView, CalculatorView
 from product import views
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -11,6 +11,7 @@ from application.views import ApplicationView
 
 router_v1 = routers.DefaultRouter()
 router_v1.register("price-list", PriceListView, basename="price-list")
+router_v1.register("calculator", CalculatorView, basename="calculator")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -52,10 +53,6 @@ urlpatterns_api = [
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # Calculator
-    path("cal/camera/", CameraView.as_view()),
-    path("cal/camera-pr/", CameraPriceView.as_view()),
-    # application
     path("application/", ApplicationView.as_view()),
     path("application/<int:id>/", ApplicationView.as_view()),
     path("api/", include(urlpatterns_api))

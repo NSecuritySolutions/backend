@@ -9,10 +9,30 @@ from .models import (
     Manufacturer,
     Questions,
     Register,
+    Camera
 )
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    # TODO docstring
+    title = serializers.CharField(required=True)
+
+    class Meta:
+        model = Category
+        fields = ["id", "title"]
+
+
+class ManufacturerSerializer(serializers.ModelSerializer):
+    # TODO docstring
+    title = serializers.CharField(required=True)
+
+    class Meta:
+        model = Manufacturer
+        fields = ["id", "title"]
+
+
 class OurServiceListSerializer(serializers.ModelSerializer):
+    # TODO docstring
     description = serializers.CharField(required=True)
     image = serializers.ImageField(
         max_length=None, use_url=True, allow_null=True, required=False
@@ -24,81 +44,50 @@ class OurServiceListSerializer(serializers.ModelSerializer):
 
 
 class RegisterListSerializer(serializers.ModelSerializer):
-    manufacturer = serializers.SerializerMethodField(source="get_manufacturer")
+    """Сериализатор для модели Register."""
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+    # category = serializers.CharField(source="category.title")
 
     class Meta:
         model = Register
-        fields = [
-            "id",
-            "article",
-            "model",
-            "image",
-            "description",
-            "manufacturer",
-            "max_resolution",
-            "quantity_сam",
-            "quantity_hdd",
-            "max_quantity_hdd",
-            "nutrition",
-            "price",
-        ]
+        fields = "__all__"
 
-    def get_manufacturer(self, obj):
-        return ManufacturerSerializer(obj.manufacturer, many=True).data
+
+class CameraSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Camera."""
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = Camera
+        fields = "__all__"
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField(source="get_category")
-    manufacturer = serializers.SerializerMethodField(source="get_manufacturer")
-
+    """Сериализатор для моделей унаследованных от Product."""
     class Meta:
         model = Product
-        fields = [
-            "id",
-            "article",
-            "model",
-            "image",
-            "type",
-            "description",
-            "category",
-            "manufacturer",
-            "resolution",
-            "dark",
-            "accommodation",
-            "temperature",
-            "nutrition",
-            "microphone",
-            "micro_sd",
-            "viewing_angle",
-            "focus",
-            "price",
-        ]
+        fields = "__all__"
 
-    def get_category(self, obj):
-        return CategorySerializer(obj.category, many=True).data
+    def to_representation(self, instance):
+        if isinstance(instance, Camera):
+            return CameraSerializer(instance).data
+        elif isinstance(instance, Register):
+            return RegisterListSerializer(instance).data
+        return None
 
-    def get_manufacturer(self, obj):
-        return ManufacturerSerializer(obj.manufacturer, many=True).data
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    title = serializers.CharField(required=True)
-
-    class Meta:
-        model = Category
-        fields = ["id", "title"]
-
-
-class ManufacturerSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(required=True)
-
-    class Meta:
-        model = Manufacturer
-        fields = ["id", "title"]
+    # def get_content_object(self, obj: P):
+    #     if isinstance(obj.content_object, Camera):
+    #         return CameraSerializer(obj.content_object).data
+    #     elif isinstance(obj.content_object, Register):
+    #         return RegisterListSerializer(obj.content_object).data
+    #     return None
 
 
 class ReadySolutionsListSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField(source="get_category")
+    # TODO docstring
+    category = CategorySerializer(many=True)
 
     class Meta:
         model = ReadySolutions
@@ -112,11 +101,9 @@ class ReadySolutionsListSerializer(serializers.ModelSerializer):
             "category",
         ]
 
-    def get_category(self, obj):
-        return CategorySerializer(obj.category, many=True).data
-
 
 class ImageSerializer(serializers.ModelSerializer):
+    # TODO docstring
     image = serializers.ImageField(
         max_length=None, use_url=True, allow_null=True, required=False
     )
@@ -127,8 +114,10 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class OurWorksListSerializer(serializers.ModelSerializer):
+    # TODO docstring
     image = ImageSerializer(many=True, required=False)
     date = serializers.DateTimeField(format="%d.%m.%Y")
+    product = ProductListSerializer(many=True)
 
     class Meta:
         model = OurWorks
@@ -145,11 +134,9 @@ class OurWorksListSerializer(serializers.ModelSerializer):
             "date",
         ]
 
-    def get_product(self, obj):
-        return ProductListSerializer(obj.product, many=True).data
-
 
 class QuestionsListSerializer(serializers.ModelSerializer):
+    # TODO docstring
     class Meta:
         model = Questions
         fields = "__all__"
