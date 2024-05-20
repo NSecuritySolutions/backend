@@ -9,6 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "83(vot%*rpken0wm#0lt!defrrf0%%=hl$ey8(b20%l8a07#f^")  # default key is just for django test
 
+DOMAIN = os.getenv("DOMAIN", "localhost:8000")
+
 # TODO .env
 DEBUG = True
 
@@ -55,6 +57,7 @@ if DEBUG:
     MIDDLEWARE.insert(2, "corsheaders.middleware.CorsMiddleware")
 
     CORS_ALLOW_ALL_ORIGINS = True
+    CSRF_TRUSTED_ORIGINS = [f"https://{DOMAIN}", f"http://{DOMAIN}"]
 
 ROOT_URLCONF = "main.urls"
 

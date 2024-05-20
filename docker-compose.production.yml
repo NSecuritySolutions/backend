@@ -9,7 +9,6 @@ services:
   web:
     image: aleksey2299/security_backend:latest
     volumes:
-      - ./backend:/code
       - static:/backend_static
       - media:/code/media
     depends_on:
