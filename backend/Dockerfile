@@ -8,6 +8,6 @@ COPY . .
 RUN pip install gunicorn==20.1.0
 
 RUN python manage.py collectstatic --noinput
-COPY ./static/. /backend_static
+RUN cp -r static/. /backend_static
 
 CMD gunicorn --reload -b 0.0.0.0:8000 -w 2 main.wsgi
