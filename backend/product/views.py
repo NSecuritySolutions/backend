@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.mixins import ListModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework import status
+from drf_spectacular.utils import extend_schema, PolymorphicProxySerializer
 
 from .models import (
     Product,
@@ -19,43 +22,34 @@ from .serializers import (
     CategorySerializer,
     QuestionsListSerializer,
     RegisterListSerializer,
+    CameraSerializer,
 )
 
 
-class ProductListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = Product.objects.all()
-        serializer = ProductListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(tags=['Товары'], responses=PolymorphicProxySerializer(component_name='Product', serializers=[CameraSerializer, RegisterListSerializer], resource_type_field_name='model'))
+class ProductListView(ListModelMixin, GenericViewSet):
+    """Список товаров."""
+    queryset = Product.objects.all()
+    serializer_class = ProductListSerializer
 
 
-class RegisterListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = Register.objects.all()
-        serializer = RegisterListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(exclude=True)
+class RegisterListView(ListModelMixin, GenericViewSet):
+    """Список регистраторов."""
+    queryset = Register.objects.all()
+    serializer_class = RegisterListSerializer
 
 
-class OurServiceListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = OurService.objects.all()
-        serializer = OurServiceListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(tags=["Наши услуги"])
+class OurServiceListView(ListModelMixin, GenericViewSet):
+    """Список наших услуг."""
+    queryset = OurService.objects.all()
+    serializer_class = OurServiceListSerializer
 
 
+@extend_schema(tags=["Категории"], exclude=True)
 class CategoryView(APIView):
+    """Список категорий с товарами."""
     # TODO docstring
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
@@ -81,34 +75,22 @@ class CategoryView(APIView):
         return Response(category_data, status=status.HTTP_200_OK)
 
 
-class OurWorksListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = OurWorks.objects.all()
-        serializer = OurWorksListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(tags=["Наши работы"])
+class OurWorksListView(ListModelMixin, GenericViewSet):
+    """Список наших работ."""
+    queryset = OurWorks.objects.all()
+    serializer_class = OurWorksListSerializer
 
 
-class ReadySolutionsListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = ReadySolutions.objects.all()
-        serializer = ReadySolutionsListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(tags=["Готовые решения"])
+class ReadySolutionsListView(ListModelMixin, GenericViewSet):
+    """Список готовых решений."""
+    queryset = ReadySolutions.objects.all()
+    serializer_class = ReadySolutionsListSerializer
 
 
-class QuestionsListView(APIView):
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        queryset = Questions.objects.all()
-        serializer = QuestionsListSerializer(
-            queryset, many=True
-        )
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+@extend_schema(tags=["Вопросы"])
+class QuestionsListView(ListModelMixin, GenericViewSet):
+    """Список вопросов."""
+    queryset = Questions.objects.all()
+    serializer_class = QuestionsListSerializer

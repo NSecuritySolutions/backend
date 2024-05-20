@@ -47,11 +47,10 @@ class RegisterListSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Register."""
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
-    # category = serializers.CharField(source="category.title")
 
     class Meta:
         model = Register
-        fields = "__all__"
+        exclude = ("polymorphic_ctype", "model")
 
 
 class CameraSerializer(serializers.ModelSerializer):
@@ -61,7 +60,7 @@ class CameraSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Camera
-        fields = "__all__"
+        exclude = ("polymorphic_ctype", "model")
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -76,13 +75,6 @@ class ProductListSerializer(serializers.ModelSerializer):
         elif isinstance(instance, Register):
             return RegisterListSerializer(instance).data
         return None
-
-    # def get_content_object(self, obj: P):
-    #     if isinstance(obj.content_object, Camera):
-    #         return CameraSerializer(obj.content_object).data
-    #     elif isinstance(obj.content_object, Register):
-    #         return RegisterListSerializer(obj.content_object).data
-    #     return None
 
 
 class ReadySolutionsListSerializer(serializers.ModelSerializer):

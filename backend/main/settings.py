@@ -37,9 +37,7 @@ INSTALLED_APPS = [
     "product",
     "application",
     "calculator",
-    # TODO выбери что-то одно
     "drf_spectacular",
-    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -109,8 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"Basic": {"type": "basic"}}}
-
 DATE_INPUT_FORMATS = [
     "%m.%d.%y",
     "%m:%d:%y %H:%M",  # Ни разу не видел чтобы так писали
@@ -136,3 +132,11 @@ STATIC_URL = 'static/'
 STATIC_ROOT = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "NSecuritySolutions Project",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVERS": [{"url": f"https://{DOMAIN}"}, {"url": f"http://{DOMAIN}"}],
+    "COMPONENT_SPLIT_REQUEST": True,
+}

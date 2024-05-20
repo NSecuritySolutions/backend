@@ -4,50 +4,33 @@ from django.contrib import admin
 from django.urls import path, include
 from calculator.views import PriceListView, CalculatorView
 from product import views
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from rest_framework import permissions, routers
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from rest_framework import routers
 from application.views import ApplicationView
 
 router_v1 = routers.DefaultRouter()
 router_v1.register("price-list", PriceListView, basename="price-list")
 router_v1.register("calculator", CalculatorView, basename="calculator")
+router_v1.register("product", views.ProductListView, basename="product")
+router_v1.register("ready", views.ReadySolutionsListView, basename="ready")
+router_v1.register("our-service", views.OurServiceListView, basename="our-service")
+router_v1.register("our-works", views.OurWorksListView, basename="our-works")
+router_v1.register("questions", views.QuestionsListView, basename="questions")
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="My API",
-        default_version="v1",
-        description="My API description",
-        terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
-        license=openapi.License(name="Awesome License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
 
 urlpatterns_v1 = [
-    path("product/", views.ProductListView.as_view()),
-    path("register/", views.RegisterListView.as_view()),
-    path("ready/", views.ReadySolutionsListView.as_view()),
-    path("our-service/", views.OurServiceListView.as_view()),
-    path("our-works/", views.OurWorksListView.as_view()),
     path("category/", views.CategoryView.as_view()),
-    path("questions/", views.QuestionsListView.as_view()),
     path("", include(router_v1.urls)),
 ]
 
 urlpatterns_api = [
     path("v1/", include(urlpatterns_v1)),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
-        "swagger<format>/",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
+        "swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"
     ),
     path(
-        "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
+        "redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"
     ),
 ]
 
