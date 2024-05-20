@@ -10,11 +10,11 @@ services:
     build: ./backend/
     volumes:
       - ./backend:/code
-      - static:/backend_static
-      - media:/code/media
     depends_on:
       - db
     env_file: .env
+    ports:
+      - 8000:8000
 
   # update_prices:
   #   build: ./backend
@@ -32,21 +32,5 @@ services:
   #   depends_on:
   #     - db
 
-  nginx:
-    build: ./nginx/
-    env_file: .env
-    ports:
-      - 8000:80
-      - 443:443
-    volumes:
-      - static:/static/
-      - media:/media/
-      - certs:/etc/letsencrypt
-    depends_on:
-      - web
-
 volumes:
   pgdbdata:
-  static:
-  media:
-  certs:
