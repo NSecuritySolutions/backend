@@ -8,6 +8,7 @@ services:
 
   web:
     build: ./backend/
+    command: gunicorn --reload -b 0.0.0.0:8000 main.wsgi
     volumes:
       - ./backend:/code
     depends_on:
