@@ -131,7 +131,7 @@ USE_L10N = True
 USE_TZ = True
 
 MEDIA_URL = f'https://{DOMAIN}/'
-STATIC_URL = f'https://{DOMAIN}/static/'
+STATIC_URL = 'static/'
 
 STATIC_ROOT = "static/"
 

@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$600000$gAKvd2ylDLLudI57AwRgwf$byLYiFF0KqgFkgkI1zl759ZwTaibX+pvZkVpxP3mWmA=",
-      "last_login": "2024-05-16T19:31:52.376Z",
+      "last_login": "2024-05-20T12:33:05.350Z",
       "is_superuser": true,
       "username": "admin",
       "first_name": "",
@@ -23,12 +23,12 @@
   { "model": "product.manufacturer", "pk": 2, "fields": { "title": "HiWatch" } },
   {
     "model": "product.product",
-    "pk": 2,
+    "pk": 1,
     "fields": {
-      "polymorphic_ctype": 23,
+      "polymorphic_ctype": 17,
       "article": "УТ-00063990",
       "model": "DH-IPC-HDPW1431R1P-0360B-S4 Купольная IP-видеокамера Dahua",
-      "image": "media/product/IMG_20231106_221940_NQNqtkW.jpg",
+      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5_7pzlb52.jpg",
       "description": "Купольная IP-видеокамера",
       "manufacturer": 1,
       "category": 1,
@@ -37,12 +37,12 @@
   },
   {
     "model": "product.product",
-    "pk": 3,
+    "pk": 2,
     "fields": {
-      "polymorphic_ctype": 23,
+      "polymorphic_ctype": 17,
       "article": "УТ-00053516",
       "model": "DH-IPC-HDW1239TP-A-LED-0280B-S5 Уличная купольная IP-видеокамера Full-color Dahua",
-      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5.jpg",
+      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5_EHNynRu.jpg",
       "description": "Купольная IP-видеокамера",
       "manufacturer": 1,
       "category": 1,
@@ -51,12 +51,12 @@
   },
   {
     "model": "product.product",
-    "pk": 4,
+    "pk": 3,
     "fields": {
       "polymorphic_ctype": 15,
       "article": "УТ-00028365",
       "model": "DS-N204(C) 4-х канальный IP-регистратор HiWatch",
-      "image": "media/product/default_pic.jpeg",
+      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5_G8Hx7s6.jpg",
       "description": "4-х канальный IP-регистратор",
       "manufacturer": 2,
       "category": 2,
@@ -65,12 +65,12 @@
   },
   {
     "model": "product.product",
-    "pk": 5,
+    "pk": 4,
     "fields": {
       "polymorphic_ctype": 15,
       "article": "УТ-00051004",
       "model": "DS-H116GA 16-канальный гибридный HD-TVI регистратор HiWatch",
-      "image": "media/product/SSR.jpg",
+      "image": "media/product/3d25dde96efb7e56e03c348ea54368f5_xF5AERa.jpg",
       "description": "16-х канальный гибридный HD-TVI",
       "manufacturer": 2,
       "category": 2,
@@ -79,7 +79,7 @@
   },
   {
     "model": "product.camera",
-    "pk": 2,
+    "pk": 1,
     "fields": {
       "type": "IP",
       "form_factor": "Купольная",
@@ -96,7 +96,7 @@
   },
   {
     "model": "product.camera",
-    "pk": 3,
+    "pk": 2,
     "fields": {
       "type": "IP",
       "form_factor": "Купольная",
@@ -113,7 +113,7 @@
   },
   {
     "model": "product.register",
-    "pk": 4,
+    "pk": 3,
     "fields": {
       "max_resolution": "до 4Мп",
       "quantity_cam": 4,
@@ -124,7 +124,7 @@
   },
   {
     "model": "product.register",
-    "pk": 5,
+    "pk": 4,
     "fields": {
       "max_resolution": "До 8Мп",
       "quantity_cam": 16,
