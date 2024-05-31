@@ -91,12 +91,12 @@ jobs:
           push: true
           tags: aleksey2299/security_backend:latest
           load: true
-      - name: List Docker images for debugging
-        run: |
-          docker images
       - name: Save Docker image to file
         run: |
           docker save -o security_backend.tar aleksey2299/security_backend:latest
+      - name: Set permissions on Docker image file
+        run: |
+          sudo chmod 777 security_backend.tar
 
       - name: Upload Docker image to server
         uses: appleboy/scp-action@master
@@ -137,6 +137,10 @@ jobs:
       - name: Save Docker image to file
         run: |
           docker save -o security_nginx.tar aleksey2299/security_nginx:latest
+
+      - name: Set permissions on Docker image file
+        run: |
+          sudo chmod 777 security_nginx.tar
 
       - name: Upload Docker image to server
         uses: appleboy/scp-action@master
