@@ -90,6 +90,9 @@ jobs:
           context: ./backend/
           push: true
           tags: aleksey2299/security_backend:latest
+      - name: List Docker images for debugging
+        run: |
+          docker images
       - name: Save Docker image to file
         run: |
           docker save -o security_backend.tar aleksey2299/security_backend:latest
