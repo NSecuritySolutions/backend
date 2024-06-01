@@ -1,3 +1,5 @@
+root = true
+
 # Правила для файлов Python
 [*.py]
 indent_style = tab

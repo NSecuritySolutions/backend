@@ -5,6 +5,8 @@ WORKDIR /code
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
+
+RUN chmod +x /code/backend_entrypoint.sh
 RUN pip install gunicorn==20.1.0
 
 RUN python manage.py collectstatic --noinput
