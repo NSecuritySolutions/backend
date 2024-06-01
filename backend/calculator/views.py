@@ -1,22 +1,23 @@
-from rest_framework import viewsets
-from .models import PriceList, Calculator
-from .serializers import (
-    PriceListSerializer,
-    CalculatorSerializer
-)
 from drf_spectacular.utils import extend_schema
+from rest_framework.mixins import ListModelMixin
+from rest_framework.viewsets import GenericViewSet
+
+from calculator.models import Calculator, PriceList
+from calculator.serializers import CalculatorSerializer, PriceListSerializer
 
 
-@extend_schema(exclude=True)
-class PriceListView(viewsets.ModelViewSet):
+@extend_schema(tags=["Прайс лист"])
+class PriceListView(ListModelMixin, GenericViewSet):
     """ViewSet для модели PriceList."""
+
     queryset = PriceList.objects.all()
     serializer_class = PriceListSerializer
     http_method_names = ("get", "post", "patch")
 
 
 @extend_schema(tags=["Калькулятор"])
-class CalculatorView(viewsets.ReadOnlyModelViewSet):
+class CalculatorView(ListModelMixin, GenericViewSet):
     """Список калькуляторов."""
+
     queryset = Calculator.objects.all()
     serializer_class = CalculatorSerializer

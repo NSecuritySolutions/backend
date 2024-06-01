@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class ProductConfig(AppConfig):
+class SocialConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "product"
-    verbose_name = "Товар"
+    name = "social"
+    verbose_name = "Социальное"

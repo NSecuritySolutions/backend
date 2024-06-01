@@ -1,13 +1,15 @@
 import os
-from dotenv import load_dotenv
-
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY", "83(vot%*rpken0wm#0lt!defrrf0%%=hl$ey8(b20%l8a07#f^")  # default key is just for django test
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "83(vot%*rpken0wm#0lt!defrrf0%%=hl$ey8(b20%l8a07#f^"
+)  # default key is just for django test
 
 DOMAIN = os.getenv("DOMAIN", "localhost:8000")
 
@@ -35,8 +37,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "product",
+    "social",
     "application",
     "calculator",
+    "phonenumber_field",
     "drf_spectacular",
 ]
 
@@ -84,11 +88,11 @@ WSGI_APPLICATION = "main.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv('POSTGRES_DB', "djago_db"),
-        "USER": os.getenv('POSTGRES_USER', "djago_user"),
-        "PASSWORD": os.getenv('POSTGRES_PASSWORD', "django_pass"),
-        "HOST": os.getenv('POSTGRES_HOST', "localhost"),
-        "PORT": os.getenv('POSTGRES_PORT', 5432),
+        "NAME": os.getenv("POSTGRES_DB", "djago_db"),
+        "USER": os.getenv("POSTGRES_USER", "djago_user"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "django_pass"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", 5432),
     }
 }
 
@@ -107,15 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DATE_INPUT_FORMATS = [
-    "%m.%d.%y",
-    "%m:%d:%y %H:%M",  # Ни разу не видел чтобы так писали
-    "%m.%d.%y %H.%M",  # Ни разу не видел чтобы так писали
-    "%m/%d/%y %H:%M",  # '10/25/06 14:30'
-    "%m/%d/%y %H.%M",  # Ни разу не видел чтобы так писали
-    "%m/%d/%y",  # '10/25/06'
-]
-
 LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "Europe/Moscow"
@@ -126,8 +121,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_URL = f'https://{DOMAIN}/'
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 STATIC_ROOT = "static/"
 
@@ -140,3 +134,6 @@ SPECTACULAR_SETTINGS = {
     "SERVERS": [{"url": f"https://{DOMAIN}"}, {"url": f"http://{DOMAIN}"}],
     "COMPONENT_SPLIT_REQUEST": True,
 }
+
+PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_FORMA = "INTERNATIONAL"

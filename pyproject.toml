@@ -1,0 +1,16 @@
+[tool.black]
+target-version = ['py312']
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "backend.main.settings"
+norecursedirs = "env/* venv/*"
+addopts = [
+    "-vv",
+    "-p",
+    "no:cacheprovider",
+]
+testpaths = "tests/"
+python_files = "test_*.py"
+
+[tool.isort]
+src_paths = ["backend"]
