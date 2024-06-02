@@ -2,8 +2,12 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from social.models import Questions, Team
-from social.serializers import QuestionsListSerializer, TeamSerializer
+from social.models import Questions, SocialInfo, Team
+from social.serializers import (
+    QuestionsListSerializer,
+    SocialInfoSerializer,
+    TeamSerializer,
+)
 
 
 @extend_schema(tags=["Вопросы"])
@@ -20,3 +24,11 @@ class TeamListView(ListModelMixin, GenericViewSet):
 
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+
+
+@extend_schema(tags=["Инфомация"])
+class TeamListView(ListModelMixin, GenericViewSet):
+    """Социальная информация."""
+
+    queryset = SocialInfo.objects.all()
+    serializer_class = SocialInfoSerializer

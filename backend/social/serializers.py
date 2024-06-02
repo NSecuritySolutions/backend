@@ -2,7 +2,7 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
 from main.utils import ParagraphsField
-from social.models import Employee, Questions, Team
+from social.models import Employee, Questions, SocialInfo, Team
 
 
 class QuestionsListSerializer(serializers.ModelSerializer):
@@ -35,3 +35,11 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ("id", "description", "employees")
+
+
+class SocialInfoSerializer(serializers.ModelSerializer):
+    """Сериализатор модели социальной информации."""
+
+    class Meta:
+        model = SocialInfo
+        fields = ("id", "phone", "email", "telegram", "whatsapp", "address")

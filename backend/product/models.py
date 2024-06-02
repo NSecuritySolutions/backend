@@ -226,6 +226,9 @@ class OurService(models.Model):
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/service")
     title = models.CharField(verbose_name=_("Название"), max_length=400)
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)
+    action = models.CharField(
+        verbose_name=_("Текст кнопки"), max_length=20, default="Подробнее"
+    )
 
     class Meta:
         verbose_name = _("Наши услуги")
