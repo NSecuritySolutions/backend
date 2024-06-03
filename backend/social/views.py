@@ -27,7 +27,7 @@ class TeamListView(ListModelMixin, GenericViewSet):
 
 
 @extend_schema(tags=["Инфомация"])
-class TeamListView(ListModelMixin, GenericViewSet):
+class SocialInfoView(ListModelMixin, GenericViewSet):
     """Социальная информация."""
 
     queryset = SocialInfo.objects.all()
