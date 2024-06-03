@@ -2,7 +2,14 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 
 from main.utils import ParagraphsField
-from social.models import Employee, Questions, SocialInfo, Team
+from social.models import (
+    Employee,
+    OurGuarantees,
+    Questions,
+    SocialInfo,
+    Subguarantees,
+    Team,
+)
 
 
 class QuestionsListSerializer(serializers.ModelSerializer):
@@ -43,3 +50,21 @@ class SocialInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialInfo
         fields = ("id", "phone", "email", "telegram", "whatsapp", "address")
+
+
+class SubguranteeSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели подкатегории гарантии."""
+
+    class Meta:
+        model = Subguarantees
+        fields = ("id", "text", "guarantee")
+
+
+class OurGuaranteeSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели гарантии."""
+
+    subguarantees = SubguranteeSerializer(many=True)
+
+    class Meta:
+        model = OurGuarantees
+        fields = ("id", "icon", "title", "is_big", "is_active", "subguarantees")

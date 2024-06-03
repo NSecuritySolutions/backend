@@ -222,7 +222,8 @@ class SolutionToProduct(models.Model):
 
 
 class OurService(models.Model):
-    # TODO docstring
+    """Модель наших услуг."""
+
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/service")
     title = models.CharField(verbose_name=_("Название"), max_length=400)
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)

@@ -11,6 +11,7 @@ class QuestionsCategory(models.Model):
     """Модель категории для вопросов."""
 
     name = models.CharField(_("Название"), max_length=100)
+    icon = models.ImageField(_("Иконка категории"), upload_to="media/questions/icons")
 
     class Meta:
         verbose_name = _("Категория вопросов")
@@ -128,3 +129,65 @@ class SocialInfo(models.Model):
                 raise ValidationError(
                     _("Только один социальный блок может быть актуальным.")
                 )
+
+
+class OurGuarantees(models.Model):
+    """Модель для 'мы обеспечиваем'"""
+
+    icon = models.ImageField(verbose_name=_("Иконка"))
+    title = models.CharField(verbose_name=_("Название"), max_length=30)
+    is_big = models.BooleanField(verbose_name=_("Большая карточка"))
+    is_active = models.BooleanField(verbose_name=_("На главной"))
+
+    class Meta:
+        verbose_name = _("Категория гарантий")
+        verbose_name_plural = _("Категории гарантий")
+
+    def __str__(self) -> str:
+        return self.title
+
+    def clean(self) -> None:
+        if self.is_active:
+            prev_active = OurGuarantees.objects.filter(
+                ~models.Q(pk=self.pk), is_active=True, is_big=False
+            )
+            if prev_active >= 4:
+                raise ValidationError(
+                    _("Только 4 обычные (по размеру) гарантии могут быть на главной.")
+                )
+            if self.is_big:
+                prev_main = OurGuarantees.objects.filter(
+                    ~models.Q(pk=self.pk), is_big=True, is_active=True
+                )
+                if prev_main:
+                    raise ValidationError(
+                        _("Только 1 категория гарантии может быть большой.")
+                    )
+
+
+class Subguarantees(models.Model):
+    """Модель подкатегорий гарантии."""
+
+    guarantee = models.ForeignKey(
+        OurGuarantees, on_delete=models.CASCADE, related_name="subguarantees"
+    )
+    text = models.CharField(verbose_name=_("Текст"))
+
+    class Meta:
+        verbose_name = _("Подкатегория гарантии")
+        verbose_name_plural = _("Подкатегории гарантий")
+
+    def __str__(self) -> str:
+        return self.text
+
+    def clean(self) -> None:
+        subguarantees = Subguarantees.objects.filter(guarantee=self.guarantee)
+        text_len = len(self.text)
+        if len(subguarantees) >= 3:
+            raise ValidationError(
+                _("Подкатегорий гарантии не может быть больше 3 для одной категории.")
+            )
+        if (self.guarantee.is_big and text_len >= 90) or (
+            not self.guarantee.is_big and text_len >= 60
+        ):
+            raise ValidationError(_("Недопустимая длина текста."))

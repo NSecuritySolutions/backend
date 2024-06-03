@@ -2,8 +2,9 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from social.models import Questions, SocialInfo, Team
+from social.models import OurGuarantees, Questions, SocialInfo, Team
 from social.serializers import (
+    OurGuaranteeSerializer,
     QuestionsListSerializer,
     SocialInfoSerializer,
     TeamSerializer,
@@ -32,3 +33,11 @@ class SocialInfoView(ListModelMixin, GenericViewSet):
 
     queryset = SocialInfo.objects.all()
     serializer_class = SocialInfoSerializer
+
+
+@extend_schema(tags=["Мы обеспечиваем"])
+class OurGuaranteesView(ListModelMixin, GenericViewSet):
+    """Список гарантий."""
+
+    queryset = OurGuarantees.objects.all()
+    serializer_class = OurGuaranteeSerializer
