@@ -2,10 +2,10 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from social.models import OurGuarantees, Questions, SocialInfo, Team
+from social.models import OurGuarantees, QuestionsCategory, SocialInfo, Team
 from social.serializers import (
     OurGuaranteeSerializer,
-    QuestionsListSerializer,
+    QuestionsByCategorySerializer,
     SocialInfoSerializer,
     TeamSerializer,
 )
@@ -15,15 +15,15 @@ from social.serializers import (
 class QuestionsListView(ListModelMixin, GenericViewSet):
     """Список вопросов."""
 
-    queryset = Questions.objects.all()
-    serializer_class = QuestionsListSerializer
+    queryset = QuestionsCategory.objects.all()
+    serializer_class = QuestionsByCategorySerializer
 
 
 @extend_schema(tags=["Команда"])
 class TeamListView(ListModelMixin, GenericViewSet):
     """Список команд."""
 
-    queryset = Team.objects.all()
+    queryset = Team.objects.filter(is_active=True)
     serializer_class = TeamSerializer
 
 
@@ -31,7 +31,7 @@ class TeamListView(ListModelMixin, GenericViewSet):
 class SocialInfoView(ListModelMixin, GenericViewSet):
     """Социальная информация."""
 
-    queryset = SocialInfo.objects.all()
+    queryset = SocialInfo.objects.filter(is_active=True)
     serializer_class = SocialInfoSerializer
 
 
@@ -39,5 +39,5 @@ class SocialInfoView(ListModelMixin, GenericViewSet):
 class OurGuaranteesView(ListModelMixin, GenericViewSet):
     """Список гарантий."""
 
-    queryset = OurGuarantees.objects.all()
+    queryset = OurGuarantees.objects.filter(is_active=True)
     serializer_class = OurGuaranteeSerializer

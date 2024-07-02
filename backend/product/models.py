@@ -256,6 +256,9 @@ class ImageWorks(models.Model):
         return f"Image {self.image}"
 
     def clean(self) -> None:
+        count = ImageWorks.objects.filter(work=self.work)
+        if count > 5:
+            raise ValidationError(_("Разрешено не более 5 картинок."))
         if self.is_main:
             prev_main_image = ImageWorks.objects.filter(
                 ~models.Q(pk=self.pk), is_main=True, work=self.work
@@ -282,6 +285,7 @@ class OurWorks(models.Model):
     area = models.IntegerField(
         verbose_name=_("Площадь работ"), validators=[MinValueValidator(0)]
     )
+    is_active = models.BooleanField(verbose_name=_("На главной"), default=False)
 
     class Meta:
         verbose_name = _("Примеры работ")

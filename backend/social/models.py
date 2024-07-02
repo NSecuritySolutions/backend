@@ -27,7 +27,10 @@ class Questions(models.Model):
     question = models.CharField(verbose_name=_("Вопрос"), max_length=200)
     answer = models.TextField(verbose_name=_("Ответ"), max_length=500)
     category = models.ForeignKey(
-        QuestionsCategory, verbose_name=_("Категория"), on_delete=models.CASCADE
+        QuestionsCategory,
+        verbose_name=_("Категория"),
+        on_delete=models.CASCADE,
+        related_name="questions",
     )
 
     class Meta:
@@ -73,7 +76,7 @@ class Employee(models.Model):
     phone = PhoneNumberField(
         verbose_name=_("Номер телефона"),
         max_length=20,
-        blank=False,
+        blank=True,
         unique=True,
     )
 
@@ -102,10 +105,8 @@ class SocialInfo(models.Model):
         verbose_name=_("Ссылка на whatsapp для связи"),
         validators=[validate_whatsapp_url],
     )
-    address = models.CharField(verbose_name=_("Адресс"), max_length=500)
-    years = models.IntegerField(
-        verbose_name=_("Возраст компании"), validators=[MinValueValidator(0)]
-    )
+    address = models.CharField(verbose_name=_("Адрес"), max_length=500)
+    founded = models.DateField(verbose_name=_("Компания основана"), blank=False)
     projects_done = models.IntegerField(
         verbose_name=_("Кол-во завершенных проектов"), validators=[MinValueValidator(0)]
     )

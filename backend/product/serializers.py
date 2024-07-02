@@ -21,7 +21,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ["id", "title"]
+        fields = ("id", "title")
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductCategory
-        fields = ["id", "title"]
+        fields = ("id", "title")
 
 
 class ManufacturerSerializer(serializers.ModelSerializer):
@@ -37,7 +37,7 @@ class ManufacturerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Manufacturer
-        fields = ["id", "title"]
+        fields = ("id", "title")
 
 
 class OurServiceListSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class OurServiceListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OurService
-        fields = ["id", "image", "title", "description"]
+        fields = ("id", "image", "title", "description", "action")
 
 
 class RegisterListSerializer(serializers.ModelSerializer):
@@ -109,7 +109,7 @@ class ReadySolutionsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReadySolution
-        fields = [
+        fields = (
             "id",
             "title",
             "image",
@@ -118,7 +118,7 @@ class ReadySolutionsListSerializer(serializers.ModelSerializer):
             "price",
             "tags",
             "equipment",
-        ]
+        )
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -134,11 +134,11 @@ class OurWorksListSerializer(serializers.ModelSerializer):
 
     images = ImageSerializer(many=True)
     description = ParagraphsField()
-    product = ProductListSerializer(many=True)
+    # product = ProductListSerializer(many=True)
 
     class Meta:
         model = OurWorks
-        fields = [
+        fields = (
             "id",
             "title",
             "images",
@@ -148,4 +148,4 @@ class OurWorksListSerializer(serializers.ModelSerializer):
             "budget",
             "area",
             "add_date",
-        ]
+        )

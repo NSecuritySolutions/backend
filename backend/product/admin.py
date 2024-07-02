@@ -13,6 +13,7 @@ from product.models import (
     ReadySolution,
     Register,
     SolutionToProduct,
+    Tag,
 )
 
 
@@ -47,4 +48,5 @@ admin.site.register(OurWorks)
 admin.site.register(ProductCategory)
 admin.site.register(ImageWorks)
 admin.site.register(Manufacturer)
+admin.site.register(Tag)
 admin.site.register(HDD)
