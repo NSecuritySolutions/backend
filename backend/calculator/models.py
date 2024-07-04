@@ -119,6 +119,7 @@ class BlockOption(models.Model):
         NUMBER = ("number", _("Число"))
         RADIO = ("radio", _("Выбор"))
         CHECKBOX = ("checkbox", _("Подтверждение"))
+        COUNTER = ("counter", _("Счетчик"))
 
     block = models.ForeignKey(
         CalculatorBlock, on_delete=models.CASCADE, related_name="options"
