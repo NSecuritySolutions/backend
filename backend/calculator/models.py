@@ -96,6 +96,13 @@ class CalculatorBlock(models.Model):
     formula = models.ForeignKey(
         Formula, on_delete=models.SET_NULL, blank=True, null=True
     )
+    quantity_selection = models.BooleanField(
+        verbose_name=_("Выбор кол-ва"),
+        default=True,
+        help_text=_(
+            "Предоставить пользователю выбор кол-ва товара (иначе это будет выбор между 'да' и 'нет')"
+        ),
+    )
 
     class Meta:
         verbose_name = _("Блок калькулятора")
