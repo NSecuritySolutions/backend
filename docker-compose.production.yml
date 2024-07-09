@@ -10,6 +10,7 @@ services:
   backend:
     restart: always
     image: aleksey2299/security_backend:latest
+    entrypoint: /code/backend_entrypoint.sh
     volumes:
       - static:/backend_static
       - media:/code/media
