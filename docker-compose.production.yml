@@ -1,12 +1,14 @@
 version: '3'
 services:
   db:
+    restart: always
     image: postgres:16-alpine
     volumes:
       - pgdbdata:/var/lib/postgresql/data/
     env_file: .env
 
-  web:
+  backend:
+    restart: always
     image: aleksey2299/security_backend:latest
     volumes:
       - static:/backend_static
@@ -14,6 +16,23 @@ services:
     depends_on:
       - db
     env_file: .env
+
+  redis:
+    restart: always
+    image: redis:7.2.5-alpine
+    expose:
+      - 6379
+
+  worker:
+    restart: always
+    image: aleksey2299/security_backend:latest
+    command: celery -A main worker -B -l info
+    env_file: .env
+    volumes:
+      - ./backend:/code
+    depends_on:
+      - backend
+      - redis
 
   # update_prices:
   #   build: ./backend
@@ -32,12 +51,14 @@ services:
   #     - db
 
   next:
+    restart: always
     image: natashasolntseva/security_frontend:latest
     env_file: .env
     depends_on:
-      - web
+      - backend
 
   nginx:
+    restart: always
     image: aleksey2299/security_nginx:latest
     env_file: .env
     ports:
@@ -48,7 +69,7 @@ services:
       - media:/media/
       - certs:/etc/letsencrypt
     depends_on:
-      - web
+      - backend
 
 volumes:
   pgdbdata:

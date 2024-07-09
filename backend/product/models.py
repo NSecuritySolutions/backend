@@ -47,12 +47,16 @@ class Manufacturer(models.Model):
 class Product(PolymorphicModel):
     """Модель товара с общими для всех товаров атрибутами."""
 
-    article = models.CharField(verbose_name=_("Артикул"), max_length=100)
-    model = models.CharField(verbose_name=_("Модель"), max_length=300)
+    article = models.CharField(verbose_name=_("Артикул"), max_length=100, blank=True)
+    model = models.CharField(
+        verbose_name=_("Модель"), max_length=300, help_text=_("Название поля: model")
+    )
     image = models.ImageField(verbose_name=_("Изображение"), upload_to="media/product")
     description = models.CharField(verbose_name=_("Описание"), max_length=5000)
     manufacturer = models.ForeignKey(
-        Manufacturer, verbose_name=_("Производитель"), on_delete=models.CASCADE
+        Manufacturer,
+        verbose_name=_("Производитель"),
+        on_delete=models.CASCADE,
     )
     category = models.ForeignKey(
         ProductCategory,
@@ -103,7 +107,7 @@ class Camera(Product):
         help_text=_("Название поля: dark"),
     )
     temperature = models.CharField(
-        verbose_name=_("Температура"),
+        verbose_name=_("Рабочая температура"),
         max_length=30,
         help_text=_("Название поля: temperature"),
     )
@@ -174,18 +178,72 @@ class Register(Product):
         return self.model
 
 
-class HDD(models.Model):
-    # TODO docstring
-    model = models.CharField(verbose_name=_("Модель"), max_length=300)
-    description = models.CharField(verbose_name=_("Описание"), max_length=5000)
-    manufacturer = models.ManyToManyField(Manufacturer, verbose_name=_("Производитель"))
-    price = models.IntegerField(
-        verbose_name=_("Цена"), default=0, validators=[MinValueValidator(0)]
-    )
+class HDD(Product):
+    """Модель жесткого диска."""
 
     class Meta:
         verbose_name = "HDD"
         verbose_name_plural = "HDD"
+
+    def __str__(self) -> str:
+        return f"{self.model}"
+
+
+class FACP(Product):
+    """Модель ППКОП (прибор приемно-контрольный охранно-пожарный)."""
+
+    alarm_loops = models.IntegerField(
+        verbose_name=_("Кол-во шлейфов сигнализации"),
+        validators=[MinValueValidator(0)],
+        help_text=_("Название поля: alarm_loops"),
+    )
+    wireless_sensor_support = models.BooleanField(
+        verbose_name=_("Поддержка беспроводных извещателей"),
+        default=False,
+        help_text=_("Название поля: wireless_sensor_support"),
+    )
+    phone_control = models.BooleanField(
+        verbose_name=_("Управление с телефона"),
+        default=False,
+        help_text=_("Название поля: phone_control"),
+    )
+    temperature = models.CharField(
+        verbose_name=_("Рабочая температура"),
+        max_length=30,
+        help_text=_("Название поля: temperature"),
+    )
+
+    class Meta:
+        verbose_name = "ППКОП"
+        verbose_name_plural = "ППКОПы"
+
+    def __str__(self) -> str:
+        return f"{self.model}"
+
+
+class Sensor(Product):
+    """Модель извещателя."""
+
+    temperature = models.CharField(
+        verbose_name=_("Рабочая температура"),
+        max_length=30,
+        help_text=_("Название поля: temperature"),
+    )
+
+    class Meta:
+        verbose_name = "Извещатель"
+        verbose_name_plural = "Извещатели"
+
+    def __str__(self) -> str:
+        return f"{self.model}"
+
+
+class PACSProduct(Product):
+    """Модель товара СКУД (система контроля и управления доступом)."""
+
+    class Meta:
+        verbose_name = "Товар СКУД"
+        verbose_name_plural = "Товары СКУД"
 
     def __str__(self) -> str:
         return f"{self.model}"

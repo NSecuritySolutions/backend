@@ -2,16 +2,19 @@ from django.contrib import admin
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from product.models import (
+    FACP,
     HDD,
     Camera,
     ImageWorks,
     Manufacturer,
     OurService,
     OurWorks,
+    PACSProduct,
     Product,
     ProductCategory,
     ReadySolution,
     Register,
+    Sensor,
     SolutionToProduct,
     Tag,
 )
@@ -50,3 +53,6 @@ admin.site.register(ImageWorks)
 admin.site.register(Manufacturer)
 admin.site.register(Tag)
 admin.site.register(HDD)
+admin.site.register(FACP)
+admin.site.register(Sensor)
+admin.site.register(PACSProduct)

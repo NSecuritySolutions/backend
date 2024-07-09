@@ -17,6 +17,7 @@ from product.views import (
     OurWorksListView,
     ProductListView,
     ReadySolutionsListView,
+    api_view_test,
 )
 from social.views import (
     OurGuaranteesView,
@@ -40,6 +41,7 @@ router_v1.register("guarantees", OurGuaranteesView, basename="guarantees")
 
 urlpatterns_v1 = [
     path("category/", CategoryView.as_view()),
+    path("test", api_view_test),
     path("", include(router_v1.urls)),
 ]
 

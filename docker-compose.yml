@@ -6,7 +6,7 @@ services:
       - pgdbdata:/var/lib/postgresql/data/
     env_file: .env
 
-  web:
+  backend:
     restart: always
     build: ./backend/
     entrypoint: /code/backend_entrypoint.sh
@@ -17,6 +17,22 @@ services:
     env_file: .env
     ports:
       - 8000:8000
+
+  redis:
+    image: redis:7.2.5-alpine
+    expose:
+      - 6379
+
+  worker:
+    restart: always
+    build: ./backend/
+    command: celery -A main worker -B -l info
+    env_file: .env
+    volumes:
+      - ./backend:/code
+    depends_on:
+      - backend
+      - redis
 
   # update_prices:
   #   build: ./backend

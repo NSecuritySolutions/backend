@@ -2,15 +2,19 @@ from rest_framework import serializers
 
 from main.utils import ParagraphsField
 from product.models import (
+    FACP,
+    HDD,
     Camera,
     ImageWorks,
     Manufacturer,
     OurService,
     OurWorks,
+    PACSProduct,
     Product,
     ProductCategory,
     ReadySolution,
     Register,
+    Sensor,
     SolutionToProduct,
     Tag,
 )
@@ -53,7 +57,7 @@ class OurServiceListSerializer(serializers.ModelSerializer):
         fields = ("id", "image", "title", "description", "action")
 
 
-class RegisterListSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Register."""
 
     category = CategorySerializer()
@@ -61,7 +65,7 @@ class RegisterListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Register
-        exclude = ("polymorphic_ctype", "model")
+        exclude = ("polymorphic_ctype",)
 
 
 class CameraSerializer(serializers.ModelSerializer):
@@ -72,7 +76,51 @@ class CameraSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Camera
-        exclude = ("polymorphic_ctype", "model")
+        exclude = ("polymorphic_ctype",)
+
+
+class HDDSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели HDD."""
+
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = HDD
+        exclude = ("polymorphic_ctype",)
+
+
+class FACPSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели FACP."""
+
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = FACP
+        exclude = ("polymorphic_ctype",)
+
+
+class SensorSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Sensor."""
+
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = Sensor
+        exclude = ("polymorphic_ctype",)
+
+
+class PACSProductSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели PACSProduct."""
+
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = PACSProduct
+        exclude = ("polymorphic_ctype",)
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -86,7 +134,15 @@ class ProductListSerializer(serializers.ModelSerializer):
         if isinstance(instance, Camera):
             return CameraSerializer(instance).data
         elif isinstance(instance, Register):
-            return RegisterListSerializer(instance).data
+            return RegisterSerializer(instance).data
+        elif isinstance(instance, HDD):
+            return HDDSerializer(instance).data
+        elif isinstance(instance, FACP):
+            return FACPSerializer(instance).data
+        elif isinstance(instance, Sensor):
+            return SensorSerializer(instance).data
+        elif isinstance(instance, PACSProduct):
+            return PACSProductSerializer(instance).data
         return None
 
 
