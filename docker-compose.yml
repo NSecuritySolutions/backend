@@ -28,8 +28,6 @@ services:
     build: ./backend/
     command: celery -A main worker -B -l info
     env_file: .env
-    volumes:
-      - ./backend:/code
     depends_on:
       - backend
       - redis
