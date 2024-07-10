@@ -45,7 +45,12 @@ class Price(models.Model):
 class Formula(models.Model):
     """Модель формулы для калькулятора."""
 
-    expression = models.TextField(_("Формула"))
+    expression = models.TextField(
+        _("Формула"),
+        help_text=_(
+            "Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
+        ),
+    )
 
     class Meta:
         verbose_name = _("Формула")
@@ -89,6 +94,9 @@ class CalculatorBlock(models.Model):
         null=True,
         related_name="blocks",
     )
+    position = models.IntegerField(
+        _("Позиция в списке"), validators=[MinValueValidator(1)]
+    )
     title = models.CharField(_("Название"), max_length=40)
     image = models.ImageField(
         _("Значок"), upload_to="media/calculator", blank=True, null=True, default=None
@@ -105,11 +113,25 @@ class CalculatorBlock(models.Model):
     )
 
     class Meta:
+        ordering = ("position",)
         verbose_name = _("Блок калькулятора")
         verbose_name_plural = _("Блоки калькулятора")
 
     def __str__(self) -> str:
         return f"{self.calculator}-{self.title}"
+
+    def clean(self) -> None:
+        count = CalculatorBlock.objects.filter(calculator=self.calculator).count()
+        if self.pk is None:
+            count += 1
+        if self.position > count:
+            raise ValidationError(
+                _("Позиция не должна превышать кол-во блоков у калькулятора.")
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class BlockOption(models.Model):
@@ -123,6 +145,9 @@ class BlockOption(models.Model):
 
     block = models.ForeignKey(
         CalculatorBlock, on_delete=models.CASCADE, related_name="options"
+    )
+    position = models.IntegerField(
+        _("Позиция в списке"), validators=[MinValueValidator(1)]
     )
     title = models.CharField(_("Название"), max_length=40)
     description = models.CharField(_("Описание"))
@@ -151,8 +176,22 @@ class BlockOption(models.Model):
     )
 
     class Meta:
+        ordering = ("position",)
         verbose_name = _("Опция для блока")
         verbose_name_plural = _("Опции блока")
 
     def __str__(self) -> str:
         return f"{self.block.calculator}-{self.block.title}. {self.title}"
+
+    def clean(self) -> None:
+        count = BlockOption.objects.filter(block=self.block).count()
+        if self.pk is None:
+            count += 1
+        if self.position > count:
+            raise ValidationError(
+                _("Позиция не должна превышать кол-во опций у блока.")
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
