@@ -83,6 +83,10 @@ class Calculator(models.Model):
             if prev_active_calc:
                 raise ValidationError(_("Только один калькулятор может быть активным."))
 
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
 class CalculatorBlock(models.Model):
     """Модель блока калькулятора."""
@@ -108,7 +112,8 @@ class CalculatorBlock(models.Model):
         verbose_name=_("Выбор кол-ва"),
         default=True,
         help_text=_(
-            "Предоставить пользователю выбор кол-ва товара (иначе это будет выбор между 'да' и 'нет')"
+            "Предоставить пользователю выбор кол-ва товара "
+            "(иначе это будет выбор между 'да' и 'нет')"
         ),
     )
 
@@ -171,9 +176,26 @@ class BlockOption(models.Model):
         blank=True,
         null=True,
         help_text=_(
-            "Фильтры перечисленые через запятую.\nДоступные операторы:\n1. Равенство: ==.\n2. Неравенство: !=.\n3. Больше: >.\n4. Меньше: <.\n5. Больше или равно: >=.\n6. Меньше или равно: <=.\nПример: type == HD, price <= 1000"
+            "Фильтры перечисленые через запятую.\n"
+            "Доступные операторы:\n"
+            "1. Равенство: ==.\n"
+            "2. Неравенство: !=.\n"
+            "3. Больше: >.\n"
+            "4. Меньше: <.\n"
+            "5. Больше или равно: >=.\n"
+            "6. Меньше или равно: <=.\n"
+            "Пример: type == HD, price <= 1000"
         ),
     )
+    depends_on = models.ForeignKey(
+        "BlockOption",
+        on_delete=models.SET_NULL,
+        verbose_name=_("Зависит от опции"),
+        blank=True,
+        null=True,
+        related_name="dependent",
+    )
+    depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
 
     class Meta:
         ordering = ("position",)
@@ -191,6 +213,11 @@ class BlockOption(models.Model):
             raise ValidationError(
                 _("Позиция не должна превышать кол-во опций у блока.")
             )
+        if self.depends_on is not None:
+            if self.depends_on.block != self.block:
+                raise ValidationError(
+                    _("Опция, от которой зависим, должна быть из текущего блока.")
+                )
 
     def save(self, *args, **kwargs):
         self.clean()

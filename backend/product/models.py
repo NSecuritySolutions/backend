@@ -324,6 +324,10 @@ class ImageWorks(models.Model):
             if prev_main_image:
                 raise ValidationError(_("Только одна картинка может быть на главной."))
 
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
 class OurWorks(models.Model):
     """Модель примера работ."""

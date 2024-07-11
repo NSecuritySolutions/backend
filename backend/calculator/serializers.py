@@ -55,9 +55,14 @@ class FormulaSerializer(serializers.ModelSerializer):
 class OptionSerializer(serializers.ModelSerializer):
     """Сериализатор для модели опции блока калькулятора."""
 
+    dependencies = serializers.SerializerMethodField()
+
     class Meta:
         model = BlockOption
         fields = "__all__"
+
+    def get_dependencies(self, instance: BlockOption):
+        return instance.dependent.count() > 0
 
 
 class BlockSerializer(serializers.ModelSerializer):
