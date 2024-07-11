@@ -4,6 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from calculator.validators import validate_latin_underscore
+from product.models import Product, ProductCategory
 
 
 class PriceList(models.Model):
@@ -217,6 +218,24 @@ class BlockOption(models.Model):
             if self.depends_on.block != self.block:
                 raise ValidationError(
                     _("Опция, от которой зависим, должна быть из текущего блока.")
+                )
+        if self.product is not None:
+            category = ProductCategory.objects.filter(title=self.product)
+            if category.count() == 0:
+                raise ValidationError(_("Такой категории товаров не существует."))
+            products = Product.objects.filter(
+                category__title=self.product
+            ).get_real_instances()
+            found = False
+            for product in products:
+                if self.name in map(
+                    lambda x: x.attname, product._meta._get_fields(reverse=False)
+                ):
+                    found = True
+                    break
+            if not found:
+                raise ValidationError(
+                    _("Такого поля у данной категории моделей не существует")
                 )
 
     def save(self, *args, **kwargs):
