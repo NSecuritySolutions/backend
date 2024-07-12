@@ -7,6 +7,7 @@ from calculator.models import (
     Formula,
     Price,
     PriceList,
+    PriceListCategory,
 )
 
 
@@ -18,10 +19,20 @@ class PriceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PriceListCategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для модели категории прайс листа."""
+
+    prices = PriceSerializer(many=True)
+
+    class Meta:
+        model = PriceListCategory
+        fields = "__all__"
+
+
 class PriceListSerializer(serializers.ModelSerializer):
     """Сериализатор для модели PriceList."""
 
-    prices = PriceSerializer(many=True)
+    categories = PriceListCategorySerializer(many=True)
 
     class Meta:
         model = PriceList
@@ -31,17 +42,18 @@ class PriceListSerializer(serializers.ModelSerializer):
 class PriceListCalculatorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели PriceList."""
 
-    prices = PriceSerializer(many=True)
+    # prices = PriceSerializer(many=True)
+    categories = PriceListCategorySerializer(many=True)
 
     class Meta:
         model = PriceList
         fields = "__all__"
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        fields = data.get("prices", [])
-        result = {field["variable_name"]: field["price"] for field in fields}
-        return result
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     fields = data.get("prices", [])
+    #     result = {field["variable_name"]: field["price"] for field in fields}
+    #     return result
 
 
 class FormulaSerializer(serializers.ModelSerializer):

@@ -8,7 +8,13 @@ from social.validators import validate_telegram_url, validate_whatsapp_url
 
 
 class QuestionsCategory(models.Model):
-    """Модель категории для вопросов."""
+    """
+    Модель категории для вопросов.
+
+    Атрибуты:
+        name (str): Название категории.
+        icon (ImageField): Иконка категории.
+    """
 
     name = models.CharField(_("Название"), max_length=100)
     icon = models.ImageField(_("Иконка категории"), upload_to="media/questions/icons")
@@ -22,7 +28,14 @@ class QuestionsCategory(models.Model):
 
 
 class Questions(models.Model):
-    """Модель вопроса."""
+    """
+    Модель вопроса.
+
+    Атрибуты:
+        question (str): Вопрос.
+        answer (str): Ответ на вопрос.
+        category (ForeignKey): Категория вопроса.
+    """
 
     question = models.CharField(verbose_name=_("Вопрос"), max_length=200)
     answer = models.TextField(verbose_name=_("Ответ"), max_length=500)
@@ -42,7 +55,13 @@ class Questions(models.Model):
 
 
 class Team(models.Model):
-    """Модель команды."""
+    """
+    Модель команды.
+
+    Атрибуты:
+        description (str): Описание команды.
+        is_active (bool): Флаг, указывающий на актуальность команды.
+    """
 
     description = models.TextField(_("Описание"), max_length=2000)
     is_active = models.BooleanField(verbose_name=_("Актуальная команда"), default=False)
@@ -64,7 +83,17 @@ class Team(models.Model):
 
 
 class Employee(models.Model):
-    """Модель работника."""
+    """
+    Модель работника.
+
+    Атрибуты:
+        team (ForeignKey): Ссылка на команду.
+        image (ImageField): Фото работника.
+        first_name (str): Имя работника.
+        last_name (str): Фамилия работника.
+        position (str): Должность работника.
+        phone (PhoneNumberField): Номер телефона работника.
+    """
 
     team = models.ForeignKey(
         Team, on_delete=models.SET_NULL, related_name="employees", null=True
@@ -89,7 +118,19 @@ class Employee(models.Model):
 
 
 class SocialInfo(models.Model):
-    """Модель информации о компании."""
+    """
+    Модель информации о компании.
+
+    Атрибуты:
+        phone (PhoneNumberField): Номер телефона компании.
+        email (str): Почта для связи.
+        telegram (URLField): Ссылка на телеграм для связи.
+        whatsapp (URLField): Ссылка на WhatsApp для связи.
+        address (str): Адрес компании.
+        founded (DateField): Дата основания компании.
+        projects_done (int): Количество завершенных проектов.
+        is_active (bool): Флаг актуальности информации.
+    """
 
     phone = PhoneNumberField(
         verbose_name=_("Номер телефона"),
@@ -133,7 +174,15 @@ class SocialInfo(models.Model):
 
 
 class OurGuarantees(models.Model):
-    """Модель для 'мы обеспечиваем'"""
+    """
+    Модель для 'мы обеспечиваем'.
+
+    Атрибуты:
+        icon (ImageField): Иконка гарантии.
+        title (str): Название гарантии.
+        is_big (bool): Флаг, указывающий на большую карточку.
+        is_active (bool): Флаг, указывающий на отображение на главной странице.
+    """
 
     icon = models.ImageField(verbose_name=_("Иконка"))
     title = models.CharField(verbose_name=_("Название"), max_length=30)
@@ -167,7 +216,13 @@ class OurGuarantees(models.Model):
 
 
 class Subguarantees(models.Model):
-    """Модель подкатегорий гарантии."""
+    """
+    Модель подкатегорий гарантии.
+
+    Атрибуты:
+        guarantee (ForeignKey): Ссылка на категорию гарантии.
+        text (str): Текст подкатегории.
+    """
 
     guarantee = models.ForeignKey(
         OurGuarantees, on_delete=models.CASCADE, related_name="subguarantees"

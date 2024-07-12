@@ -6,7 +6,12 @@ from polymorphic.models import PolymorphicModel
 
 
 class ProductCategory(models.Model):
-    """Модель категории товара."""
+    """
+    Модель категории товара.
+
+    Атрибуты:
+        title (str): Название категории товара.
+    """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
 
@@ -19,7 +24,12 @@ class ProductCategory(models.Model):
 
 
 class Tag(models.Model):
-    """Модель тэга."""
+    """
+    Модель тэга.
+
+    Атрибуты:
+        title (str): Название тэга.
+    """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
 
@@ -32,7 +42,12 @@ class Tag(models.Model):
 
 
 class Manufacturer(models.Model):
-    """Модель производителя."""
+    """
+    Модель производителя.
+
+    Атрибуты:
+        title (str): Название производителя.
+    """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
 
@@ -45,7 +60,18 @@ class Manufacturer(models.Model):
 
 
 class Product(PolymorphicModel):
-    """Модель товара с общими для всех товаров атрибутами."""
+    """
+    Модель товара с общими для всех товаров атрибутами.
+
+    Атрибуты:
+        article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+    """
 
     article = models.CharField(verbose_name=_("Артикул"), max_length=100, blank=True)
     model = models.CharField(
@@ -81,25 +107,56 @@ class Product(PolymorphicModel):
 
 
 class Camera(Product):
-    """Модель камеры."""
+    """
+    Модель камеры.
+
+    Атрибуты:
+                article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+        type (str): Тип камеры.
+        form_factor (str): Форм-фактор камеры.
+        accommodation (str): Размещение камеры.
+        resolution (str): Разрешение камеры.
+        resolution_type (str): Тип разрешения камеры.
+        dark (str): Съемка в темноте.
+        temperature (str): Рабочая температура камеры.
+        power_supply (str): Электропитание камеры.
+        microphone (bool): Наличие микрофона.
+        microphone_details (str): Подробности для микрофона.
+        micro_sd (bool): Поддержка MicroSD.
+        micro_sd_details (str): Подробности для MicroSD.
+        viewing_angle (str): Угол обзора камеры.
+        focus (str): Фокус камеры.
+    """
 
     type = models.CharField(
         verbose_name=_("Тип"), max_length=20, help_text=_("Название поля: type")
     )
     form_factor = models.CharField(
         verbose_name=_("Форм Фактор"),
-        max_length=20,
+        max_length=50,
         help_text=_("Название поля: form_factor"),
     )
     accommodation = models.CharField(
         verbose_name=_("Размещение"),
-        max_length=30,
+        max_length=50,
         help_text=_("Название поля: accommodation"),
     )
     resolution = models.CharField(
         verbose_name=_("Разрешение"),
-        max_length=30,
+        max_length=50,
         help_text=_("Название поля: resolution"),
+    )
+    resolution_type = models.CharField(
+        verbose_name=_("Тип разрешения"),
+        max_length=30,
+        help_text=_("Название поля: resolution_type"),
+        blank=True,
     )
     dark = models.CharField(
         verbose_name=_("Съемка в темноте"),
@@ -116,21 +173,35 @@ class Camera(Product):
         max_length=30,
         help_text=_("Название поля: power_supply"),
     )
-    microphone = models.CharField(
-        verbose_name=_("Микрофон"),
+    microphone = models.BooleanField(
+        verbose_name=_("Наличичие микрофона"),
         max_length=30,
+        default=False,
         help_text=_("Название поля: microphone"),
     )
-    micro_sd = models.CharField(
-        verbose_name="MicroSD", max_length=30, help_text=_("Название поля: micro_sd")
+    microphone_details = models.TextField(
+        verbose_name=_("Подробности для микрофона"),
+        help_text=_("Название поля: microphone_details"),
+        blank=True,
+    )
+    micro_sd = models.BooleanField(
+        verbose_name=_("Поддержка MicroSD"),
+        max_length=30,
+        help_text=_("Название поля: micro_sd"),
+        default=False,
+    )
+    micro_sd_details = models.TextField(
+        _("Подробности для MicroSD"),
+        help_text=_("Название поля: micro_sd_details"),
+        blank=True,
     )
     viewing_angle = models.CharField(
         verbose_name=_("Угол Обзора"),
-        max_length=30,
+        max_length=50,
         help_text=_("Название поля: viewing_angle"),
     )
     focus = models.CharField(
-        verbose_name=_("Фокус"), max_length=30, help_text=_("Название поля: focus")
+        verbose_name=_("Фокус"), max_length=50, help_text=_("Название поля: focus")
     )
 
     class Meta:
@@ -142,7 +213,23 @@ class Camera(Product):
 
 
 class Register(Product):
-    """Модель регистратора."""
+    """
+    Модель регистратора.
+
+    Атрибуты:
+        article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+        max_resolution (str): Максимальное разрешение.
+        quantity_cam (int): Количество камер.
+        quantity_hdd (int): Количество HDD.
+        max_size_hdd (int): Максимальный объем HDD в Тб.
+        power_supply (str): Электропитание регистратора.
+    """
 
     max_resolution = models.CharField(
         verbose_name=_("Максимально разрешение"),
@@ -179,7 +266,18 @@ class Register(Product):
 
 
 class HDD(Product):
-    """Модель жесткого диска."""
+    """
+    Модель жесткого диска.
+
+    Атрибуты:
+                article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+    """
 
     class Meta:
         verbose_name = "HDD"
@@ -190,7 +288,22 @@ class HDD(Product):
 
 
 class FACP(Product):
-    """Модель ППКОП (прибор приемно-контрольный охранно-пожарный)."""
+    """
+    Модель ППКОП (прибор приемно-контрольный охранно-пожарный).
+
+    Атрибуты:
+                article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+        alarm_loops (int): Количество шлейфов сигнализации.
+        wireless_sensor_support (bool): Поддержка беспроводных извещателей.
+        phone_control (bool): Управление с телефона.
+        temperature (str): Рабочая температура.
+    """
 
     alarm_loops = models.IntegerField(
         verbose_name=_("Кол-во шлейфов сигнализации"),
@@ -222,7 +335,19 @@ class FACP(Product):
 
 
 class Sensor(Product):
-    """Модель извещателя."""
+    """
+    Модель извещателя.
+
+    Атрибуты:
+                article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+        temperature (str): Рабочая температура извещателя.
+    """
 
     temperature = models.CharField(
         verbose_name=_("Рабочая температура"),
@@ -239,7 +364,18 @@ class Sensor(Product):
 
 
 class PACSProduct(Product):
-    """Модель товара СКУД (система контроля и управления доступом)."""
+    """
+    Модель товара СКУД (система контроля и управления доступом).
+
+    Атрибуты:
+                article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+    """
 
     class Meta:
         verbose_name = "Товар СКУД"
@@ -250,7 +386,17 @@ class PACSProduct(Product):
 
 
 class ReadySolution(models.Model):
-    """Модель готового решения."""
+    """
+    Модель готового решения.
+
+    Атрибуты:
+        title (str): Название решения.
+        image (ImageField): Фотография решения.
+        tooltip_text (str): Подсказка.
+        description (str): Описание решения.
+        price (int): Цена решения.
+        tags (ManyToManyField): Тэги решения.
+    """
 
     title = models.CharField(verbose_name=_("Название"), max_length=300)
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/ready")
@@ -270,7 +416,14 @@ class ReadySolution(models.Model):
 
 
 class SolutionToProduct(models.Model):
-    """Промежуточная модель между готовым решением и продукцией."""
+    """
+    Промежуточная модель между готовым решением и продукцией.
+
+    Атрибуты:
+        solution (ForeignKey): Ссылка на готовое решение.
+        product (ForeignKey): Ссылка на товар.
+        amount (int): Количество товара в решении.
+    """
 
     solution = models.ForeignKey(
         ReadySolution, on_delete=models.CASCADE, related_name="equipment"
@@ -280,7 +433,15 @@ class SolutionToProduct(models.Model):
 
 
 class OurService(models.Model):
-    """Модель наших услуг."""
+    """
+    Модель наших услуг.
+
+    Атрибуты:
+        image (ImageField): Фотография услуги.
+        title (str): Название услуги.
+        description (str): Описание услуги.
+        action (str): Текст кнопки действия.
+    """
 
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/service")
     title = models.CharField(verbose_name=_("Название"), max_length=400)
@@ -298,7 +459,14 @@ class OurService(models.Model):
 
 
 class ImageWorks(models.Model):
-    """Модель картинки для примера работы."""
+    """
+    Модель картинки для примера работы.
+
+    Атрибуты:
+        work (ForeignKey): Ссылка на пример работы.
+        image (ImageField): Фотография.
+        is_main (bool): Флаг, указывающий, является ли изображение основным.
+    """
 
     work = models.ForeignKey(
         "OurWorks", on_delete=models.CASCADE, related_name="images"
@@ -330,7 +498,19 @@ class ImageWorks(models.Model):
 
 
 class OurWorks(models.Model):
-    """Модель примера работ."""
+    """
+    Модель примера работ.
+
+    Атрибуты:
+        title (str): Название работы.
+        product (str): Используемое оборудование.
+        description (str): Описание работы.
+        add_date (datetime): Дата добавления работы на сайт.
+        time (int): Затраченное время.
+        budget (int): Бюджет работы.
+        area (int): Площадь работ.
+        is_active (bool): Флаг, указывающий, находится ли работа на главной странице.
+    """
 
     title = models.CharField(verbose_name=_("Название"), max_length=300)
     product = models.TextField(
