@@ -48,9 +48,6 @@ class OurServiceListSerializer(serializers.ModelSerializer):
     """Сериализатор для модели наших услуг."""
 
     description = ParagraphsField()
-    image = serializers.ImageField(
-        max_length=None, use_url=True, allow_null=True, required=False
-    )
 
     class Meta:
         model = OurService
@@ -131,18 +128,19 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def to_representation(self, instance):
+        request = self.context.get("request")
         if isinstance(instance, Camera):
-            return CameraSerializer(instance).data
+            return CameraSerializer(instance, context={"request": request}).data
         elif isinstance(instance, Register):
-            return RegisterSerializer(instance).data
+            return RegisterSerializer(instance, context={"request": request}).data
         elif isinstance(instance, HDD):
-            return HDDSerializer(instance).data
+            return HDDSerializer(instance, context={"request": request}).data
         elif isinstance(instance, FACP):
-            return FACPSerializer(instance).data
+            return FACPSerializer(instance, context={"request": request}).data
         elif isinstance(instance, Sensor):
-            return SensorSerializer(instance).data
+            return SensorSerializer(instance, context={"request": request}).data
         elif isinstance(instance, PACSProduct):
-            return PACSProductSerializer(instance).data
+            return PACSProductSerializer(instance, context={"request": request}).data
         return None
 
 

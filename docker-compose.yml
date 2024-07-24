@@ -15,8 +15,8 @@ services:
     depends_on:
       - db
     env_file: .env
-    ports:
-      - 8000:8000
+    # ports:
+    #   - 8000:8000
 
   redis:
     image: redis:7.2.5-alpine
@@ -48,5 +48,29 @@ services:
   #   depends_on:
   #     - db
 
+  next:
+    restart: always
+    image: natashasolntseva/security_frontend:latest
+    env_file: .env
+    depends_on:
+      - backend
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    env_file: .env
+    ports:
+      - 8000:80
+      - 443:443
+    volumes:
+      - static:/static/
+      - media:/media/
+      - certs:/etc/letsencrypt
+    depends_on:
+      - backend
+
 volumes:
   pgdbdata:
+  static:
+  media:
+  certs:
