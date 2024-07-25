@@ -9,6 +9,7 @@ from .models import (
     Manufacturer,
     Questions,
     Register,
+    Camera
 )
 
 
@@ -43,23 +44,45 @@ class OurServiceListSerializer(serializers.ModelSerializer):
 
 
 class RegisterListSerializer(serializers.ModelSerializer):
-    # TODO docstring
-    manufacturer = ManufacturerSerializer(many=True)
+    """Сериализатор для модели Register."""
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+    # category = serializers.CharField(source="category.title")
 
     class Meta:
         model = Register
         fields = "__all__"
 
 
-class ProductListSerializer(serializers.ModelSerializer):
-    # TODO docstring
-    category = CategorySerializer(many=True)
-    manufacturer = ManufacturerSerializer(many=True)
+class CameraSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Camera."""
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
 
+    class Meta:
+        model = Camera
+        fields = "__all__"
+
+
+class ProductListSerializer(serializers.ModelSerializer):
+    """Сериализатор для моделей унаследованных от Product."""
     class Meta:
         model = Product
         fields = "__all__"
-        exclude_fields = ("form_factor",)
+
+    def to_representation(self, instance):
+        if isinstance(instance, Camera):
+            return CameraSerializer(instance).data
+        elif isinstance(instance, Register):
+            return RegisterListSerializer(instance).data
+        return None
+
+    # def get_content_object(self, obj: P):
+    #     if isinstance(obj.content_object, Camera):
+    #         return CameraSerializer(obj.content_object).data
+    #     elif isinstance(obj.content_object, Register):
+    #         return RegisterListSerializer(obj.content_object).data
+    #     return None
 
 
 class ReadySolutionsListSerializer(serializers.ModelSerializer):

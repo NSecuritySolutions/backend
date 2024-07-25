@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "jazzmin",
+    "polymorphic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,6 +49,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    INSTALLED_APPS.insert(6, "corsheaders")
+    MIDDLEWARE.insert(2, "corsheaders.middleware.CorsMiddleware")
+
+    CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "main.urls"
 
@@ -103,10 +110,10 @@ SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"Basic": {"type": "basic"}}}
 
 DATE_INPUT_FORMATS = [
     "%m.%d.%y",
-    "%m:%d:%y %H:%M", # Ни разу не видел чтобы так писали
-    "%m.%d.%y %H.%M", # Ни разу не видел чтобы так писали
+    "%m:%d:%y %H:%M",  # Ни разу не видел чтобы так писали
+    "%m.%d.%y %H.%M",  # Ни разу не видел чтобы так писали
     "%m/%d/%y %H:%M",  # '10/25/06 14:30'
-    "%m/%d/%y %H.%M", # Ни разу не видел чтобы так писали
+    "%m/%d/%y %H.%M",  # Ни разу не видел чтобы так писали
     "%m/%d/%y",  # '10/25/06'
 ]
 

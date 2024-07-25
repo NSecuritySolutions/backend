@@ -65,6 +65,7 @@ db.sqlite3-journal
 collected_static/
 static/
 sent_emails/
+media/
 
 # Flask stuff:
 instance/
