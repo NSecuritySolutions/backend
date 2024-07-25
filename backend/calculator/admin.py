@@ -1,8 +1,5 @@
 from django.contrib import admin
-from .models import Camera, CameraPrice
-
-# Register your models here.
+from .models import PriceList
 
 
-admin.site.register(Camera)
-admin.site.register(CameraPrice)
+admin.site.register(PriceList)

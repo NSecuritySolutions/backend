@@ -13,7 +13,6 @@ from .models import (
 )
 
 
-# Register your models here.
 class ProductAdmin(admin.ModelAdmin):
     search_fields = ["model"]
 
