@@ -1,0 +1,77 @@
+version: '3'
+services:
+  db:
+    restart: always
+    image: postgres:16-alpine
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+    env_file: .env
+
+  backend:
+    restart: always
+    image: aleksey2299/security_backend:latest
+    entrypoint: /code/backend_entrypoint.sh
+    volumes:
+      - static:/backend_static
+      - media:/code/media
+    depends_on:
+      - db
+    env_file: .env
+
+  redis:
+    restart: always
+    image: redis:7.2.5-alpine
+    expose:
+      - 6379
+
+  worker:
+    restart: always
+    image: aleksey2299/security_backend:latest
+    command: celery -A main worker -B -l info
+    env_file: .env
+    depends_on:
+      - backend
+      - redis
+
+  # update_prices:
+  #   build: ./backend
+  #   command: python manage.py update_prices
+  #   volumes:
+  #     - ./backend:/code/
+  #   depends_on:
+  #     - db
+
+  # bot:
+  #   build: ./backend/
+  #   command: python manage.py bot
+  #   volumes:
+  #     - ./backend:/code
+  #   depends_on:
+  #     - db
+
+  next:
+    restart: always
+    image: natashasolntseva/security_frontend:latest
+    env_file: .env
+    depends_on:
+      - backend
+
+  nginx:
+    restart: always
+    image: aleksey2299/security_nginx:latest
+    env_file: .env
+    ports:
+      - 8000:80
+      - 443:443
+    volumes:
+      - static:/static/
+      - media:/media/
+      - certs:/etc/letsencrypt
+    depends_on:
+      - backend
+
+volumes:
+  pgdbdata:
+  static:
+  media:
+  certs:

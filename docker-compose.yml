@@ -6,15 +6,31 @@ services:
       - pgdbdata:/var/lib/postgresql/data/
     env_file: .env
 
-  web:
+  backend:
+    restart: always
     build: ./backend/
+    entrypoint: /code/backend_entrypoint.sh
     volumes:
       - ./backend:/code
-    ports:
-      - 8000:8000
     depends_on:
       - db
     env_file: .env
+    # ports:
+    #   - 8000:8000
+
+  redis:
+    image: redis:7.2.5-alpine
+    expose:
+      - 6379
+
+  worker:
+    restart: always
+    build: ./backend/
+    command: celery -A main worker -B -l info
+    env_file: .env
+    depends_on:
+      - backend
+      - redis
 
   # update_prices:
   #   build: ./backend
@@ -32,5 +48,29 @@ services:
   #   depends_on:
   #     - db
 
+  next:
+    restart: always
+    image: natashasolntseva/security_frontend:latest
+    env_file: .env
+    depends_on:
+      - backend
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    env_file: .env
+    ports:
+      - 8000:80
+      - 443:443
+    volumes:
+      - static:/static/
+      - media:/media/
+      - certs:/etc/letsencrypt
+    depends_on:
+      - backend
+
 volumes:
   pgdbdata:
+  static:
+  media:
+  certs:

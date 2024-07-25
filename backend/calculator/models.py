@@ -1,78 +1,199 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from calculator.validators import validate_latin_underscore
+from product.models import Product, ProductCategory
+
 
 class PriceList(models.Model):
-    """Модель прайс листа."""
+    """
+    Модель прайс листа.
 
-    # Cameras
+    Атрибуты:
+        date (DateTimeField): Дата создания прайс листа.
+    """
 
-    # Inner camera prices
-    setup_inner_camera_easy = models.IntegerField(_("Простая установка внутренней камеры"))
-    setup_inner_camera = models.IntegerField(_("Установка внутренней камеры"))
-    setup_inner_camera_hard = models.IntegerField(_("Сложная установка внутренней камеры"))
-    cabel_price_for_inner_cameras_per_meter = models.IntegerField(_("Цена за 1 метра кабеля для внутренних камер"))
-
-    # Outer camera prices
-    setup_outer_camera_easy = models.IntegerField(_("Простая установка внешней камеры"))
-    setup_outer_camera = models.IntegerField(_("Установка внешней камеры"))
-    setup_outer_camera_hard = models.IntegerField(_("Сложная установка внешней камеры"))
-    cabel_price_for_outer_cameras_per_meter = models.IntegerField(_("Цена за 1 метра кабеля для внешних камер"))
-
-    # Additional setup for cameras
-    setup_ahd_registery = models.IntegerField(_("Установка регистратора AHD системы"))
-    setup_ip_registery = models.IntegerField(_("Установка регистратора IP системы"))
-    price_multiplier_for_registery_setup = models.IntegerField(_("Множитель цены установки регистратора если больше 16 камер"))
-    registery_4 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    registery_8 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    registery_16 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    registery_20 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    registery_24 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    registery_32 = models.IntegerField(_("Цена регистратора при 4 и меньше камерах"))
-    power_unit = models.IntegerField(_("Цена блока питания с работой (цена увеличивается каждые 5 камер)"))
-
-    is_current = models.BooleanField(_("Актуальный прайс лист"), default=False)
+    date = models.DateTimeField(_("Дата последнего обновления"), auto_now_add=True)
 
     class Meta:
         verbose_name = _("Прайс лист")
         verbose_name_plural = _("Прайс листы")
 
     def __str__(self):
-        return f"{self.pk}. Active: {self.is_current}"
+        return f"{self.pk}. Updated at {self.date}"
+
+
+class PriceListCategory(models.Model):
+    """
+    Модель катогрии для прайс листа.
+
+    Атрибуты:
+                name (str): Название категории.
+        price_list (ForeignKey): Ссыслка на прайс лист.
+    """
+
+    name = models.CharField(_("Название"), max_length=100)
+    price_list = models.ForeignKey(
+        PriceList,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="categories",
+    )
+
+    class Meta:
+        verbose_name = _("Категория прайс листа")
+        verbose_name_plural = _("Категории прайс листов")
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Price(models.Model):
+    """
+    Модель цены.
+
+    Атрибуты:
+        price_list_category (ForeignKey): Ссылка на категорию прайс листа.
+        name (str): Название услуги/товара.
+        variable_name (str): Имя переменной в калькуляторе.
+        price (int): Цена услуги/товара.
+        is_show (bool): Флаг отображения цены клиенту.
+    """
+
+    price_list_category = models.ForeignKey(
+        PriceListCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="prices",
+        blank=True,
+    )
+    name = models.CharField("Название услуги/товара")
+    variable_name = models.CharField(
+        _("Переменная"),
+        max_length=200,
+        help_text=_(
+            "Имя переменной в калькуляторе (латинские символы, цифры и нижнее подчеркивание)"
+        ),
+        blank=True,
+        null=True,
+        validators=[validate_latin_underscore],
+    )
+    price = models.IntegerField(_("Цена"), validators=[MinValueValidator(0)])
+    is_show = models.BooleanField(
+        _("Показывать клиенту"), help_text=_("Отображать ли эту цену в прайс листе")
+    )
+
+    class Meta:
+        verbose_name = _("Цена")
+        verbose_name_plural = "Цены"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Formula(models.Model):
-    """Модель формулы для калькулятора."""
-    expression = models.TextField(_("Формула"))
+    """
+    Модель формулы для калькулятора.
+
+    Атрибуты:
+        name (str): Название формулы.
+        expression (str): Формула в синтаксисе math.js с дополнительными функциями.
+    """
+
+    name = models.CharField(_("Название"), max_length=100)
+    expression = models.TextField(
+        _("Формула"),
+        help_text=_(
+            "Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
+        ),
+    )
 
     class Meta:
         verbose_name = _("Формула")
         verbose_name_plural = _("Формулы")
 
     def __str__(self) -> str:
-        return self.expression
+        return self.name
 
 
 class Calculator(models.Model):
-    """Модель калькулятора."""
-    price_list = models.ForeignKey(PriceList, on_delete=models.SET_NULL, blank=True, null=True)
+    """
+    Модель калькулятора.
+
+    Атрибуты:
+        price_list (ForeignKey): Ссылка на прайс лист.
+        is_active (bool): Флаг актуальности калькулятора.
+    """
+
+    price_list = models.ForeignKey(
+        PriceList, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    active = models.BooleanField("Текущий калькулятор", default=False)
 
     class Meta:
         verbose_name = _("Калькулятор")
         verbose_name_plural = _("Калькуляторы")
 
     def __str__(self) -> str:
-        return f"{self.pk}"
+        return f"{self.pk}. Active" if self.active else f"{self.pk}"
+
+    def clean(self) -> None:
+        if self.active:
+            prev_active_calc = Calculator.objects.filter(
+                ~models.Q(pk=self.pk), active=True
+            )
+            if prev_active_calc:
+                raise ValidationError(_("Только один калькулятор может быть активным."))
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class CalculatorBlock(models.Model):
-    """Модель блока калькулятора."""
-    calculator = models.ForeignKey(Calculator, on_delete=models.SET_NULL, blank=True, null=True, related_name='blocks')
-    title = models.CharField(_('Название'), max_length=40)
-    image = models.ImageField(_('Значок'), upload_to='media/calculator', blank=True, null=True, default=None)
-    formula = models.ForeignKey(Formula, on_delete=models.SET_NULL, blank=True, null=True)
+    """
+    Модель блока калькулятора.
+
+    Атрибуты:
+        calculator (ForeignKey): Ссылка на калькулятор.
+        position (int): Позиция блока в списке.
+        title (str): Название блока.
+        image (ImageField): Значок блока.
+        formula (ForeignKey): Ссылка на формулу.
+        quantity_selection (bool): Флаг выбора количества товара.
+    """
+
+    calculator = models.ForeignKey(
+        Calculator,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="blocks",
+    )
+    position = models.IntegerField(
+        _("Позиция в списке"), validators=[MinValueValidator(1)]
+    )
+    title = models.CharField(_("Название"), max_length=40)
+    image = models.ImageField(
+        _("Значок"), upload_to="media/calculator", blank=True, null=True, default=None
+    )
+    formula = models.ForeignKey(
+        Formula, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    quantity_selection = models.BooleanField(
+        verbose_name=_("Выбор кол-ва"),
+        default=True,
+        help_text=_(
+            "Предоставить пользователю выбор кол-ва товара "
+            "(иначе это будет выбор между 'да' и 'нет')"
+        ),
+    )
 
     class Meta:
+        ordering = ("position",)
         verbose_name = _("Блок калькулятора")
         verbose_name_plural = _("Блоки калькулятора")
 
@@ -80,25 +201,136 @@ class CalculatorBlock(models.Model):
         return f"{self.calculator}-{self.title}"
 
 
-class BlockOption(models.Model):
-    """Модель опции для блока калькулятора."""
-    class OptionTypes(models.TextChoices):
-        NUMBER = ('number', _('Число'))
-        RADIO = ('radio', _('Выбор'))
-        CHECKBOX = ('checkbox', _('Подтверждение'))
+# TODO нужно ли???
+# def clean(self) -> None:
+#     count = CalculatorBlock.objects.filter(calculator=self.calculator).count()
+#     if self.pk is None:
+#         count += 1
+#     if self.position > count:
+#         raise ValidationError(
+#             _("Позиция не должна превышать кол-во блоков у калькулятора.")
+#         )
 
-    block = models.ForeignKey(CalculatorBlock, on_delete=models.CASCADE, related_name='options')
-    title = models.CharField(_('Название'), max_length=40)
-    description = models.CharField(_('Описание'))
-    option_type = models.CharField(_('Тип опции'), choices=OptionTypes.choices)
-    name = models.CharField(_('Имя'), max_length=40, help_text=_('Имя переменной для формулы или имя поля модели'))
-    choices = models.CharField(_('Выбор'), blank=True, null=True, help_text=_("Перечислите варианты через ';'"))
-    product = models.CharField(_('Продукт для фильтрации'), blank=True, null=True, help_text=_('Название категории'))
-    filters = models.TextField(_('Фильтры для товара'), blank=True, null=True, help_text=_('Фильтры перечисленые через запятую.\nДоступные операторы:\n1. Равенство: ==.\n2. Неравенство: !=.\n3. Больше: >.\n4. Меньше: <.\n5. Больше или равно: >=.\n6. Меньше или равно: <=.\nПример: type == HD, price <= 1000'))
+# def save(self, *args, **kwargs):
+#     self.clean()
+#     super().save(*args, **kwargs)
+
+
+class BlockOption(models.Model):
+    """
+    Модель опции для блока калькулятора.
+
+    Атрибуты:
+        block (ForeignKey): Ссылка на блок калькулятора.
+        position (int): Позиция опции в списке.
+        title (str): Название опции.
+        description (str): Описание опции.
+        option_type (str): Тип опции (число, выбор, подтверждение, счетчик).
+        name (str): Имя переменной для формулы или имя поля модели.
+        choices (str): Варианты выбора для опции.
+        product (str): Название категории для фильтрации.
+        filters (str): Фильтры для товара.
+        depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
+        depends_on_value (str): Значение, от которого зависит текущая опция.
+    """
+
+    class OptionTypes(models.TextChoices):
+        NUMBER = ("number", _("Число"))
+        RADIO = ("radio", _("Выбор"))
+        CHECKBOX = ("checkbox", _("Подтверждение"))
+        COUNTER = ("counter", _("Счетчик"))
+
+    block = models.ForeignKey(
+        CalculatorBlock, on_delete=models.CASCADE, related_name="options"
+    )
+    position = models.IntegerField(
+        _("Позиция в списке"),
+        validators=[MinValueValidator(1)],
+    )
+    title = models.CharField(_("Название"), max_length=40)
+    description = models.CharField(_("Описание"))
+    option_type = models.CharField(_("Тип опции"), choices=OptionTypes.choices)
+    name = models.CharField(
+        _("Имя"),
+        max_length=40,
+        help_text=_("Имя переменной для формулы или имя поля модели"),
+    )
+    choices = models.CharField(
+        _("Выбор"), blank=True, null=True, help_text=_("Перечислите варианты через ';'")
+    )
+    product = models.CharField(
+        _("Продукт для фильтрации"),
+        blank=True,
+        null=True,
+        help_text=_("Название категории"),
+    )
+    filters = models.TextField(
+        _("Фильтры для товара"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Фильтры перечисленые через запятую.\n"
+            "Доступные операторы:\n"
+            "1. Равенство: ==.\n"
+            "2. Неравенство: !=.\n"
+            "3. Больше: >.\n"
+            "4. Меньше: <.\n"
+            "5. Больше или равно: >=.\n"
+            "6. Меньше или равно: <=.\n"
+            "Пример: type == HD, price <= 1000"
+        ),
+    )
+    depends_on = models.ForeignKey(
+        "BlockOption",
+        on_delete=models.SET_NULL,
+        verbose_name=_("Зависит от опции"),
+        blank=True,
+        null=True,
+        related_name="dependent",
+    )
+    depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
 
     class Meta:
+        ordering = ("position",)
         verbose_name = _("Опция для блока")
         verbose_name_plural = _("Опции блока")
 
     def __str__(self) -> str:
         return f"{self.block.calculator}-{self.block.title}. {self.title}"
+
+    def clean(self) -> None:
+        # TODO нужно ли???
+        # count = BlockOption.objects.filter(block=self.block).count()
+        # if self.pk is None:
+        #     count += 1
+        # if self.position > count:
+        #     raise ValidationError(
+        #         _("Позиция не должна превышать кол-во опций у блока.")
+        #     )
+        if self.depends_on is not None:
+            if self.depends_on.block != self.block:
+                raise ValidationError(
+                    _("Опция, от которой зависим, должна быть из текущего блока.")
+                )
+        if self.product is not None:
+            category = ProductCategory.objects.filter(title=self.product)
+            if category.count() == 0:
+                raise ValidationError(_("Такой категории товаров не существует."))
+            products = Product.objects.filter(
+                category__title=self.product
+            ).get_real_instances()
+            found = False
+            for product in products:
+                if self.name in map(
+                    lambda x: x.attname, product._meta._get_fields(reverse=False)
+                ):
+                    found = True
+                    break
+            if not found:
+                raise ValidationError(
+                    _("Такого поля у данной категории моделей не существует")
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
