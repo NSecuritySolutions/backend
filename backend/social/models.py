@@ -38,7 +38,7 @@ class Questions(models.Model):
     """
 
     question = models.CharField(verbose_name=_("Вопрос"), max_length=200)
-    answer = models.TextField(verbose_name=_("Ответ"), max_length=500)
+    answer = models.TextField(verbose_name=_("Ответ"), max_length=1000)
     category = models.ForeignKey(
         QuestionsCategory,
         verbose_name=_("Категория"),

@@ -14,18 +14,9 @@ SECRET_KEY = os.getenv(
 
 DOMAIN = os.getenv("DOMAIN", "localhost:8000")
 
-# TODO .env
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-# TODO .env
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
-    "*",
-    "https://opticontrol.ru/",
-    "opticontrol.ru",
-]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost 127.0.0.1").split(" ")
 
 INSTALLED_APPS = [
     "jazzmin",
