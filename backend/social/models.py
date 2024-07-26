@@ -64,7 +64,7 @@ class Team(models.Model):
     """
 
     description = models.TextField(_("Описание"), max_length=2000)
-    is_active = models.BooleanField(verbose_name=_("Актуальная команда"), default=False)
+    active = models.BooleanField(verbose_name=_("Актуальная команда"), default=False)
 
     class Meta:
         verbose_name = _("Команда")
@@ -74,11 +74,9 @@ class Team(models.Model):
         return f"{self.pk}. {self.description}"
 
     def clean(self) -> None:
-        if self.is_active:
-            prev_active_calc = Team.objects.filter(
-                ~models.Q(pk=self.pk), is_active=True
-            )
-            if prev_active_calc:
+        if self.active:
+            prev_active = Team.objects.filter(~models.Q(pk=self.pk), active=True)
+            if prev_active:
                 raise ValidationError(_("Только одна команда может быть актуальной."))
 
 
@@ -151,9 +149,7 @@ class SocialInfo(models.Model):
     projects_done = models.IntegerField(
         verbose_name=_("Кол-во завершенных проектов"), validators=[MinValueValidator(0)]
     )
-    is_active = models.BooleanField(
-        verbose_name=_("Актуальная информация"), default=False
-    )
+    active = models.BooleanField(verbose_name=_("Актуальная информация"), default=False)
 
     class Meta:
         verbose_name = _("Информация")
@@ -163,11 +159,9 @@ class SocialInfo(models.Model):
         return f"{self.pk}. {self.address}"
 
     def clean(self) -> None:
-        if self.is_active:
-            prev_active_calc = SocialInfo.objects.filter(
-                ~models.Q(pk=self.pk), is_active=True
-            )
-            if prev_active_calc:
+        if self.active:
+            prev_active = SocialInfo.objects.filter(~models.Q(pk=self.pk), active=True)
+            if prev_active:
                 raise ValidationError(
                     _("Только один социальный блок может быть актуальным.")
                 )
@@ -187,7 +181,7 @@ class OurGuarantees(models.Model):
     icon = models.ImageField(verbose_name=_("Иконка"))
     title = models.CharField(verbose_name=_("Название"), max_length=30)
     is_big = models.BooleanField(verbose_name=_("Большая карточка"))
-    is_active = models.BooleanField(verbose_name=_("На главной"))
+    active = models.BooleanField(verbose_name=_("На главной"))
 
     class Meta:
         verbose_name = _("Категория гарантий")
@@ -197,9 +191,9 @@ class OurGuarantees(models.Model):
         return self.title
 
     def clean(self) -> None:
-        if self.is_active:
+        if self.active:
             prev_active = OurGuarantees.objects.filter(
-                ~models.Q(pk=self.pk), is_active=True, is_big=False
+                ~models.Q(pk=self.pk), active=True, is_big=False
             )
             if prev_active >= 4:
                 raise ValidationError(
@@ -207,7 +201,7 @@ class OurGuarantees(models.Model):
                 )
             if self.is_big:
                 prev_main = OurGuarantees.objects.filter(
-                    ~models.Q(pk=self.pk), is_big=True, is_active=True
+                    ~models.Q(pk=self.pk), is_big=True, active=True
                 )
                 if prev_main:
                     raise ValidationError(

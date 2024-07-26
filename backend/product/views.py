@@ -11,13 +11,17 @@ from rest_framework.viewsets import GenericViewSet
 
 from product.filters import ProductFilter
 from product.models import (
+    FACP,
+    HDD,
     Camera,
     OurService,
     OurWorks,
+    PACSProduct,
     Product,
     ProductCategory,
     ReadySolution,
     Register,
+    Sensor,
 )
 from product.serializers import (
     CameraSerializer,
@@ -119,7 +123,9 @@ class ReadySolutionsListView(ListModelMixin, GenericViewSet):
 @api_view(["GET"])
 def api_view_test(request: Request) -> Response:
     instances = Product.objects.all()
-    queryset: list[Camera | Register] = instances.get_real_instances()
+    queryset: list[Camera | Register | HDD | FACP | Sensor | PACSProduct] = (
+        instances.get_real_instances()
+    )
     for instance in queryset:
         if instance.article is None:
             continue
