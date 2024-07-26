@@ -271,11 +271,12 @@ class BlockOption(models.Model):
     choices = models.CharField(
         _("Выбор"), blank=True, null=True, help_text=_("Перечислите варианты через ';'")
     )
-    product = models.CharField(
-        _("Продукт для фильтрации"),
+    product = models.ForeignKey(
+        ProductCategory,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Категория продукта для фильтрации"),
         blank=True,
         null=True,
-        help_text=_("Название категории"),
     )
     filters = models.TextField(
         _("Фильтры для товара"),
@@ -343,9 +344,6 @@ class BlockOption(models.Model):
                     _("Опция, от которой зависим, должна быть из текущего блока.")
                 )
         if self.product is not None:
-            category = ProductCategory.objects.filter(title=self.product)
-            if category.count() == 0:
-                raise ValidationError(_("Такой категории товаров не существует."))
             products = Product.objects.filter(
                 category__title=self.product
             ).get_real_instances()

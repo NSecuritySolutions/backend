@@ -1,13 +1,13 @@
 import requests
 from celery import shared_task
 
-from product.models import FACP, HDD, Camera, Product, Register, Sensor
+from product.models import FACP, Camera, OtherProduct, Product, Register, Sensor
 
 
 @shared_task
 def update_prices() -> bool:
     instances = Product.objects.all()
-    queryset: list[Camera | Register | HDD | FACP | Sensor] = (
+    queryset: list[Camera | Register | OtherProduct | FACP | Sensor] = (
         instances.get_real_instances()
     )
     for instance in queryset:

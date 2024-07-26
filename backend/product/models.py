@@ -265,28 +265,6 @@ class Register(Product):
         return self.model
 
 
-class HDD(Product):
-    """
-    Модель жесткого диска.
-
-    Атрибуты:
-                article (str): Артикул товара.
-        model (str): Модель товара.
-        image (ImageField): Изображение товара.
-        description (str): Описание товара.
-        manufacturer (ForeignKey): Производитель товара.
-        category (ForeignKey): Категория товара.
-        price (int): Цена товара.
-    """
-
-    class Meta:
-        verbose_name = "HDD"
-        verbose_name_plural = "HDD"
-
-    def __str__(self) -> str:
-        return f"{self.model}"
-
-
 class FACP(Product):
     """
     Модель ППКОП (прибор приемно-контрольный охранно-пожарный).
@@ -363,12 +341,12 @@ class Sensor(Product):
         return f"{self.model}"
 
 
-class PACSProduct(Product):
+class OtherProduct(Product):
     """
-    Модель товара СКУД (система контроля и управления доступом).
+    Модель остального товара.
 
     Атрибуты:
-                article (str): Артикул товара.
+        article (str): Артикул товара.
         model (str): Модель товара.
         image (ImageField): Изображение товара.
         description (str): Описание товара.
@@ -378,8 +356,8 @@ class PACSProduct(Product):
     """
 
     class Meta:
-        verbose_name = "Товар СКУД"
-        verbose_name_plural = "Товары СКУД"
+        verbose_name = "Остальной товар"
+        verbose_name_plural = "Остальные товары"
 
     def __str__(self) -> str:
         return f"{self.model}"

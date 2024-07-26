@@ -67,6 +67,7 @@ class FormulaSerializer(serializers.ModelSerializer):
 class OptionSerializer(serializers.ModelSerializer):
     """Сериализатор для модели опции блока калькулятора."""
 
+    product = serializers.CharField(source="title")
     dependencies = serializers.SerializerMethodField()
 
     class Meta:

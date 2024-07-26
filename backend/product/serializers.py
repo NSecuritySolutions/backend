@@ -4,13 +4,12 @@ from calculator.serializers import PriceSerializer
 from main.utils import ParagraphsField
 from product.models import (
     FACP,
-    HDD,
     Camera,
     ImageWorks,
     Manufacturer,
+    OtherProduct,
     OurService,
     OurWorks,
-    PACSProduct,
     Product,
     ProductCategory,
     ReadySolution,
@@ -79,15 +78,15 @@ class CameraSerializer(serializers.ModelSerializer):
         exclude = ("polymorphic_ctype",)
 
 
-class HDDSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели HDD."""
+class OtherProductSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели остального товара."""
 
     prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
-        model = HDD
+        model = OtherProduct
         exclude = ("polymorphic_ctype",)
 
 
@@ -115,18 +114,6 @@ class SensorSerializer(serializers.ModelSerializer):
         exclude = ("polymorphic_ctype",)
 
 
-class PACSProductSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели PACSProduct."""
-
-    prices_in_price_lists = PriceSerializer(many=True)
-    category = CategorySerializer()
-    manufacturer = ManufacturerSerializer()
-
-    class Meta:
-        model = PACSProduct
-        exclude = ("polymorphic_ctype",)
-
-
 class ProductListSerializer(serializers.ModelSerializer):
     """Сериализатор для моделей унаследованных от Product."""
 
@@ -140,14 +127,12 @@ class ProductListSerializer(serializers.ModelSerializer):
             return CameraSerializer(instance, context={"request": request}).data
         elif isinstance(instance, Register):
             return RegisterSerializer(instance, context={"request": request}).data
-        elif isinstance(instance, HDD):
-            return HDDSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, OtherProduct):
+            return OtherProductSerializer(instance, context={"request": request}).data
         elif isinstance(instance, FACP):
             return FACPSerializer(instance, context={"request": request}).data
         elif isinstance(instance, Sensor):
             return SensorSerializer(instance, context={"request": request}).data
-        elif isinstance(instance, PACSProduct):
-            return PACSProductSerializer(instance, context={"request": request}).data
         return None
 
 

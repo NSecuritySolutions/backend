@@ -12,11 +12,10 @@ from rest_framework.viewsets import GenericViewSet
 from product.filters import ProductFilter
 from product.models import (
     FACP,
-    HDD,
     Camera,
+    OtherProduct,
     OurService,
     OurWorks,
-    PACSProduct,
     Product,
     ProductCategory,
     ReadySolution,
@@ -27,10 +26,9 @@ from product.serializers import (
     CameraSerializer,
     CategorySerializer,
     FACPSerializer,
-    HDDSerializer,
+    OtherProductSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
-    PACSProductSerializer,
     ProductListSerializer,
     ReadySolutionsListSerializer,
     RegisterSerializer,
@@ -45,10 +43,9 @@ from product.serializers import (
         serializers=[
             CameraSerializer,
             RegisterSerializer,
-            HDDSerializer,
             FACPSerializer,
             SensorSerializer,
-            PACSProductSerializer,
+            OtherProductSerializer,
         ],
         resource_type_field_name="model",
     ),
@@ -123,7 +120,7 @@ class ReadySolutionsListView(ListModelMixin, GenericViewSet):
 @api_view(["GET"])
 def api_view_test(request: Request) -> Response:
     instances = Product.objects.all()
-    queryset: list[Camera | Register | HDD | FACP | Sensor | PACSProduct] = (
+    queryset: list[Camera | Register | FACP | Sensor | OtherProduct] = (
         instances.get_real_instances()
     )
     for instance in queryset:
