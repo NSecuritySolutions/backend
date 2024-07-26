@@ -82,6 +82,14 @@ class Price(models.Model):
         validators=[validate_latin_underscore],
     )
     price = models.IntegerField(_("Цена"), validators=[MinValueValidator(0)])
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_("Связать с ценой товара"),
+        related_name="prices_in_price_lists",
+    )
     is_show = models.BooleanField(
         _("Показывать клиенту"), help_text=_("Отображать ли эту цену в прайс листе")
     )
@@ -92,6 +100,11 @@ class Price(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args, **kwargs) -> None:
+        if self.product:
+            self.price = self.product.price
+        return super().save(*args, **kwargs)
 
 
 class Formula(models.Model):
@@ -289,6 +302,13 @@ class BlockOption(models.Model):
         related_name="dependent",
     )
     depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
+    price = models.ForeignKey(
+        Price,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_("Связать с ценой из прайс листа"),
+    )
 
     class Meta:
         ordering = ("position",)
@@ -307,7 +327,17 @@ class BlockOption(models.Model):
         #     raise ValidationError(
         #         _("Позиция не должна превышать кол-во опций у блока.")
         #     )
+        if self.price and self.product:
+            raise ValidationError(
+                _(
+                    "Нельзя связать с категорией товара и ценой из прайс листа одновременно."
+                )
+            )
         if self.depends_on is not None:
+            if self.depends_on.pk == self.pk:
+                raise ValidationError(
+                    _("Нельзя сделать опцию зависимой от самой себя.")
+                )
             if self.depends_on.block != self.block:
                 raise ValidationError(
                     _("Опция, от которой зависим, должна быть из текущего блока.")

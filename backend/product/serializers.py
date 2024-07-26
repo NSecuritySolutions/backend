@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from calculator.serializers import PriceSerializer
 from main.utils import ParagraphsField
 from product.models import (
     FACP,
@@ -57,6 +58,7 @@ class OurServiceListSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Register."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -68,6 +70,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CameraSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Camera."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -79,6 +82,7 @@ class CameraSerializer(serializers.ModelSerializer):
 class HDDSerializer(serializers.ModelSerializer):
     """Сериализатор для модели HDD."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -90,6 +94,7 @@ class HDDSerializer(serializers.ModelSerializer):
 class FACPSerializer(serializers.ModelSerializer):
     """Сериализатор для модели FACP."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -101,6 +106,7 @@ class FACPSerializer(serializers.ModelSerializer):
 class SensorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Sensor."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -112,6 +118,7 @@ class SensorSerializer(serializers.ModelSerializer):
 class PACSProductSerializer(serializers.ModelSerializer):
     """Сериализатор для модели PACSProduct."""
 
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -147,7 +154,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 class SolutionToProductSerializer(serializers.ModelSerializer):
     """Сериализатор для промежуточной модели готовое решение - товары"""
 
-    product = Product
+    product = ProductListSerializer()
 
     class Meta:
         model = SolutionToProduct
