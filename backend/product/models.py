@@ -78,7 +78,7 @@ class Product(PolymorphicModel):
         verbose_name=_("Модель"), max_length=300, help_text=_("Название поля: model")
     )
     image = models.ImageField(verbose_name=_("Изображение"), upload_to="media/product")
-    description = models.CharField(verbose_name=_("Описание"), max_length=5000)
+    description = models.TextField(verbose_name=_("Описание"), max_length=5000)
     manufacturer = models.ForeignKey(
         Manufacturer,
         verbose_name=_("Производитель"),
