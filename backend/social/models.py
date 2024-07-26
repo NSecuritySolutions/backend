@@ -60,7 +60,7 @@ class Team(models.Model):
 
     Атрибуты:
         description (str): Описание команды.
-        is_active (bool): Флаг, указывающий на актуальность команды.
+        active (bool): Флаг, указывающий на актуальность команды.
     """
 
     description = models.TextField(_("Описание"), max_length=2000)
@@ -127,7 +127,7 @@ class SocialInfo(models.Model):
         address (str): Адрес компании.
         founded (DateField): Дата основания компании.
         projects_done (int): Количество завершенных проектов.
-        is_active (bool): Флаг актуальности информации.
+        active (bool): Флаг актуальности информации.
     """
 
     phone = PhoneNumberField(
@@ -175,7 +175,7 @@ class OurGuarantees(models.Model):
         icon (ImageField): Иконка гарантии.
         title (str): Название гарантии.
         is_big (bool): Флаг, указывающий на большую карточку.
-        is_active (bool): Флаг, указывающий на отображение на главной странице.
+        active (bool): Флаг, указывающий на отображение на главной странице.
     """
 
     icon = models.ImageField(verbose_name=_("Иконка"))

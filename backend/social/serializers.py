@@ -51,7 +51,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ("id", "description", "employees")
+        fields = ("id", "description", "employees", "active")
 
 
 class SocialInfoSerializer(serializers.ModelSerializer):
@@ -68,6 +68,7 @@ class SocialInfoSerializer(serializers.ModelSerializer):
             "address",
             "founded",
             "projects_done",
+            "active",
         )
 
 
@@ -86,4 +87,4 @@ class OurGuaranteeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OurGuarantees
-        fields = ("id", "icon", "title", "is_big", "is_active", "subguarantees")
+        fields = ("id", "icon", "title", "is_big", "active", "subguarantees")
