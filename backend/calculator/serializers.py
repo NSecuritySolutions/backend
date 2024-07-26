@@ -67,15 +67,21 @@ class FormulaSerializer(serializers.ModelSerializer):
 class OptionSerializer(serializers.ModelSerializer):
     """Сериализатор для модели опции блока калькулятора."""
 
-    product = serializers.CharField(source="title")
+    product = serializers.SerializerMethodField()
     dependencies = serializers.SerializerMethodField()
 
     class Meta:
         model = BlockOption
         fields = "__all__"
 
-    def get_dependencies(self, instance: BlockOption):
+    def get_dependencies(self, instance: BlockOption) -> bool:
         return instance.dependent.count() > 0
+
+    def get_product(self, instance: BlockOption) -> str | None:
+        if instance.product:
+            return instance.product.title
+        else:
+            return None
 
 
 class BlockSerializer(serializers.ModelSerializer):
