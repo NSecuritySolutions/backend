@@ -29,7 +29,7 @@ class CameraAdmin(PolymorphicChildModelAdmin):
 
 
 @admin.register(ReadySolution)
-class ReadySolutionAdmin(PolymorphicChildModelAdmin):
+class ReadySolutionAdmin(admin.ModelAdmin):
     base_model = ReadySolution
     inlines = (SolutionToProductInline,)
 

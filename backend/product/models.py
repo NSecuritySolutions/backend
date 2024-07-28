@@ -378,7 +378,7 @@ class ReadySolution(models.Model):
 
     title = models.CharField(verbose_name=_("Название"), max_length=300)
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/ready")
-    tooltip_text = models.TextField(verbose_name=_("Подсказка"), max_length=200)
+    tooltip_text = models.TextField(verbose_name=_("Подсказка"), max_length=1000)
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)
     price = models.IntegerField(
         verbose_name=_("Цена"), null=True, blank=True, validators=[MinValueValidator(0)]
@@ -387,7 +387,7 @@ class ReadySolution(models.Model):
 
     class Meta:
         verbose_name = _("Готовые решение")
-        verbose_name_plural = _("Готовые решение")
+        verbose_name_plural = _("Готовые решения")
 
     def __str__(self) -> str:
         return f"{self.title}"
