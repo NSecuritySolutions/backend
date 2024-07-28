@@ -21,6 +21,7 @@ from product.models import (
     ReadySolution,
     Register,
     Sensor,
+    Tag,
 )
 from product.serializers import (
     CameraSerializer,
@@ -33,6 +34,7 @@ from product.serializers import (
     ReadySolutionsListSerializer,
     RegisterSerializer,
     SensorSerializer,
+    TagSerializer,
 )
 
 
@@ -114,6 +116,14 @@ class ReadySolutionsListView(ListModelMixin, GenericViewSet):
 
     queryset = ReadySolution.objects.all()
     serializer_class = ReadySolutionsListSerializer
+
+
+@extend_schema(tags=["Готовые решения"])
+class TagListView(ListModelMixin, GenericViewSet):
+    """Список готовых решений."""
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
 
 
 @extend_schema(exclude=True)

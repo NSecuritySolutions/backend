@@ -17,6 +17,7 @@ from product.views import (
     OurWorksListView,
     ProductListView,
     ReadySolutionsListView,
+    TagListView,
     api_view_test,
 )
 from social.views import (
@@ -31,6 +32,7 @@ router_v1.register("price-list", PriceListView, basename="price-list")
 router_v1.register("calculator", CalculatorView, basename="calculator")
 router_v1.register("products", ProductListView, basename="product")
 router_v1.register("ready-solutions", ReadySolutionsListView, basename="ready")
+router_v1.register("solutions-tags", TagListView, basename="solution-tags")
 router_v1.register("our-services", OurServiceListView, basename="our-service")
 router_v1.register("our-works", OurWorksListView, basename="our-works")
 router_v1.register("questions", QuestionsListView, basename="questions")
