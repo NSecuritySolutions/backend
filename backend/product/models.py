@@ -265,12 +265,37 @@ class Register(Product):
         return self.model
 
 
+class HDD(Product):
+    """
+    Модель жёсткого диска.
+
+    Атрибуты:
+        article (str): Артикул товара.
+        model (str): Модель товара.
+        image (ImageField): Изображение товара.
+        description (str): Описание товара.
+        manufacturer (ForeignKey): Производитель товара.
+        category (ForeignKey): Категория товара.
+        price (int): Цена товара.
+        capacity (int): Ёмкость.
+    """
+
+    capacity = models.IntegerField(_("Ёмкость, tb"), validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = "Жёсткий диск"
+        verbose_name_plural = "Жёсткие диски"
+
+    def __str__(self) -> str:
+        return f"{self.model}"
+
+
 class FACP(Product):
     """
     Модель ППКОП (прибор приемно-контрольный охранно-пожарный).
 
     Атрибуты:
-                article (str): Артикул товара.
+        article (str): Артикул товара.
         model (str): Модель товара.
         image (ImageField): Изображение товара.
         description (str): Описание товара.

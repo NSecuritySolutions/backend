@@ -245,6 +245,9 @@ class BlockOption(models.Model):
         filters (str): Фильтры для товара.
         depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
         depends_on_value (str): Значение, от которого зависит текущая опция.
+        price (ForeignKey): Ссылка на цену.
+        block_amount_undependent (bool): Флаг независимости кол-ва товара для опции от кол-ва в самом блоке.
+        amount_depend (str): Название переменной в которой содержится кол-во для товара.
     """
 
     class OptionTypes(models.TextChoices):
@@ -310,6 +313,15 @@ class BlockOption(models.Model):
         blank=True,
         help_text=_("Связать с ценой из прайс листа"),
     )
+    block_amount_undependent = models.BooleanField(
+        _("Не зависит от кол-ва в самом блоке"), default=False
+    )
+    amount_depend = models.CharField(
+        _("Зависит от переменной"),
+        blank=True,
+        null=True,
+        help_text=_("Название переменной другой опции из этого блока"),
+    )
 
     class Meta:
         ordering = ("position",)
@@ -328,6 +340,18 @@ class BlockOption(models.Model):
         #     raise ValidationError(
         #         _("Позиция не должна превышать кол-во опций у блока.")
         #     )
+        if self.block_amount_undependent and self.amount_depend:
+            option = BlockOption.objects.filter(
+                block=self.block, name=self.amount_depend
+            ).first()
+            if option is None:
+                raise ValidationError(
+                    _("В блоке нет опции с данным именем переменной.")
+                )
+            if option.option_type not in ("number", "counter"):
+                raise ValidationError(
+                    _("Опция с данным именем переменной не содержит число.")
+                )
         if self.price and self.product:
             raise ValidationError(
                 _(

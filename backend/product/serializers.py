@@ -4,6 +4,7 @@ from calculator.serializers import PriceSerializer
 from main.utils import ParagraphsField
 from product.models import (
     FACP,
+    HDD,
     Camera,
     ImageWorks,
     Manufacturer,
@@ -78,6 +79,18 @@ class CameraSerializer(serializers.ModelSerializer):
         exclude = ("polymorphic_ctype",)
 
 
+class HDDSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Camera."""
+
+    prices_in_price_lists = PriceSerializer(many=True)
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = HDD
+        exclude = ("polymorphic_ctype",)
+
+
 class OtherProductSerializer(serializers.ModelSerializer):
     """Сериализатор для модели остального товара."""
 
@@ -133,6 +146,8 @@ class ProductListSerializer(serializers.ModelSerializer):
             return FACPSerializer(instance, context={"request": request}).data
         elif isinstance(instance, Sensor):
             return SensorSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, HDD):
+            return HDDSerializer(instance, context={"request": request}).data
         return None
 
 

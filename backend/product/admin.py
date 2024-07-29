@@ -3,6 +3,7 @@ from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModel
 
 from product.models import (
     FACP,
+    HDD,
     Camera,
     ImageWorks,
     Manufacturer,
@@ -42,7 +43,7 @@ class RegisterAdmin(PolymorphicChildModelAdmin):
 @admin.register(Product)
 class ProductAdmin(PolymorphicParentModelAdmin):
     base_model = Product
-    child_models = (Camera, Register, FACP, Sensor, OtherProduct)
+    child_models = (Camera, Register, FACP, Sensor, OtherProduct, HDD)
 
 
 admin.site.register(OurService)
@@ -54,3 +55,4 @@ admin.site.register(Tag)
 admin.site.register(FACP)
 admin.site.register(Sensor)
 admin.site.register(OtherProduct)
+admin.site.register(HDD)
