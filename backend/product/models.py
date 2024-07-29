@@ -280,7 +280,11 @@ class HDD(Product):
         capacity (int): Ёмкость.
     """
 
-    capacity = models.IntegerField(_("Ёмкость, tb"), validators=[MinValueValidator(1)])
+    capacity = models.IntegerField(
+        _("Ёмкость, tb"),
+        validators=[MinValueValidator(1)],
+        help_text=_("Название поля: capacity"),
+    )
 
     class Meta:
         verbose_name = "Жёсткий диск"
