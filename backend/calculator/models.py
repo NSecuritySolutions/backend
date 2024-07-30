@@ -274,10 +274,19 @@ class BlockOption(models.Model):
     choices = models.CharField(
         _("Выбор"), blank=True, null=True, help_text=_("Перечислите варианты через ';'")
     )
+    depends_on = models.ForeignKey(
+        "BlockOption",
+        on_delete=models.SET_NULL,
+        verbose_name=_("Зависит от опции"),
+        blank=True,
+        null=True,
+        related_name="dependent",
+    )
+    depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
     product = models.ForeignKey(
         ProductCategory,
         on_delete=models.SET_NULL,
-        verbose_name=_("Категория продукта для фильтрации"),
+        verbose_name=_("Категория товара для фильтрации"),
         blank=True,
         null=True,
     )
@@ -297,15 +306,17 @@ class BlockOption(models.Model):
             "Пример: type == HD, price <= 1000"
         ),
     )
-    depends_on = models.ForeignKey(
-        "BlockOption",
-        on_delete=models.SET_NULL,
-        verbose_name=_("Зависит от опции"),
+    block_amount_undependent = models.BooleanField(
+        _("Кол-во товара не зависит от кол-ва в самом блоке"),
+        default=False,
+        help_text=_("Не будет учитываться если нет связи с категорией продукции"),
+    )
+    amount_depend = models.CharField(
+        _("Кол-во товара зависит от переменной"),
         blank=True,
         null=True,
-        related_name="dependent",
+        help_text=_("Название переменной другой опции из этого блока"),
     )
-    depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
     price = models.ForeignKey(
         Price,
         on_delete=models.SET_NULL,
@@ -313,14 +324,18 @@ class BlockOption(models.Model):
         blank=True,
         help_text=_("Связать с ценой из прайс листа"),
     )
-    block_amount_undependent = models.BooleanField(
-        _("Не зависит от кол-ва в самом блоке"), default=False
+    variability_with_block_amount = models.BooleanField(
+        _("Изменяется вместе с кол-вом в блоке"),
+        default=False,
+        help_text=_("Нельзя использовать вместе с категорией продукции"),
     )
-    amount_depend = models.CharField(
-        _("Зависит от переменной"),
+    initial_value = models.IntegerField(
+        _("Начальное числовое значение"),
         blank=True,
         null=True,
-        help_text=_("Название переменной другой опции из этого блока"),
+        help_text=_(
+            "Можно оставить пустым для 1 (при условии, что выбрана изменяемость)"
+        ),
     )
 
     class Meta:
@@ -340,6 +355,17 @@ class BlockOption(models.Model):
         #     raise ValidationError(
         #         _("Позиция не должна превышать кол-во опций у блока.")
         #     )
+        if self.product and self.variability_with_block_amount:
+            raise ValidationError(
+                _("Нельзя назначить категорию товара и изменяемость одновременно.")
+            )
+        if self.variability_with_block_amount and self.option_type not in (
+            "counter",
+            "number",
+        ):
+            raise ValidationError(
+                _("Изменяемость работает только с числовыми опциями.")
+            )
         if self.block_amount_undependent and self.amount_depend:
             option = BlockOption.objects.filter(
                 block=self.block, name=self.amount_depend
@@ -350,7 +376,7 @@ class BlockOption(models.Model):
                 )
             if option.option_type not in ("number", "counter"):
                 raise ValidationError(
-                    _("Опция с данным именем переменной не содержит число.")
+                    _("Опция с данным именем переменной не является числовой опцией.")
                 )
         if self.price and self.product:
             raise ValidationError(
