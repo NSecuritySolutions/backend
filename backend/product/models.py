@@ -428,12 +428,18 @@ class SolutionToProduct(models.Model):
 
     Атрибуты:
         solution (ForeignKey): Ссылка на готовое решение.
+        text (str): Краткое описание товара.
+        is_link (bool): Флаг, указывающий, отображать ли текст как ссылку на товар.
         product (ForeignKey): Ссылка на товар.
         amount (int): Количество товара в решении.
     """
 
     solution = models.ForeignKey(
         ReadySolution, on_delete=models.CASCADE, related_name="equipment"
+    )
+    text = models.CharField(_("Текст"), max_length=200, help_text=_("Краткое описание"))
+    is_link = models.BooleanField(
+        _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount = models.IntegerField(_("Кол-во"), validators=[MinValueValidator(1)])
