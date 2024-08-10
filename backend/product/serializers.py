@@ -127,7 +127,7 @@ class SensorSerializer(serializers.ModelSerializer):
         exclude = ("polymorphic_ctype",)
 
 
-class ProductListSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     """Сериализатор для моделей унаследованных от Product."""
 
     class Meta:
@@ -154,7 +154,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 class SolutionToProductSerializer(serializers.ModelSerializer):
     """Сериализатор для промежуточной модели готовое решение - товары"""
 
-    product = ProductListSerializer()
+    product = ProductSerializer()
 
     class Meta:
         model = SolutionToProduct

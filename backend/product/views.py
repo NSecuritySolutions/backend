@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,7 +31,7 @@ from product.serializers import (
     OtherProductSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
-    ProductListSerializer,
+    ProductSerializer,
     ReadySolutionsListSerializer,
     RegisterSerializer,
     SensorSerializer,
@@ -54,11 +54,11 @@ from product.serializers import (
         resource_type_field_name="model",
     ),
 )
-class ProductListView(ListModelMixin, GenericViewSet):
+class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Список товаров."""
 
     queryset = Product.objects.all()
-    serializer_class = ProductListSerializer
+    serializer_class = ProductSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
 
@@ -92,7 +92,7 @@ class CategoryView(APIView):
         for category in categories:
             category_serializer = CategorySerializer(category)
             products = Product.objects.filter(category=category)
-            product_serializer = ProductListSerializer(products, many=True)
+            product_serializer = ProductSerializer(products, many=True)
 
             category_data.append(
                 {
