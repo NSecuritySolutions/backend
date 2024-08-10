@@ -158,7 +158,7 @@ class SolutionToProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SolutionToProduct
-        fields = ("id", "solution", "product", "amount")
+        fields = "__all__"
 
 
 class ReadySolutionsListSerializer(serializers.ModelSerializer):

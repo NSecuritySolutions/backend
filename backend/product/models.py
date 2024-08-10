@@ -431,6 +431,7 @@ class SolutionToProduct(models.Model):
         text (str): Краткое описание товара.
         is_link (bool): Флаг, указывающий, отображать ли текст как ссылку на товар.
         product (ForeignKey): Ссылка на товар.
+        calculator_block (ForeignKey): Ссылка на блок в калькуляторе.
         amount (int): Количество товара в решении.
     """
 
@@ -441,7 +442,12 @@ class SolutionToProduct(models.Model):
     is_link = models.BooleanField(
         _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
     )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    calculator_block = models.ForeignKey(
+        "calculator.CalculatorBlock", on_delete=models.SET_NULL, blank=True, null=True
+    )
     amount = models.IntegerField(_("Кол-во"), validators=[MinValueValidator(1)])
 
 
