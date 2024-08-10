@@ -161,7 +161,7 @@ class SolutionToProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ReadySolutionsListSerializer(serializers.ModelSerializer):
+class ReadySolutionsSerializer(serializers.ModelSerializer):
     """Сериализатор для модели готовых решений."""
 
     tags = TagSerializer(many=True)

@@ -32,7 +32,7 @@ from product.serializers import (
     OurServiceListSerializer,
     OurWorksListSerializer,
     ProductSerializer,
-    ReadySolutionsListSerializer,
+    ReadySolutionsSerializer,
     RegisterSerializer,
     SensorSerializer,
     TagSerializer,
@@ -113,11 +113,11 @@ class OurWorksListView(ListModelMixin, GenericViewSet):
 
 
 @extend_schema(tags=["Готовые решения"])
-class ReadySolutionsListView(ListModelMixin, GenericViewSet):
+class ReadySolutionsListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Список готовых решений."""
 
     queryset = ReadySolution.objects.all()
-    serializer_class = ReadySolutionsListSerializer
+    serializer_class = ReadySolutionsSerializer
 
 
 @extend_schema(tags=["Готовые решения"])
