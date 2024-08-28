@@ -1,37 +1,53 @@
-from rest_framework.decorators import APIView
-from rest_framework.response import Response
-from .serializers import ApplicationSerializer
-from .models import Application
-from rest_framework import status
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
+from rest_framework.viewsets import GenericViewSet
+
+from application.models import Application
+from application.serializers import (
+    ApplicationListSerializer,
+    ApplicationWithCalcSerializer,
+    ApplicationWithFileSerializer,
+    ApplicationWithSolutionCreateSerializer,
+    ApplicationWithSolutionSerializer,
+)
 
 
-class ApplicationView(APIView):
-    def get(self, request, id=None):
-        if id:
-            # Handle GET request for a specific application by ID
-            try:
-                application = Application.objects.get(id=id)
-                serializer = ApplicationSerializer(application)
-                return Response(serializer.data)
-            except Application.DoesNotExist:
-                return Response(
-                    {"status": "error", "message": "Application not found"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-        else:
-            # Handle GET request to retrieve the latest application data
-            latest_application = Application.objects.order_by("-id").first()
-            if latest_application:
-                serializer = ApplicationSerializer(latest_application)
-                return Response(serializer.data)
-            else:
-                return Response({"status": "error", "message": "No applications found"})
+@extend_schema(
+    tags=["Заявки"],
+    responses=PolymorphicProxySerializer(
+        component_name="Application",
+        serializers=[
+            ApplicationWithCalcSerializer,
+            ApplicationWithFileSerializer,
+            ApplicationWithSolutionSerializer,
+        ],
+        resource_type_field_name="model",
+    ),
+)
+class ApplicationListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Список заявок."""
 
-    def post(self, request, *args, **kwargs):
-        # Handle POST request to create a new application
-        serializer = ApplicationSerializer(data=request.data)
-        if serializer.is_valid():
-            application = serializer.save()
-            return Response({"status": "success", "id": application.id})
-        else:
-            return Response({"status": "error", "errors": serializer.errors})
+    queryset = Application.objects.all()
+    serializer_class = ApplicationListSerializer
+    http_method_names = ("get",)
+
+
+class ApplicationWithFileView(CreateModelMixin, GenericViewSet):
+    """Создание обычной заявки."""
+
+    serializer_class = ApplicationWithFileSerializer
+    http_method_names = ("post",)
+
+
+class ApplicationWithSolutionView(CreateModelMixin, GenericViewSet):
+    """Создание заявки с готовым решением."""
+
+    serializer_class = ApplicationWithSolutionCreateSerializer
+    http_method_names = ("post",)
+
+
+class ApplicationWithCalcView(CreateModelMixin, GenericViewSet):
+    """Создание заявки с калькулятором."""
+
+    serializer_class = ApplicationWithCalcSerializer
+    http_method_names = ("post",)

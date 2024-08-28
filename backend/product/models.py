@@ -111,7 +111,7 @@ class Camera(Product):
     Модель камеры.
 
     Атрибуты:
-                article (str): Артикул товара.
+        article (str): Артикул товара.
         model (str): Модель товара.
         image (ImageField): Изображение товара.
         description (str): Описание товара.

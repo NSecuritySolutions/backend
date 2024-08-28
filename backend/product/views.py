@@ -59,6 +59,7 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
 
@@ -69,6 +70,7 @@ class RegisterListView(ListModelMixin, GenericViewSet):
 
     queryset = Register.objects.all()
     serializer_class = RegisterSerializer
+    http_method_names = ("get",)
 
 
 @extend_schema(tags=["Наши услуги"])
@@ -77,6 +79,7 @@ class OurServiceListView(ListModelMixin, GenericViewSet):
 
     queryset = OurService.objects.all()
     serializer_class = OurServiceListSerializer
+    http_method_names = ("get",)
 
 
 @extend_schema(tags=["Категории"], exclude=True)
@@ -110,6 +113,7 @@ class OurWorksListView(ListModelMixin, GenericViewSet):
 
     queryset = OurWorks.objects.all()
     serializer_class = OurWorksListSerializer
+    http_method_names = ("get",)
 
 
 @extend_schema(tags=["Готовые решения"])
@@ -118,6 +122,7 @@ class ReadySolutionsListView(ListModelMixin, RetrieveModelMixin, GenericViewSet)
 
     queryset = ReadySolution.objects.all()
     serializer_class = ReadySolutionsSerializer
+    http_method_names = ("get",)
 
 
 @extend_schema(tags=["Готовые решения"])
@@ -126,6 +131,7 @@ class TagListView(ListModelMixin, GenericViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    http_method_names = ("get",)
 
 
 @extend_schema(exclude=True)

@@ -9,7 +9,12 @@ from drf_spectacular.views import (
 )
 from rest_framework import routers
 
-from application.views import ApplicationView
+from application.views import (
+    ApplicationListView,
+    ApplicationWithCalcView,
+    ApplicationWithFileView,
+    ApplicationWithSolutionView,
+)
 from calculator.views import CalculatorView, PriceListView
 from product.views import (
     CategoryView,
@@ -28,6 +33,18 @@ from social.views import (
 )
 
 router_v1 = routers.DefaultRouter()
+router_v1.register(
+    "calc-applications", ApplicationWithCalcView, basename="calc-applications"
+)
+router_v1.register(
+    "solution-applications",
+    ApplicationWithSolutionView,
+    basename="solution-applications",
+)
+router_v1.register(
+    "simple-applications", ApplicationWithFileView, basename="file-applications"
+)
+router_v1.register("applications", ApplicationListView, basename="applications")
 router_v1.register("price-list", PriceListView, basename="price-list")
 router_v1.register("calculator", CalculatorView, basename="calculator")
 router_v1.register("products", ProductListView, basename="product")
@@ -56,8 +73,8 @@ urlpatterns_api = [
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("application/", ApplicationView.as_view()),
-    path("application/<int:id>/", ApplicationView.as_view()),
+    # path("application/", ApplicationView.as_view()),
+    # path("application/<int:id>/", ApplicationView.as_view()),
     path("api/", include(urlpatterns_api)),
 ]
 

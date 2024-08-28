@@ -1,5 +1,19 @@
 from django.contrib import admin
-from .models import Application
+from polymorphic.admin import PolymorphicParentModelAdmin
 
-# Register your models here.
-admin.site.register(Application)
+from application.models import (
+    Application,
+    ApplicationWithCalculator,
+    ApplicationWithFile,
+    ApplicationWithSolution,
+)
+
+
+@admin.register(Application)
+class ApplicationAdmin(PolymorphicParentModelAdmin):
+    base_model = Application
+    child_models = (
+        ApplicationWithFile,
+        ApplicationWithSolution,
+        ApplicationWithCalculator,
+    )

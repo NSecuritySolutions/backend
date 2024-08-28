@@ -151,6 +151,22 @@ class ProductSerializer(serializers.ModelSerializer):
         return None
 
 
+class ProductIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ("id",)
+
+    def to_internal_value(self, data):
+        try:
+            obj = Product.objects.get(id=data["id"])
+            print(obj)
+            return obj.id
+        except Product.DoesNotExist:
+            raise serializers.ValidationError(
+                f"Product with ID {data['id']} does not exist."
+            )
+
+
 class SolutionToProductSerializer(serializers.ModelSerializer):
     """Сериализатор для промежуточной модели готовое решение - товары"""
 

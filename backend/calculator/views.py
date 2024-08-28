@@ -13,7 +13,7 @@ class PriceListView(ListModelMixin, GenericViewSet):
 
     queryset = PriceList.objects.all()
     serializer_class = PriceListSerializer
-    http_method_names = ("get", "post", "patch")
+    http_method_names = ("get",)
 
 
 @extend_schema(tags=["Калькулятор"])
@@ -22,5 +22,6 @@ class CalculatorView(ListModelMixin, GenericViewSet):
 
     queryset = Calculator.objects.all()
     serializer_class = CalculatorSerializer
+    http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("active",)
