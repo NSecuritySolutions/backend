@@ -211,6 +211,7 @@ class OurWorksListSerializer(serializers.ModelSerializer):
 
     images = ImageSerializer(many=True)
     description = ParagraphsField()
+    product = ParagraphsField()
     # product = ProductListSerializer(many=True)
 
     class Meta:
