@@ -108,8 +108,8 @@ class CategoryView(APIView):
 
 
 @extend_schema(tags=["Наши работы"])
-class OurWorksListView(ListModelMixin, GenericViewSet):
-    """Список наших работ."""
+class OurWorksListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Список наших работ или объект по id."""
 
     queryset = OurWorks.objects.all()
     serializer_class = OurWorksListSerializer
@@ -118,7 +118,7 @@ class OurWorksListView(ListModelMixin, GenericViewSet):
 
 @extend_schema(tags=["Готовые решения"])
 class ReadySolutionsListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
-    """Список готовых решений."""
+    """Список готовых решений или объект по id."""
 
     queryset = ReadySolution.objects.all()
     serializer_class = ReadySolutionsSerializer
