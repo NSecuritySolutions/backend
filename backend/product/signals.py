@@ -6,6 +6,6 @@ from product.models import Product
 
 @receiver(post_save, sender=Product)
 def update_pricelist_date(sender, instance: Product, **kwargs):
-    for price in instance.prices_in_price_lists:
+    for price in instance.prices_in_price_lists.all():
         price.price = instance.price
         price.save()
