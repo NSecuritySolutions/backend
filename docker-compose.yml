@@ -12,6 +12,7 @@ services:
     entrypoint: /code/backend_entrypoint.sh
     volumes:
       - ./backend:/code
+      - media:/code/media
     depends_on:
       - db
     env_file: .env
@@ -49,7 +50,6 @@ services:
   #     - db
 
   next:
-    restart: always
     image: natashasolntseva/security_frontend:latest
     env_file: .env
     depends_on:

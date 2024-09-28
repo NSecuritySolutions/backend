@@ -8,6 +8,8 @@ from calculator.models import (
     Price,
     PriceList,
     PriceListCategory,
+    ProductOption,
+    ValueOption,
 )
 
 
@@ -64,25 +66,47 @@ class FormulaSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OptionSerializer(serializers.ModelSerializer):
+class ProductOptionSerializer(serializers.ModelSerializer):
     """Сериализатор для модели опции блока калькулятора."""
 
-    price = PriceSerializer()
-    product = serializers.SerializerMethodField()
     dependencies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductOption
+        fields = "__all__"
+
+    def get_dependencies(self, instance: ProductOption) -> bool:
+        return instance.dependent.count() > 0
+
+
+class ValueOptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели опции со значениями."""
+
+    price = PriceSerializer()
+    dependencies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ValueOption
+        fields = "__all__"
+
+    def get_dependencies(self, instance: ValueOption) -> bool:
+        return instance.dependent.count() > 0
+
+
+class OptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели опции блока калькулятора."""
 
     class Meta:
         model = BlockOption
         fields = "__all__"
 
-    def get_dependencies(self, instance: BlockOption) -> bool:
-        return instance.dependent.count() > 0
-
-    def get_product(self, instance: BlockOption) -> str | None:
-        if instance.product:
-            return instance.product.title
-        else:
-            return None
+    def to_representation(self, instance):
+        request = self.context.get("request")
+        if isinstance(instance, ValueOption):
+            return ValueOptionSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, ProductOption):
+            return ProductOptionSerializer(instance, context={"request": request}).data
+        return None
 
 
 class BlockSerializer(serializers.ModelSerializer):

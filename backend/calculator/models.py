@@ -1,10 +1,12 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from polymorphic.models import PolymorphicModel
 
 from calculator.validators import validate_latin_underscore
-from product.models import Product, ProductCategory
+from product.models import Product
 
 
 class PriceList(models.Model):
@@ -15,14 +17,19 @@ class PriceList(models.Model):
         date (DateTimeField): Дата создания прайс листа.
     """
 
-    date = models.DateTimeField(_("Дата последнего обновления"), auto_now_add=True)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Прайс лист")
         verbose_name_plural = _("Прайс листы")
 
     def __str__(self):
-        return f"{self.pk}. Updated at {self.date}"
+        return f"{self.pk}. Updated at {self.updated_at}"
 
 
 class PriceListCategory(models.Model):
@@ -41,6 +48,12 @@ class PriceListCategory(models.Model):
         null=True,
         blank=True,
         related_name="categories",
+    )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
     )
 
     class Meta:
@@ -93,6 +106,12 @@ class Price(models.Model):
     is_show = models.BooleanField(
         _("Показывать клиенту"), help_text=_("Отображать ли эту цену в прайс листе")
     )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Цена")
@@ -123,6 +142,12 @@ class Formula(models.Model):
             "Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
         ),
     )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Формула")
@@ -145,6 +170,12 @@ class Calculator(models.Model):
         PriceList, on_delete=models.SET_NULL, blank=True, null=True
     )
     active = models.BooleanField("Текущий калькулятор", default=False)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Калькулятор")
@@ -204,6 +235,12 @@ class CalculatorBlock(models.Model):
             "(иначе это будет выбор между 'да' и 'нет')"
         ),
     )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         ordering = ("position",)
@@ -229,7 +266,7 @@ class CalculatorBlock(models.Model):
 #     super().save(*args, **kwargs)
 
 
-class BlockOption(models.Model):
+class BlockOption(PolymorphicModel):
     """
     Модель опции для блока калькулятора.
 
@@ -266,11 +303,6 @@ class BlockOption(models.Model):
     title = models.CharField(_("Название"), max_length=40)
     description = models.CharField(_("Описание"))
     option_type = models.CharField(_("Тип опции"), choices=OptionTypes.choices)
-    name = models.CharField(
-        _("Имя"),
-        max_length=40,
-        help_text=_("Имя переменной для формулы или имя поля модели"),
-    )
     choices = models.CharField(
         _("Выбор"), blank=True, null=True, help_text=_("Перечислите варианты через ';'")
     )
@@ -283,12 +315,51 @@ class BlockOption(models.Model):
         related_name="dependent",
     )
     depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
+
+    class Meta:
+        ordering = ("position",)
+        verbose_name = _("Опция блока")
+        verbose_name_plural = _("Опции блока")
+
+    def __str__(self) -> str:
+        return f"{self.block.calculator}-{self.block.title}. {self.title}"
+
+    def clean(self) -> None:
+        if self.depends_on is not None:
+            if self.depends_on.pk == self.pk:
+                raise ValidationError(
+                    _("Нельзя сделать опцию зависимой от самой себя.")
+                )
+            if self.depends_on.block != self.block:
+                raise ValidationError(
+                    _("Опция, от которой зависим, должна быть из текущего блока.")
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(*args, **kwargs)
+
+
+class ProductOption(BlockOption):
+    name = models.CharField(
+        _("Имя"),
+        max_length=40,
+        help_text=_("Имя поля модели"),
+    )
     product = models.ForeignKey(
-        ProductCategory,
+        # ProductCategory,
+        ContentType,
         on_delete=models.SET_NULL,
         verbose_name=_("Категория товара для фильтрации"),
         blank=True,
         null=True,
+        related_name="product_options",
     )
     filters = models.TextField(
         _("Фильтры для товара"),
@@ -317,6 +388,60 @@ class BlockOption(models.Model):
         null=True,
         help_text=_("Название переменной другой опции из этого блока"),
     )
+
+    class Meta:
+        verbose_name = "Опция с товаром"
+        verbose_name_plural = "Опции с товарами"
+
+    def clean(self) -> None:
+        super().clean()
+        # TODO нужно ли???
+        # count = BlockOption.objects.filter(block=self.block).count()
+        # if self.pk is None:
+        #     count += 1
+        # if self.position > count:
+        #     raise ValidationError(
+        #         _("Позиция не должна превышать кол-во опций у блока.")
+        #     )
+        if self.block_amount_undependent and self.amount_depend:
+            option = BlockOption.objects.filter(
+                block=self.block, name=self.amount_depend
+            ).first()
+            if option is None:
+                raise ValidationError(
+                    _("В блоке нет опции с данным именем переменной.")
+                )
+            if option.option_type not in ("number", "counter"):
+                raise ValidationError(
+                    _("Опция с данным именем переменной не является числовой опцией.")
+                )
+        if self.product is not None:
+            products = Product.objects.filter(
+                polymorphic_ctype=self.product
+            ).get_real_instances()
+            found = False
+            for product in products:
+                if self.name in map(
+                    lambda x: x.attname, product._meta._get_fields(reverse=False)
+                ):
+                    found = True
+                    break
+            if not found:
+                raise ValidationError(
+                    _("Такого поля у данной категории моделей не существует")
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+
+class ValueOption(BlockOption):
+    name = models.CharField(
+        _("Имя"),
+        max_length=40,
+        help_text=_("Имя переменной для формулы"),
+    )
     price = models.ForeignKey(
         Price,
         on_delete=models.SET_NULL,
@@ -339,26 +464,11 @@ class BlockOption(models.Model):
     )
 
     class Meta:
-        ordering = ("position",)
-        verbose_name = _("Опция для блока")
-        verbose_name_plural = _("Опции блока")
-
-    def __str__(self) -> str:
-        return f"{self.block.calculator}-{self.block.title}. {self.title}"
+        verbose_name = "Опция со значением"
+        verbose_name_plural = "Опции со значениями"
 
     def clean(self) -> None:
-        # TODO нужно ли???
-        # count = BlockOption.objects.filter(block=self.block).count()
-        # if self.pk is None:
-        #     count += 1
-        # if self.position > count:
-        #     raise ValidationError(
-        #         _("Позиция не должна превышать кол-во опций у блока.")
-        #     )
-        if self.product and self.variability_with_block_amount:
-            raise ValidationError(
-                _("Нельзя назначить категорию товара и изменяемость одновременно.")
-            )
+        super().clean()
         if self.variability_with_block_amount and self.option_type not in (
             "counter",
             "number",
@@ -366,49 +476,198 @@ class BlockOption(models.Model):
             raise ValidationError(
                 _("Изменяемость работает только с числовыми опциями.")
             )
-        if self.block_amount_undependent and self.amount_depend:
-            option = BlockOption.objects.filter(
-                block=self.block, name=self.amount_depend
-            ).first()
-            if option is None:
-                raise ValidationError(
-                    _("В блоке нет опции с данным именем переменной.")
-                )
-            if option.option_type not in ("number", "counter"):
-                raise ValidationError(
-                    _("Опция с данным именем переменной не является числовой опцией.")
-                )
-        if self.price and self.product:
-            raise ValidationError(
-                _(
-                    "Нельзя связать с категорией товара и ценой из прайс листа одновременно."
-                )
-            )
-        if self.depends_on is not None:
-            if self.depends_on.pk == self.pk:
-                raise ValidationError(
-                    _("Нельзя сделать опцию зависимой от самой себя.")
-                )
-            if self.depends_on.block != self.block:
-                raise ValidationError(
-                    _("Опция, от которой зависим, должна быть из текущего блока.")
-                )
-        if self.product is not None:
-            products = Product.objects.filter(
-                category__title=self.product
-            ).get_real_instances()
-            found = False
-            for product in products:
-                if self.name in map(
-                    lambda x: x.attname, product._meta._get_fields(reverse=False)
-                ):
-                    found = True
-                    break
-            if not found:
-                raise ValidationError(
-                    _("Такого поля у данной категории моделей не существует")
-                )
 
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+
+# class BlockOption(models.Model):
+#     """
+#     Модель опции для блока калькулятора.
+
+#     Атрибуты:
+#         block (ForeignKey): Ссылка на блок калькулятора.
+#         position (int): Позиция опции в списке.
+#         title (str): Название опции.
+#         description (str): Описание опции.
+#         option_type (str): Тип опции (число, выбор, подтверждение, счетчик).
+#         name (str): Имя переменной для формулы или имя поля модели.
+#         choices (str): Варианты выбора для опции.
+#         product (str): Название категории для фильтрации.
+#         filters (str): Фильтры для товара.
+#         depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
+#         depends_on_value (str): Значение, от которого зависит текущая опция.
+#         price (ForeignKey): Ссылка на цену.
+#         block_amount_undependent (bool): Флаг независимости кол-ва товара для опции от кол-ва в самом блоке.
+#         amount_depend (str): Название переменной в которой содержится кол-во для товара.
+#     """
+
+#     class OptionTypes(models.TextChoices):
+#         NUMBER = ("number", _("Число"))
+#         RADIO = ("radio", _("Выбор"))
+#         CHECKBOX = ("checkbox", _("Подтверждение"))
+#         COUNTER = ("counter", _("Счетчик"))
+
+#     block = models.ForeignKey(
+#         CalculatorBlock, on_delete=models.CASCADE, related_name="options"
+#     )
+#     position = models.IntegerField(
+#         _("Позиция в списке"),
+#         validators=[MinValueValidator(1)],
+#     )
+#     title = models.CharField(_("Название"), max_length=40)
+#     description = models.CharField(_("Описание"))
+#     option_type = models.CharField(_("Тип опции"), choices=OptionTypes.choices)
+#     name = models.CharField(
+#         _("Имя"),
+#         max_length=40,
+#         help_text=_("Имя переменной для формулы или имя поля модели"),
+#     )
+#     choices = models.CharField(
+#         _("Выбор"), blank=True, null=True, help_text=_("Перечислите варианты через ';'")
+#     )
+#     depends_on = models.ForeignKey(
+#         "BlockOption",
+#         on_delete=models.SET_NULL,
+#         verbose_name=_("Зависит от опции"),
+#         blank=True,
+#         null=True,
+#         related_name="dependent",
+#     )
+#     depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
+#     product = models.ForeignKey(
+#         ProductCategory,
+#         on_delete=models.SET_NULL,
+#         verbose_name=_("Категория товара для фильтрации"),
+#         blank=True,
+#         null=True,
+#     )
+#     filters = models.TextField(
+#         _("Фильтры для товара"),
+#         blank=True,
+#         null=True,
+#         help_text=_(
+#             "Фильтры перечисленые через запятую.\n"
+#             "Доступные операторы:\n"
+#             "1. Равенство: ==.\n"
+#             "2. Неравенство: !=.\n"
+#             "3. Больше: >.\n"
+#             "4. Меньше: <.\n"
+#             "5. Больше или равно: >=.\n"
+#             "6. Меньше или равно: <=.\n"
+#             "Пример: type == HD, price <= 1000"
+#         ),
+#     )
+#     block_amount_undependent = models.BooleanField(
+#         _("Кол-во товара не зависит от кол-ва в самом блоке"),
+#         default=False,
+#         help_text=_("Не будет учитываться если нет связи с категорией продукции"),
+#     )
+#     amount_depend = models.CharField(
+#         _("Кол-во товара зависит от переменной"),
+#         blank=True,
+#         null=True,
+#         help_text=_("Название переменной другой опции из этого блока"),
+#     )
+#     price = models.ForeignKey(
+#         Price,
+#         on_delete=models.SET_NULL,
+#         null=True,
+#         blank=True,
+#         help_text=_("Связать с ценой из прайс листа"),
+#     )
+#     variability_with_block_amount = models.BooleanField(
+#         _("Изменяется вместе с кол-вом в блоке"),
+#         default=False,
+#         help_text=_("Нельзя использовать вместе с категорией продукции"),
+#     )
+#     initial_value = models.IntegerField(
+#         _("Начальное числовое значение"),
+#         blank=True,
+#         null=True,
+#         help_text=_(
+#             "Можно оставить пустым для 1 (при условии, что выбрана изменяемость)"
+#         ),
+#     )
+#     created_at = models.DateTimeField(
+#         _("Дата создания"), auto_now_add=True, blank=True, null=True
+#     )
+#     updated_at = models.DateTimeField(
+#         _("Дата обновления"), auto_now=True, blank=True, null=True
+#     )
+
+#     class Meta:
+#         ordering = ("position",)
+#         verbose_name = _("Опция для блока")
+#         verbose_name_plural = _("Опции блока")
+
+#     def __str__(self) -> str:
+#         return f"{self.block.calculator}-{self.block.title}. {self.title}"
+
+#     def clean(self) -> None:
+#         # TODO нужно ли???
+#         # count = BlockOption.objects.filter(block=self.block).count()
+#         # if self.pk is None:
+#         #     count += 1
+#         # if self.position > count:
+#         #     raise ValidationError(
+#         #         _("Позиция не должна превышать кол-во опций у блока.")
+#         #     )
+#         if self.product and self.variability_with_block_amount:
+#             raise ValidationError(
+#                 _("Нельзя назначить категорию товара и изменяемость одновременно.")
+#             )
+#         if self.variability_with_block_amount and self.option_type not in (
+#             "counter",
+#             "number",
+#         ):
+#             raise ValidationError(
+#                 _("Изменяемость работает только с числовыми опциями.")
+#             )
+#         if self.block_amount_undependent and self.amount_depend:
+#             option = BlockOption.objects.filter(
+#                 block=self.block, name=self.amount_depend
+#             ).first()
+#             if option is None:
+#                 raise ValidationError(
+#                     _("В блоке нет опции с данным именем переменной.")
+#                 )
+#             if option.option_type not in ("number", "counter"):
+#                 raise ValidationError(
+#                     _("Опция с данным именем переменной не является числовой опцией.")
+#                 )
+#         if self.price and self.product:
+#             raise ValidationError(
+#                 _(
+#                     "Нельзя связать с категорией товара и ценой из прайс листа одновременно."
+#                 )
+#             )
+#         if self.depends_on is not None:
+#             if self.depends_on.pk == self.pk:
+#                 raise ValidationError(
+#                     _("Нельзя сделать опцию зависимой от самой себя.")
+#                 )
+#             if self.depends_on.block != self.block:
+#                 raise ValidationError(
+#                     _("Опция, от которой зависим, должна быть из текущего блока.")
+#                 )
+#         if self.product is not None:
+#             products = Product.objects.filter(
+#                 category__title=self.product
+#             ).get_real_instances()
+#             found = False
+#             for product in products:
+#                 if self.name in map(
+#                     lambda x: x.attname, product._meta._get_fields(reverse=False)
+#                 ):
+#                     found = True
+#                     break
+#             if not found:
+#                 raise ValidationError(
+#                     _("Такого поля у данной категории моделей не существует")
+#                 )
+
+#     def save(self, *args, **kwargs):
+#         self.clean()
+#         super().save(*args, **kwargs)

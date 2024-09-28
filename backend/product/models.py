@@ -14,6 +14,12 @@ class ProductCategory(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Категория продукции")
@@ -32,6 +38,12 @@ class Tag(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Тэг")
@@ -50,6 +62,12 @@ class Manufacturer(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Производитель")
@@ -96,6 +114,12 @@ class Product(PolymorphicModel):
         default=0,
         help_text=_("Название поля: price"),
         validators=[MinValueValidator(0)],
+    )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
     )
 
     class Meta:
@@ -413,6 +437,12 @@ class ReadySolution(models.Model):
         verbose_name=_("Цена"), null=True, blank=True, validators=[MinValueValidator(0)]
     )
     tags = models.ManyToManyField(Tag, verbose_name=_("Тэги"))
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Готовые решение")
@@ -451,6 +481,12 @@ class SolutionToProduct(models.Model):
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
     )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
 
 class OurService(models.Model):
@@ -469,6 +505,12 @@ class OurService(models.Model):
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)
     action = models.CharField(
         verbose_name=_("Текст кнопки"), max_length=20, default="Подробнее"
+    )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
     )
 
     class Meta:
@@ -494,6 +536,12 @@ class ImageWorks(models.Model):
     )
     image = models.ImageField(verbose_name=_("Фотографии"), upload_to="media/our_works")
     is_main = models.BooleanField(_("Картинка на главной"))
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Фотографии")
@@ -549,6 +597,12 @@ class OurWorks(models.Model):
         verbose_name=_("Площадь работ"), validators=[MinValueValidator(0)]
     )
     is_active = models.BooleanField(verbose_name=_("На главной"), default=False)
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Примеры работ")

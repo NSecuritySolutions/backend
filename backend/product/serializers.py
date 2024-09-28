@@ -64,7 +64,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Register
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class CameraSerializer(serializers.ModelSerializer):
@@ -76,7 +76,7 @@ class CameraSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Camera
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class HDDSerializer(serializers.ModelSerializer):
@@ -88,7 +88,7 @@ class HDDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HDD
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class OtherProductSerializer(serializers.ModelSerializer):
@@ -100,7 +100,7 @@ class OtherProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OtherProduct
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class FACPSerializer(serializers.ModelSerializer):
@@ -112,7 +112,7 @@ class FACPSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FACP
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class SensorSerializer(serializers.ModelSerializer):
@@ -124,7 +124,7 @@ class SensorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sensor
-        exclude = ("polymorphic_ctype",)
+        fields = "__all__"
 
 
 class ProductSerializer(serializers.ModelSerializer):
