@@ -276,15 +276,9 @@ class BlockOption(PolymorphicModel):
         title (str): Название опции.
         description (str): Описание опции.
         option_type (str): Тип опции (число, выбор, подтверждение, счетчик).
-        name (str): Имя переменной для формулы или имя поля модели.
         choices (str): Варианты выбора для опции.
-        product (str): Название категории для фильтрации.
-        filters (str): Фильтры для товара.
         depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
         depends_on_value (str): Значение, от которого зависит текущая опция.
-        price (ForeignKey): Ссылка на цену.
-        block_amount_undependent (bool): Флаг независимости кол-ва товара для опции от кол-ва в самом блоке.
-        amount_depend (str): Название переменной в которой содержится кол-во для товара.
     """
 
     class OptionTypes(models.TextChoices):
@@ -347,17 +341,34 @@ class BlockOption(PolymorphicModel):
 
 
 class ProductOption(BlockOption):
+    """
+    Модель опции товара для блока калькулятора.
+
+    Атрибуты:
+        block (ForeignKey): Ссылка на блок калькулятора.
+        position (int): Позиция опции в списке.
+        title (str): Название опции.
+        description (str): Описание опции.
+        option_type (str): Тип опции (число, выбор, подтверждение, счетчик).
+        name (str): Имя поля модели.
+        choices (str): Варианты выбора для опции.
+        product (str): Название категории для фильтрации.
+        filters (str): Фильтры для товара.
+        depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
+        depends_on_value (str): Значение, от которого зависит текущая опция.
+        block_amount_undependent (bool): Флаг независимости кол-ва товара для опции от кол-ва в самом блоке.
+        amount_depend (str): Название переменной в которой содержится кол-во для товара.
+    """
+
     name = models.CharField(
         _("Имя"),
         max_length=40,
         help_text=_("Имя поля модели"),
     )
     product = models.ForeignKey(
-        # ProductCategory,
         ContentType,
         on_delete=models.SET_NULL,
         verbose_name=_("Категория товара для фильтрации"),
-        blank=True,
         null=True,
         related_name="product_options",
     )
@@ -437,6 +448,24 @@ class ProductOption(BlockOption):
 
 
 class ValueOption(BlockOption):
+    """
+    Модель опции без товара для блока калькулятора.
+
+    Атрибуты:
+        block (ForeignKey): Ссылка на блок калькулятора.
+        position (int): Позиция опции в списке.
+        title (str): Название опции.
+        description (str): Описание опции.
+        option_type (str): Тип опции (число, выбор, подтверждение, счетчик).
+        name (str): Имя переменной для формулы.
+        choices (str): Варианты выбора для опции.
+        depends_on (ForeignKey): Ссылка на опцию, от которой зависит текущая опция.
+        depends_on_value (str): Значение, от которого зависит текущая опция.
+        price (ForeignKey): Ссылка на цену.
+        variability_with_block_amount (bool): Флаг зависимости значения опции от кол-ва в самом блоке.
+        initial_value (int): Начальное числовое значение.
+    """
+
     name = models.CharField(
         _("Имя"),
         max_length=40,

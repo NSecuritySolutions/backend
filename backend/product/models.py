@@ -115,6 +115,9 @@ class Product(PolymorphicModel):
         help_text=_("Название поля: price"),
         validators=[MinValueValidator(0)],
     )
+    tooltip = models.TextField(
+        verbose_name=_("Информация в тултипе"), max_length=200, blank=True, null=True
+    )
     created_at = models.DateTimeField(
         _("Дата создания"), auto_now_add=True, blank=True, null=True
     )
@@ -370,7 +373,7 @@ class Sensor(Product):
     Модель извещателя.
 
     Атрибуты:
-                article (str): Артикул товара.
+        article (str): Артикул товара.
         model (str): Модель товара.
         image (ImageField): Изображение товара.
         description (str): Описание товара.

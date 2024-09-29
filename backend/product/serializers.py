@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from calculator.serializers import PriceSerializer
@@ -227,3 +228,379 @@ class OurWorksListSerializer(serializers.ModelSerializer):
             "area",
             "add_date",
         )
+
+
+class RegisterRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Product с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = Register
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class CameraRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Camera с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = Camera
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class HDDRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели HDD с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = HDD
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class OtherProductRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели OtherProduct с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = OtherProduct
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class FACPRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели FACP с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = FACP
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class SensorRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Sensor с properties в виде списка объектов."""
+
+    properties = serializers.SerializerMethodField()
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = Sensor
+        fields = (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {
+                        "oneOf": [
+                            {"type": "string"},
+                            {"type": "boolean"},
+                            {"type": "integer"},
+                        ]
+                    },
+                },
+            },
+        }
+    )
+    def get_properties(self, instance):
+        data = [
+            field.name
+            for field in instance._meta.get_fields()
+            if not field.is_relation and not field.many_to_one and not field.one_to_one
+        ]
+        return [
+            {
+                "verbose_name": instance._meta.get_field(field).verbose_name,
+                "value": getattr(instance, field),
+            }
+            for field in data
+            if field not in self.Meta.fields
+        ]
+
+
+class ProductRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для моделей унаследованных от Product."""
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        request = self.context.get("request")
+        if isinstance(instance, Camera):
+            return CameraRetrieveSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, Register):
+            return RegisterRetrieveSerializer(
+                instance, context={"request": request}
+            ).data
+        elif isinstance(instance, OtherProduct):
+            return OtherProductRetrieveSerializer(
+                instance, context={"request": request}
+            ).data
+        elif isinstance(instance, FACP):
+            return FACPRetrieveSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, Sensor):
+            return SensorRetrieveSerializer(instance, context={"request": request}).data
+        elif isinstance(instance, HDD):
+            return HDDRetrieveSerializer(instance, context={"request": request}).data
+        return None

@@ -15,13 +15,13 @@ from application.serializers import (
 @extend_schema(
     tags=["Заявки"],
     responses=PolymorphicProxySerializer(
-        component_name="Application",
+        component_name="Single application",
         serializers=[
             ApplicationWithCalcSerializer,
             ApplicationWithFileSerializer,
             ApplicationWithSolutionSerializer,
         ],
-        resource_type_field_name="model",
+        resource_type_field_name="polymorphic_ctype",
     ),
 )
 class ApplicationListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):

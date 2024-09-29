@@ -1,39 +1,43 @@
 import requests
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from product.filters import ProductFilter
-from product.models import (
+from product.models import (  # ProductCategory,
     FACP,
+    HDD,
     Camera,
     OtherProduct,
     OurService,
     OurWorks,
     Product,
-    ProductCategory,
     ReadySolution,
     Register,
     Sensor,
     Tag,
 )
-from product.serializers import (
+from product.serializers import (  # CategorySerializer,
+    CameraRetrieveSerializer,
     CameraSerializer,
-    CategorySerializer,
+    FACPRetrieveSerializer,
     FACPSerializer,
+    HDDRetrieveSerializer,
     HDDSerializer,
+    OtherProductRetrieveSerializer,
     OtherProductSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
+    ProductRetrieveSerializer,
     ProductSerializer,
     ReadySolutionsSerializer,
+    RegisterRetrieveSerializer,
     RegisterSerializer,
+    SensorRetrieveSerializer,
     SensorSerializer,
     TagSerializer,
 )
@@ -42,7 +46,7 @@ from product.serializers import (
 @extend_schema(
     tags=["Товары"],
     responses=PolymorphicProxySerializer(
-        component_name="Product",
+        component_name="Single product",
         serializers=[
             CameraSerializer,
             RegisterSerializer,
@@ -51,7 +55,7 @@ from product.serializers import (
             OtherProductSerializer,
             HDDSerializer,
         ],
-        resource_type_field_name="model",
+        resource_type_field_name="polymorphic_ctype",
     ),
 )
 class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
@@ -62,6 +66,31 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
+
+    @extend_schema(
+        responses=PolymorphicProxySerializer(
+            component_name="Product retrieve",
+            serializers=[
+                CameraRetrieveSerializer,
+                RegisterRetrieveSerializer,
+                FACPRetrieveSerializer,
+                SensorRetrieveSerializer,
+                OtherProductRetrieveSerializer,
+                HDDRetrieveSerializer,
+            ],
+            resource_type_field_name="polymorphic_ctype",
+        ),
+    )
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # kwargs.setdefault('context', self.get_serializer_context())
+        serializer = ProductRetrieveSerializer(
+            instance, context=self.get_serializer_context()
+        )
+        return Response(serializer.data)
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     return super().retrieve(request, *args, **kwargs)
 
 
 @extend_schema(exclude=True)
@@ -80,31 +109,6 @@ class OurServiceListView(ListModelMixin, GenericViewSet):
     queryset = OurService.objects.all()
     serializer_class = OurServiceListSerializer
     http_method_names = ("get",)
-
-
-@extend_schema(tags=["Категории"], exclude=True)
-class CategoryView(APIView):
-    """Список категорий с товарами."""
-
-    # TODO docstring
-    def get(self, request, *args, **kwargs):
-        categories = ProductCategory.objects.all()
-        category_data = []
-
-        # TODO Выглядит как костыль
-        for category in categories:
-            category_serializer = CategorySerializer(category)
-            products = Product.objects.filter(category=category)
-            product_serializer = ProductSerializer(products, many=True)
-
-            category_data.append(
-                {
-                    "category": category_serializer.data,
-                    "products": product_serializer.data,
-                }
-            )
-
-        return Response(category_data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=["Наши работы"])
@@ -135,10 +139,10 @@ class TagListView(ListModelMixin, GenericViewSet):
 
 
 @extend_schema(exclude=True)
-@api_view(["GET"])
+@api_view(("GET",))
 def api_view_test(request: Request) -> Response:
     instances = Product.objects.all()
-    queryset: list[Camera | Register | FACP | Sensor | OtherProduct] = (
+    queryset: list[Camera | Register | FACP | Sensor | OtherProduct | HDD] = (
         instances.get_real_instances()
     )
     for instance in queryset:

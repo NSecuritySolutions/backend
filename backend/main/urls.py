@@ -17,7 +17,6 @@ from application.views import (
 )
 from calculator.views import CalculatorView, PriceListView
 from product.views import (
-    CategoryView,
     OurServiceListView,
     OurWorksListView,
     ProductListView,
@@ -59,7 +58,6 @@ router_v1.register("guarantees", OurGuaranteesView, basename="guarantees")
 
 
 urlpatterns_v1 = [
-    path("category/", CategoryView.as_view()),
     path("test", api_view_test),
     path("", include(router_v1.urls)),
 ]

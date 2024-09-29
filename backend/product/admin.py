@@ -44,6 +44,7 @@ class RegisterAdmin(PolymorphicChildModelAdmin):
 class ProductAdmin(PolymorphicParentModelAdmin):
     base_model = Product
     child_models = (Camera, Register, FACP, Sensor, OtherProduct, HDD)
+    search_fields = ("category__title", "model")
 
 
 admin.site.register(OurService)
