@@ -554,7 +554,7 @@ class ImageWorks(models.Model):
         return f"Image {self.image}"
 
     def clean(self) -> None:
-        count = ImageWorks.objects.filter(work=self.work)
+        count = ImageWorks.objects.filter(work=self.work).count()
         if count > 5:
             raise ValidationError(_("Разрешено не более 5 картинок."))
         if self.is_main:
