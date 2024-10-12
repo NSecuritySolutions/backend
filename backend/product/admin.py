@@ -1,4 +1,5 @@
 from django.contrib import admin
+from mptt.admin import MPTTModelAdmin
 from polymorphic.admin import PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from product.models import (
@@ -10,6 +11,7 @@ from product.models import (
     OtherProduct,
     OurService,
     OurWorks,
+    OurWorksProduct,
     Product,
     ProductCategory,
     ReadySolution,
@@ -35,6 +37,16 @@ class ReadySolutionAdmin(admin.ModelAdmin):
     inlines = (SolutionToProductInline,)
 
 
+class OurWorksProductInline(admin.TabularInline):
+    model = OurWorksProduct
+
+
+@admin.register(OurWorks)
+class OurWorksAdmin(admin.ModelAdmin):
+    base_model = OurWorks
+    inlines = (OurWorksProductInline,)
+
+
 @admin.register(Register)
 class RegisterAdmin(PolymorphicChildModelAdmin):
     base_model = Register
@@ -48,8 +60,7 @@ class ProductAdmin(PolymorphicParentModelAdmin):
 
 
 admin.site.register(OurService)
-admin.site.register(OurWorks)
-admin.site.register(ProductCategory)
+admin.site.register(ProductCategory, MPTTModelAdmin)
 admin.site.register(ImageWorks)
 admin.site.register(Manufacturer)
 admin.site.register(Tag)

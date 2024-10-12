@@ -12,6 +12,7 @@ from product.models import (
     OtherProduct,
     OurService,
     OurWorks,
+    OurWorksProduct,
     Product,
     ProductCategory,
     ReadySolution,
@@ -20,6 +21,54 @@ from product.models import (
     SolutionToProduct,
     Tag,
 )
+
+
+@extend_schema_field(
+    {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "value": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "boolean"},
+                        {"type": "integer"},
+                    ]
+                },
+            },
+        },
+    }
+)
+def form_properties(instance):
+    data = [
+        field.name
+        for field in instance._meta.get_fields()
+        if not field.is_relation and not field.many_to_one and not field.one_to_one
+    ]
+    return [
+        {
+            "name": instance._meta.get_field(field).verbose_name,
+            "value": getattr(instance, field),
+        }
+        for field in data
+        if field
+        not in (
+            "id",
+            "model",
+            "created_at",
+            "updated_at",
+            "price",
+            "description",
+            "manufacturer",
+            "category",
+            "image",
+            "tooltip",
+            "properties",
+            "polymorphic_ctype",
+        )
+    ]
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -207,13 +256,22 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ("id", "image", "is_main")
 
 
+class OurWorksProductSerializer(serializers.ModelSerializer):
+    """Сериализатор для промежуточной модели наши работы - товары"""
+
+    product = ProductSerializer()
+
+    class Meta:
+        model = OurWorksProduct
+        fields = "__all__"
+
+
 class OurWorksListSerializer(serializers.ModelSerializer):
     """Сериализатор для модели наших работ."""
 
     images = ImageSerializer(many=True)
     description = ParagraphsField()
-    product = ParagraphsField()
-    # product = ProductListSerializer(many=True)
+    products = OurWorksProductSerializer(many=True)
 
     class Meta:
         model = OurWorks
@@ -222,7 +280,7 @@ class OurWorksListSerializer(serializers.ModelSerializer):
             "title",
             "images",
             "description",
-            "product",
+            "products",
             "time",
             "budget",
             "area",
@@ -234,348 +292,96 @@ class RegisterRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Product с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = Register
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class CameraRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Camera с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = Camera
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class HDDRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели HDD с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = HDD
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class OtherProductRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели OtherProduct с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = OtherProduct
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class FACPRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели FACP с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = FACP
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class SensorRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Sensor с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
+    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
     class Meta:
         model = Sensor
-        fields = (
-            "id",
-            "model",
-            "created_at",
-            "updated_at",
-            "price",
-            "description",
-            "manufacturer",
-            "category",
-            "image",
-            "tooltip",
-            "properties",
-            "polymorphic_ctype",
-        )
+        fields = "__all__"
 
-    @extend_schema_field(
-        {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string"},
-                    "value": {
-                        "oneOf": [
-                            {"type": "string"},
-                            {"type": "boolean"},
-                            {"type": "integer"},
-                        ]
-                    },
-                },
-            },
-        }
-    )
     def get_properties(self, instance):
-        data = [
-            field.name
-            for field in instance._meta.get_fields()
-            if not field.is_relation and not field.many_to_one and not field.one_to_one
-        ]
-        return [
-            {
-                "verbose_name": instance._meta.get_field(field).verbose_name,
-                "value": getattr(instance, field),
-            }
-            for field in data
-            if field not in self.Meta.fields
-        ]
+        return form_properties(instance)
 
 
 class ProductRetrieveSerializer(serializers.ModelSerializer):

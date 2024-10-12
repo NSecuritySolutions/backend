@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "django_celery_beat",
+    "mptt",
     "product",
     "social",
     "application",

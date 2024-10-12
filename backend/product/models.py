@@ -2,10 +2,11 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from mptt.models import MPTTModel, TreeForeignKey
 from polymorphic.models import PolymorphicModel
 
 
-class ProductCategory(models.Model):
+class ProductCategory(MPTTModel):
     """
     Модель категории товара.
 
@@ -13,13 +14,23 @@ class ProductCategory(models.Model):
         title (str): Название категории товара.
     """
 
-    title = models.CharField(verbose_name=_("Название"), max_length=50)
+    title = models.CharField(verbose_name=_("Название"), max_length=50, unique=True)
+    parent = TreeForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="children",
+    )
     created_at = models.DateTimeField(
         _("Дата создания"), auto_now_add=True, blank=True, null=True
     )
     updated_at = models.DateTimeField(
         _("Дата обновления"), auto_now=True, blank=True, null=True
     )
+
+    class MPTTMeta:
+        order_insertion_by = ["title"]
 
     class Meta:
         verbose_name = _("Категория продукции")
@@ -585,9 +596,6 @@ class OurWorks(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=300)
-    product = models.TextField(
-        verbose_name=_("Используемое оборудование"), max_length=5000
-    )
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)
     add_date = models.DateTimeField(verbose_name=_("Дата добавления на сайт"))
     time = models.IntegerField(
@@ -613,3 +621,36 @@ class OurWorks(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class OurWorksProduct(models.Model):
+    """
+    Промежуточная модель для связи наших работ с товаром.
+
+    Атрибуты:
+        our_work (ForeignKey): Работа.
+        text (str): Краткое описание товара.
+        is_link (bool): Флаг, указывающий, отображать ли текст как ссылку на товар.
+        product (ForeignKey): Товар.
+        amount (int): Кол-во товара, используемого в работе.
+    """
+
+    our_work = models.ForeignKey(
+        OurWorks, on_delete=models.CASCADE, related_name="products"
+    )
+    text = models.CharField(_("Текст"), max_length=200, help_text=_("Краткое описание"))
+    is_link = models.BooleanField(
+        _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
+    )
+    product = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    amount = models.IntegerField(
+        _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
+    )
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )

@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from product.filters import ProductFilter
-from product.models import (  # ProductCategory,
+from product.models import (
     FACP,
     HDD,
     Camera,
@@ -21,24 +21,18 @@ from product.models import (  # ProductCategory,
     Sensor,
     Tag,
 )
-from product.serializers import (  # CategorySerializer,
+from product.serializers import (
     CameraRetrieveSerializer,
-    CameraSerializer,
     FACPRetrieveSerializer,
-    FACPSerializer,
     HDDRetrieveSerializer,
-    HDDSerializer,
     OtherProductRetrieveSerializer,
-    OtherProductSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
     ProductRetrieveSerializer,
-    ProductSerializer,
     ReadySolutionsSerializer,
     RegisterRetrieveSerializer,
     RegisterSerializer,
     SensorRetrieveSerializer,
-    SensorSerializer,
     TagSerializer,
 )
 
@@ -48,12 +42,12 @@ from product.serializers import (  # CategorySerializer,
     responses=PolymorphicProxySerializer(
         component_name="Single product",
         serializers=[
-            CameraSerializer,
-            RegisterSerializer,
-            FACPSerializer,
-            SensorSerializer,
-            OtherProductSerializer,
-            HDDSerializer,
+            CameraRetrieveSerializer,
+            RegisterRetrieveSerializer,
+            FACPRetrieveSerializer,
+            SensorRetrieveSerializer,
+            OtherProductRetrieveSerializer,
+            HDDRetrieveSerializer,
         ],
         resource_type_field_name="polymorphic_ctype",
     ),
@@ -62,35 +56,10 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Список товаров."""
 
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductRetrieveSerializer
     http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
-
-    @extend_schema(
-        responses=PolymorphicProxySerializer(
-            component_name="Product retrieve",
-            serializers=[
-                CameraRetrieveSerializer,
-                RegisterRetrieveSerializer,
-                FACPRetrieveSerializer,
-                SensorRetrieveSerializer,
-                OtherProductRetrieveSerializer,
-                HDDRetrieveSerializer,
-            ],
-            resource_type_field_name="polymorphic_ctype",
-        ),
-    )
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        # kwargs.setdefault('context', self.get_serializer_context())
-        serializer = ProductRetrieveSerializer(
-            instance, context=self.get_serializer_context()
-        )
-        return Response(serializer.data)
-
-    # def retrieve(self, request, *args, **kwargs):
-    #     return super().retrieve(request, *args, **kwargs)
 
 
 @extend_schema(exclude=True)

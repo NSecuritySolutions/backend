@@ -12,12 +12,11 @@ services:
     entrypoint: /code/backend_entrypoint.sh
     volumes:
       - ./backend:/code
+      - static:/backend_static
       - media:/code/media
     depends_on:
       - db
     env_file: .env
-    # ports:
-    #   - 8000:8000
 
   redis:
     image: redis:7.2.5-alpine
