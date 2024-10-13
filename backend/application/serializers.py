@@ -1,4 +1,6 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from application.models import (
@@ -52,11 +54,17 @@ class CategoryProductsSerializer(serializers.ModelSerializer):
 
     def create_with_block(self, validated_data, block):
         products_data = validated_data.pop("products")
+        content_id = validated_data.pop("category_id")
+        content_name = (
+            get_object_or_404(ContentType.objects, id=content_id)
+            .model_class()
+            ._meta.verbose_name
+        )
         category = CalculatorBlockCategoryProductsData.objects.create(
-            **validated_data, block_data=block
+            **validated_data, block_data=block, name=content_name
         )
         if len(products_data) > 0:
-            category.products.set([prod_id for prod_id in products_data])
+            category.products.set([prod["id"] for prod in products_data])
         return category
 
 
@@ -78,14 +86,15 @@ class CalculatorDataSerializer(serializers.ModelSerializer):
 
 
 class ApplicationWithCalcSerializer(serializers.ModelSerializer):
-    calculator = CalculatorDataSerializer()
+    calculator_data = serializers.JSONField(write_only=True)
+    calculator = CalculatorDataSerializer(read_only=True)
 
     class Meta:
         model = ApplicationWithCalculator
         exclude = ("polymorphic_ctype",)
 
     def create(self, validated_data: dict):
-        calculator_data = validated_data.pop("calculator")
+        calculator_data = validated_data.pop("calculator_data")
         with transaction.atomic():
             application = ApplicationWithCalculator.objects.create(**validated_data)
             blocks_data = calculator_data.pop("blocks")
