@@ -12,7 +12,7 @@ from product.serializers import ProductIdSerializer, ReadySolutionsSerializer
 
 
 class ApplicationWithFileSerializer(serializers.ModelSerializer):
-    file = serializers.FileField(use_url=False)
+    file = serializers.FileField(use_url=False, required=False)
 
     class Meta:
         model = ApplicationWithFile

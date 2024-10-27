@@ -98,7 +98,7 @@ def send_solution_application(data: dict) -> bool:
     solution = ReadySolution.objects.get(id=data.get("solution"))
     string += "\n" + (
         f"<b>Готовое решение</b>:\n"
-        f"  • <i>Название</i> - {solution.title}:\n"
+        f"  • <i>Название</i> - {solution.title}\n"
         f"  • <i>Цена</i> - {solution.price}\n"
         f"  --> <a href='{settings.DOMAIN}/sets/{solution.id}'>Ссылка на готовое решение</a>\n"
     )
