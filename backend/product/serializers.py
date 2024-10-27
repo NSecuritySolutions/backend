@@ -209,7 +209,6 @@ class ProductIdSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         try:
             obj = Product.objects.get(id=data["id"])
-            print(obj)
             return obj.id
         except Product.DoesNotExist:
             raise serializers.ValidationError(

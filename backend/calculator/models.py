@@ -9,12 +9,25 @@ from calculator.validators import validate_latin_underscore
 from product.models import Product
 
 
-class PriceList(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class PriceList(BaseModel):
     """
     Модель прайс листа.
 
     Атрибуты:
-        date (DateTimeField): Дата создания прайс листа.
+        created_at (DateTimeField): Дата создания прайс листа.
+        updated_at (DateTimeField): Дата последнего изменения.
     """
 
     created_at = models.DateTimeField(
@@ -32,7 +45,7 @@ class PriceList(models.Model):
         return f"{self.pk}. Updated at {self.updated_at}"
 
 
-class PriceListCategory(models.Model):
+class PriceListCategory(BaseModel):
     """
     Модель катогрии для прайс листа.
 
@@ -49,12 +62,6 @@ class PriceListCategory(models.Model):
         blank=True,
         related_name="categories",
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Категория прайс листа")
@@ -64,7 +71,7 @@ class PriceListCategory(models.Model):
         return self.name
 
 
-class Price(models.Model):
+class Price(BaseModel):
     """
     Модель цены.
 
@@ -106,12 +113,6 @@ class Price(models.Model):
     is_show = models.BooleanField(
         _("Показывать клиенту"), help_text=_("Отображать ли эту цену в прайс листе")
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Цена")
@@ -126,7 +127,7 @@ class Price(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Formula(models.Model):
+class Formula(BaseModel):
     """
     Модель формулы для калькулятора.
 
@@ -142,12 +143,6 @@ class Formula(models.Model):
             "Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
         ),
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Формула")
@@ -157,7 +152,7 @@ class Formula(models.Model):
         return self.name
 
 
-class Calculator(models.Model):
+class Calculator(BaseModel):
     """
     Модель калькулятора.
 
@@ -170,12 +165,6 @@ class Calculator(models.Model):
         PriceList, on_delete=models.SET_NULL, blank=True, null=True
     )
     active = models.BooleanField("Текущий калькулятор", default=False)
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Калькулятор")
@@ -197,7 +186,7 @@ class Calculator(models.Model):
         super().save(*args, **kwargs)
 
 
-class CalculatorBlock(models.Model):
+class CalculatorBlock(BaseModel):
     """
     Модель блока калькулятора.
 
@@ -235,12 +224,6 @@ class CalculatorBlock(models.Model):
             "(иначе это будет выбор между 'да' и 'нет')"
         ),
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         ordering = ("position",)
@@ -266,7 +249,7 @@ class CalculatorBlock(models.Model):
 #     super().save(*args, **kwargs)
 
 
-class BlockOption(PolymorphicModel):
+class BlockOption(PolymorphicModel, BaseModel):
     """
     Модель опции для блока калькулятора.
 
@@ -309,12 +292,6 @@ class BlockOption(PolymorphicModel):
         related_name="dependent",
     )
     depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         ordering = ("position",)

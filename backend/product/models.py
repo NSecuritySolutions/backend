@@ -6,7 +6,19 @@ from mptt.models import MPTTModel, TreeForeignKey
 from polymorphic.models import PolymorphicModel
 
 
-class ProductCategory(MPTTModel):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class ProductCategory(MPTTModel, BaseModel):
     """
     Модель категории товара.
 
@@ -22,12 +34,6 @@ class ProductCategory(MPTTModel):
         on_delete=models.SET_NULL,
         related_name="children",
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class MPTTMeta:
         order_insertion_by = ["title"]
@@ -40,7 +46,7 @@ class ProductCategory(MPTTModel):
         return f"{self.title}"
 
 
-class Tag(models.Model):
+class Tag(BaseModel):
     """
     Модель тэга.
 
@@ -49,12 +55,6 @@ class Tag(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Тэг")
@@ -64,7 +64,7 @@ class Tag(models.Model):
         return f"{self.title}"
 
 
-class Manufacturer(models.Model):
+class Manufacturer(BaseModel):
     """
     Модель производителя.
 
@@ -73,12 +73,6 @@ class Manufacturer(models.Model):
     """
 
     title = models.CharField(verbose_name=_("Название"), max_length=50)
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Производитель")
@@ -88,7 +82,7 @@ class Manufacturer(models.Model):
         return f"{self.title}"
 
 
-class Product(PolymorphicModel):
+class Product(PolymorphicModel, BaseModel):
     """
     Модель товара с общими для всех товаров атрибутами.
 
@@ -128,12 +122,6 @@ class Product(PolymorphicModel):
     )
     tooltip = models.TextField(
         verbose_name=_("Информация в тултипе"), max_length=200, blank=True, null=True
-    )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
     )
 
     class Meta:
@@ -430,7 +418,7 @@ class OtherProduct(Product):
         return f"{self.model}"
 
 
-class ReadySolution(models.Model):
+class ReadySolution(BaseModel):
     """
     Модель готового решения.
 
@@ -451,12 +439,6 @@ class ReadySolution(models.Model):
         verbose_name=_("Цена"), null=True, blank=True, validators=[MinValueValidator(0)]
     )
     tags = models.ManyToManyField(Tag, verbose_name=_("Тэги"))
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Готовые решение")
@@ -466,7 +448,7 @@ class ReadySolution(models.Model):
         return f"{self.title}"
 
 
-class SolutionToProduct(models.Model):
+class SolutionToProduct(BaseModel):
     """
     Промежуточная модель между готовым решением и продукцией.
 
@@ -495,15 +477,9 @@ class SolutionToProduct(models.Model):
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
 
-class OurService(models.Model):
+class OurService(BaseModel):
     """
     Модель наших услуг.
 
@@ -520,12 +496,6 @@ class OurService(models.Model):
     action = models.CharField(
         verbose_name=_("Текст кнопки"), max_length=20, default="Подробнее"
     )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Наши услуги")
@@ -535,7 +505,7 @@ class OurService(models.Model):
         return f"{self.title}"
 
 
-class ImageWorks(models.Model):
+class ImageWorks(BaseModel):
     """
     Модель картинки для примера работы.
 
@@ -550,12 +520,6 @@ class ImageWorks(models.Model):
     )
     image = models.ImageField(verbose_name=_("Фотографии"), upload_to="media/our_works")
     is_main = models.BooleanField(_("Картинка на главной"))
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Фотографии")
@@ -580,7 +544,7 @@ class ImageWorks(models.Model):
         super().save(*args, **kwargs)
 
 
-class OurWorks(models.Model):
+class OurWorks(BaseModel):
     """
     Модель примера работ.
 
@@ -608,12 +572,6 @@ class OurWorks(models.Model):
         verbose_name=_("Площадь работ"), validators=[MinValueValidator(0)]
     )
     is_active = models.BooleanField(verbose_name=_("На главной"), default=False)
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
 
     class Meta:
         verbose_name = _("Примеры работ")
@@ -623,7 +581,7 @@ class OurWorks(models.Model):
         return f"{self.title}"
 
 
-class OurWorksProduct(models.Model):
+class OurWorksProduct(BaseModel):
     """
     Промежуточная модель для связи наших работ с товаром.
 
@@ -647,10 +605,4 @@ class OurWorksProduct(models.Model):
     )
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
-    )
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
     )

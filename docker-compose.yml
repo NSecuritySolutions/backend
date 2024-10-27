@@ -27,6 +27,8 @@ services:
     restart: always
     build: ./backend/
     command: celery -A main worker -B -l info
+    volumes:
+      - media:/code/media
     env_file: .env
     depends_on:
       - backend

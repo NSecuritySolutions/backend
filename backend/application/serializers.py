@@ -1,6 +1,4 @@
 from django.contrib.contenttypes.models import ContentType
-from django.db import transaction
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from application.models import (
@@ -8,123 +6,14 @@ from application.models import (
     ApplicationWithCalculator,
     ApplicationWithFile,
     ApplicationWithSolution,
-    CalculatorBlockCategoryProductsData,
-    CalculatorBlockData,
-    CalculatorData,
-    OptionData,
 )
 from product.models import ReadySolution
-from product.serializers import (
-    ProductIdSerializer,
-    ProductSerializer,
-    ReadySolutionsSerializer,
-)
-
-
-class OptionsDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OptionData
-        exclude = ("block_data",)
-
-
-class CategoryProductsSerializer(serializers.ModelSerializer):
-    products = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CalculatorBlockCategoryProductsData
-        exclude = ("block_data",)
-
-    def get_products(self, obj):
-        return ProductSerializer(obj.products.all(), many=True, required=False).data
-
-    def to_internal_value(self, data):
-        internal_value = super().to_internal_value(data)
-        products_data = data.get("products", [])
-        internal_value["products"] = [
-            ProductIdSerializer().to_internal_value({"id": prod["id"]})
-            for prod in products_data
-        ]
-        return internal_value
-
-    def create(self, validated_data):
-        products_data = validated_data.pop("products")
-        category = CalculatorBlockCategoryProductsData.objects.create(**validated_data)
-        category.products.set([prod_id for prod_id in products_data])
-        return category
-
-    def create_with_block(self, validated_data, block):
-        products_data = validated_data.pop("products")
-        content_id = validated_data.pop("category_id")
-        content_name = (
-            get_object_or_404(ContentType.objects, id=content_id)
-            .model_class()
-            ._meta.verbose_name
-        )
-        category = CalculatorBlockCategoryProductsData.objects.create(
-            **validated_data, block_data=block, name=content_name
-        )
-        if len(products_data) > 0:
-            category.products.set([prod["id"] for prod in products_data])
-        return category
-
-
-class BlockDataSerializer(serializers.ModelSerializer):
-    products_category = CategoryProductsSerializer(many=True)
-    options = OptionsDataSerializer(many=True)
-
-    class Meta:
-        model = CalculatorBlockData
-        exclude = ("calculator_data",)
-
-
-class CalculatorDataSerializer(serializers.ModelSerializer):
-    blocks = BlockDataSerializer(many=True)
-
-    class Meta:
-        model = CalculatorData
-        exclude = ("application",)
-
-
-class ApplicationWithCalcSerializer(serializers.ModelSerializer):
-    calculator_data = serializers.JSONField(write_only=True)
-    calculator = CalculatorDataSerializer(read_only=True)
-
-    class Meta:
-        model = ApplicationWithCalculator
-        exclude = ("polymorphic_ctype",)
-
-    def create(self, validated_data: dict):
-        calculator_data = validated_data.pop("calculator_data")
-        with transaction.atomic():
-            application = ApplicationWithCalculator.objects.create(**validated_data)
-            blocks_data = calculator_data.pop("blocks")
-            calculator_object = CalculatorData.objects.create(
-                **calculator_data, application=application
-            )
-
-            for block_data in blocks_data:
-                categories_data = block_data.pop("products_category")
-                options_data = block_data.pop("options")
-                block_object = CalculatorBlockData.objects.create(
-                    **block_data, calculator_data=calculator_object
-                )
-
-                for category_data in categories_data:
-                    category = CategoryProductsSerializer().create_with_block(
-                        category_data, block_object
-                    )
-                    category.save()
-
-                option_objects = [
-                    OptionData(**option_data, block_data=block_object)
-                    for option_data in options_data
-                ]
-                OptionData.objects.bulk_create(option_objects)
-
-        return application
+from product.serializers import ProductIdSerializer, ReadySolutionsSerializer
 
 
 class ApplicationWithFileSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(use_url=False)
+
     class Meta:
         model = ApplicationWithFile
         exclude = ("polymorphic_ctype",)
@@ -162,7 +51,41 @@ class ApplicationListSerializer(serializers.ModelSerializer):
                 instance, context={"request": request}
             ).data
         elif isinstance(instance, ApplicationWithCalculator):
-            return ApplicationWithCalcSerializer(
-                instance, context={"request": request}
-            ).data
+            return CalculatorJSONSerializer(instance, context={"request": request}).data
         return None
+
+
+class OptionJSONSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.CharField()
+
+
+class CategoryProductsJSONSerializer(serializers.Serializer):
+    category_id = serializers.PrimaryKeyRelatedField(queryset=ContentType.objects.all())
+    products = ProductIdSerializer(many=True)
+
+
+class CalculatorBlockJSONSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    price = serializers.DecimalField(max_digits=20, decimal_places=2)
+    amount = serializers.IntegerField()
+    products_category = CategoryProductsJSONSerializer(many=True)
+    options = OptionJSONSerializer(many=True)
+
+
+class CalculatorDataJSONSerializer(serializers.Serializer):
+    price = serializers.DecimalField(max_digits=20, decimal_places=2)
+    blocks = CalculatorBlockJSONSerializer(many=True)
+
+
+class CalculatorJSONSerializer(serializers.ModelSerializer):
+    calculator_data = serializers.JSONField()
+
+    class Meta:
+        model = ApplicationWithCalculator
+        fields = "__all__"
+
+    def validate_calculator_data(self, value):
+        serializer = CalculatorDataJSONSerializer(data=value)
+        serializer.is_valid(raise_exception=True)
+        return value

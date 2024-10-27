@@ -4,7 +4,19 @@ from phonenumber_field.modelfields import PhoneNumberField
 from polymorphic.models import PolymorphicModel
 
 
-class Application(PolymorphicModel):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Application(PolymorphicModel, BaseModel):
     name = models.CharField(verbose_name=_("Имя"), max_length=50)
     email = models.EmailField(verbose_name=_("Почта"))
     phone = PhoneNumberField(
@@ -48,40 +60,21 @@ class ApplicationWithSolution(Application):
 
 
 class ApplicationWithCalculator(Application):
+    calculator_data = models.JSONField(verbose_name=_("Данные из калькулятора"))
+
     class Meta:
         verbose_name = "Завка с калькулятором"
         verbose_name_plural = "Заявки с калькулятором"
 
 
-class CalculatorData(models.Model):
-    application = models.OneToOneField(
-        ApplicationWithCalculator, on_delete=models.CASCADE, related_name="calculator"
+class TelegramChat(BaseModel):
+    chat_id = models.IntegerField(
+        verbose_name=_("ID чата пользователя"), unique=True, db_index=True
     )
-    price = models.IntegerField(verbose_name=_("Общая стоимость"))
-
-
-class CalculatorBlockData(models.Model):
-    calculator_data = models.ForeignKey(
-        CalculatorData, on_delete=models.CASCADE, related_name="blocks"
-    )
-    name = models.CharField(verbose_name=_("Название"))
-    price = models.IntegerField(verbose_name=_("Стоимость"))
-    amount = models.IntegerField(verbose_name=_("Кол-во"))
-
-
-class CalculatorBlockCategoryProductsData(models.Model):
-    block_data = models.ForeignKey(
-        CalculatorBlockData, on_delete=models.CASCADE, related_name="products_category"
-    )
-    name = models.CharField(verbose_name=_("Название категории"))
-    products = models.ManyToManyField(
-        "product.Product", verbose_name=_("Подходящие товары"), blank=True
+    send_application = models.BooleanField(
+        verbose_name=_("Уведомлять о заявках"), default=False
     )
 
-
-class OptionData(models.Model):
-    block_data = models.ForeignKey(
-        CalculatorBlockData, on_delete=models.CASCADE, related_name="options"
-    )
-    name = models.CharField(verbose_name=_("Название"))
-    value = models.CharField(verbose_name=_("Значение"))
+    class Meta:
+        verbose_name = "Телеграм чат"
+        verbose_name_plural = "Телеграм чаты"
