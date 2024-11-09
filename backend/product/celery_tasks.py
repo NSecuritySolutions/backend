@@ -20,5 +20,7 @@ def update_prices() -> bool:
         for item in json["items"]:
             if item["article"] == instance.article:
                 instance.price = item["price"]["value"]
-    instances.bulk_update(queryset, ["price"])
+                instance.save()
+    # на bulk запросы не реагируют методы модели (save и др.) и сигналы
+    # instances.bulk_update(queryset, ["price"])
     return True

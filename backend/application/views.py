@@ -1,4 +1,7 @@
 from django.conf import settings
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.viewsets import GenericViewSet
@@ -16,6 +19,12 @@ from application.serializers import (
     ApplicationWithSolutionSerializer,
     CalculatorJSONSerializer,
 )
+
+
+@extend_schema(exclude=True)
+@ensure_csrf_cookie
+def set_csrf_token(request):
+    return JsonResponse({"csrfToken": get_token(request)})
 
 
 @extend_schema(

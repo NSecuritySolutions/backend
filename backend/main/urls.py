@@ -14,6 +14,7 @@ from application.views import (
     ApplicationWithCalcView,
     ApplicationWithFileView,
     ApplicationWithSolutionView,
+    set_csrf_token,
 )
 from calculator.views import CalculatorView, PriceListView
 from product.views import (
@@ -59,6 +60,7 @@ router_v1.register("guarantees", OurGuaranteesView, basename="guarantees")
 
 urlpatterns_v1 = [
     path("test", api_view_test),
+    path("set-csrf-token/", set_csrf_token),
     path("", include(router_v1.urls)),
 ]
 
