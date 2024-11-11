@@ -18,6 +18,7 @@ from application.views import (
 )
 from calculator.views import CalculatorView, PriceListView
 from product.views import (
+    NewProductListView,
     OurServiceListView,
     OurWorksListView,
     ProductListView,
@@ -48,6 +49,7 @@ router_v1.register("applications", ApplicationListView, basename="applications")
 router_v1.register("price-list", PriceListView, basename="price-list")
 router_v1.register("calculator", CalculatorView, basename="calculator")
 router_v1.register("products", ProductListView, basename="product")
+router_v1.register("new-products", NewProductListView, basename="new-product")
 router_v1.register("ready-solutions", ReadySolutionsListView, basename="ready")
 router_v1.register("solutions-tags", TagListView, basename="solution-tags")
 router_v1.register("our-services", OurServiceListView, basename="our-service")

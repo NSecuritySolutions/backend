@@ -9,12 +9,14 @@ from product.models import (
     Camera,
     ImageWorks,
     Manufacturer,
+    NewProduct,
     OtherProduct,
     OurService,
     OurWorks,
     OurWorksProduct,
     Product,
     ProductCategory,
+    ProductProperty,
     ReadySolution,
     Register,
     Sensor,
@@ -409,3 +411,23 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
         elif isinstance(instance, HDD):
             return HDDRetrieveSerializer(instance, context={"request": request}).data
         return None
+
+
+class ProductPropertySerializer(serializers.ModelSerializer):
+    field_name = serializers.CharField(source="property.field_name")
+    name = serializers.CharField(source="property.name")
+
+    class Meta:
+        model = ProductProperty
+        fields = ("field_name", "name", "value")
+
+
+class NewProductSerializer(serializers.ModelSerializer):
+    properties = ProductPropertySerializer(many=True)
+    prices_in_price_lists = PriceSerializer(many=True)
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = NewProduct
+        fields = "__all__"

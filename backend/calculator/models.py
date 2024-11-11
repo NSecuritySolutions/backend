@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -6,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from calculator.validators import validate_latin_underscore
-from product.models import Product
+from product.models import NewProduct, ProductType
 
 
 class BaseModel(models.Model):
@@ -102,8 +101,8 @@ class Price(BaseModel):
         validators=[validate_latin_underscore],
     )
     price = models.IntegerField(_("Цена"), validators=[MinValueValidator(0)])
-    product = models.ForeignKey(
-        Product,
+    new_product = models.ForeignKey(
+        NewProduct,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -234,6 +233,29 @@ class CalculatorBlock(BaseModel):
         return f"{self.calculator}-{self.title}"
 
 
+class Calculation(BaseModel):
+    block = models.ForeignKey(
+        CalculatorBlock, on_delete=models.CASCADE, related_name="calculations"
+    )
+    amount = models.TextField(
+        _("Кол-во"), help_text=_("Значение или формула для вычисления значения")
+    )
+    product = models.ForeignKey(
+        ProductType,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Вид товара"),
+        null=True,
+    )
+    filters = models.TextField(_("Фильтры для товара"), blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Вычисление")
+        verbose_name_plural = _("Вычисления")
+
+    def __str__(self) -> str:
+        return f"{self.block}-{self.product}"
+
+
 class BlockOption(PolymorphicModel, BaseModel):
     """
     Модель опции для блока калькулятора.
@@ -328,7 +350,7 @@ class ProductOption(BlockOption):
         help_text=_("Имя поля модели"),
     )
     product = models.ForeignKey(
-        ContentType,
+        ProductType,
         on_delete=models.SET_NULL,
         verbose_name=_("Категория товара для фильтрации"),
         null=True,
@@ -381,19 +403,17 @@ class ProductOption(BlockOption):
                     _("Опция с данным именем переменной не является числовой опцией.")
                 )
         if self.product is not None:
-            products = Product.objects.filter(
-                polymorphic_ctype=self.product
-            ).get_real_instances()
+            products = NewProduct.objects.filter(product_type=self.product)
             found = False
             for product in products:
                 if self.name in map(
-                    lambda x: x.attname, product._meta._get_fields(reverse=False)
+                    lambda x: x.property.field_name, product.properties.all()
                 ):
                     found = True
                     break
             if not found:
                 raise ValidationError(
-                    _("Такого поля у данной категории моделей не существует")
+                    _("Такого поля у данного вида товара не существует")
                 )
 
     def save(self, *args, **kwargs):

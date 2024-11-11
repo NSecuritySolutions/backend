@@ -7,11 +7,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from product.filters import ProductFilter
+from product.filters import NewProductFilter, ProductFilter
 from product.models import (
     FACP,
     HDD,
     Camera,
+    NewProduct,
     OtherProduct,
     OurService,
     OurWorks,
@@ -25,6 +26,7 @@ from product.serializers import (
     CameraRetrieveSerializer,
     FACPRetrieveSerializer,
     HDDRetrieveSerializer,
+    NewProductSerializer,
     OtherProductRetrieveSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
@@ -126,3 +128,14 @@ def api_view_test(request: Request) -> Response:
                 instance.price = item["price"]["value"]
     instances.bulk_update(queryset, ["price"])
     return Response({"detail": "ok"})
+
+
+@extend_schema(tags=["Товары"])
+class NewProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Список товаров."""
+
+    queryset = NewProduct.objects.all()
+    serializer_class = NewProductSerializer
+    http_method_names = ("get",)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = NewProductFilter

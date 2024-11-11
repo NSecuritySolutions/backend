@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
 from polymorphic.admin import (
     PolymorphicChildModelAdmin,
     PolymorphicInlineSupportMixin,
@@ -8,6 +7,7 @@ from polymorphic.admin import (
 
 from calculator.models import (
     BlockOption,
+    Calculation,
     Calculator,
     CalculatorBlock,
     Formula,
@@ -17,17 +17,6 @@ from calculator.models import (
     ProductOption,
     ValueOption,
 )
-from product.models import Product
-
-
-def filter_content_type_for_polymorphic_product():
-    product_subclasses = Product.__subclasses__()
-
-    product_models = []
-    for subclass in product_subclasses:
-        product_models.append(subclass._meta.model_name)
-
-    return ContentType.objects.filter(model__in=product_models)
 
 
 class PriceInline(admin.StackedInline):
@@ -42,11 +31,6 @@ class ValueOptionAdmin(PolymorphicChildModelAdmin):
 @admin.register(ProductOption)
 class ProductOptionAdmin(PolymorphicChildModelAdmin):
     base_model = ProductOption
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "product":
-            kwargs["queryset"] = filter_content_type_for_polymorphic_product()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(BlockOption)
@@ -80,19 +64,18 @@ class CalculatorBlockInline(admin.TabularInline):
 class ProductOptionInline(admin.StackedInline):
     model = ProductOption
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "product":
-            kwargs["queryset"] = filter_content_type_for_polymorphic_product()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 class ValueOptionInline(admin.StackedInline):
     model = ValueOption
 
 
+class CalculationInline(admin.StackedInline):
+    model = Calculation
+
+
 @admin.register(CalculatorBlock)
 class BlockAdmin(admin.ModelAdmin, PolymorphicInlineSupportMixin):
-    inlines = (ProductOptionInline, ValueOptionInline)
+    inlines = (ProductOptionInline, ValueOptionInline, CalculationInline)
 
 
 @admin.register(Calculator)
@@ -101,4 +84,5 @@ class CalculatorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Price)
+admin.site.register(Calculation)
 admin.site.register(Formula)

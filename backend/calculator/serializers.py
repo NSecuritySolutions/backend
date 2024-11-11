@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from calculator.models import (
     BlockOption,
+    Calculation,
     Calculator,
     CalculatorBlock,
     Formula,
@@ -109,10 +110,19 @@ class OptionSerializer(serializers.ModelSerializer):
         return None
 
 
+class CalculationSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели расчетов для блока."""
+
+    class Meta:
+        model = Calculation
+        fields = "__all__"
+
+
 class BlockSerializer(serializers.ModelSerializer):
     """Сериализатор для модели блока калькулятора."""
 
     options = OptionSerializer(many=True)
+    calculations = CalculationSerializer(many=True)
     formula = FormulaSerializer()
 
     class Meta:

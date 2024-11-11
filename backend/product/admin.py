@@ -8,18 +8,47 @@ from product.models import (
     Camera,
     ImageWorks,
     Manufacturer,
+    NewProduct,
     OtherProduct,
     OurService,
     OurWorks,
     OurWorksProduct,
     Product,
     ProductCategory,
+    ProductProperty,
+    ProductType,
+    ProductTypeTypeProperty,
     ReadySolution,
     Register,
     Sensor,
     SolutionToProduct,
     Tag,
+    TypeProperty,
 )
+
+
+class ProductPropertyInline(admin.TabularInline):
+    model = ProductProperty
+    extra = 0
+    can_delete = False
+    max_num = 0
+
+
+@admin.register(NewProduct)
+class NewProductAdmin(admin.ModelAdmin):
+    base_model = NewProduct
+    inlines = (ProductPropertyInline,)
+    search_fields = ("category__title", "model", "product_type__name")
+
+
+class ProductTypeTypePropertyInline(admin.TabularInline):
+    model = ProductTypeTypeProperty
+
+
+@admin.register(ProductType)
+class ProductTypeAdmin(admin.ModelAdmin):
+    base_model = ProductType
+    inlines = (ProductTypeTypePropertyInline,)
 
 
 class SolutionToProductInline(admin.TabularInline):
@@ -49,6 +78,7 @@ class ProductAdmin(PolymorphicParentModelAdmin):
     search_fields = ("category__title", "model")
 
 
+admin.site.register(TypeProperty)
 admin.site.register(OurService)
 admin.site.register(ProductCategory, MPTTModelAdmin)
 admin.site.register(ImageWorks)
