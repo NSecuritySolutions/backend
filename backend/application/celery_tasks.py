@@ -3,10 +3,9 @@ import os
 import requests
 from celery import shared_task
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 
 from application.models import TelegramChat
-from product.models import ReadySolution
+from product.models import ProductType, ReadySolution
 
 
 def form_message_calculator_app(data: dict):
@@ -33,19 +32,19 @@ def form_message_calculator_app(data: dict):
         if len(products_category):
             string += "  • <b>Подходящие товары</b>:\n"
             for category_products in products_category:
-                category = (
-                    ContentType.objects.get(
-                        id=category_products.get("category_id", None)
-                    )
-                    .model_class()
-                    ._meta.verbose_name_plural
-                )
+                category = ProductType.objects.get(
+                    id=category_products.get("category_id", None)
+                ).name
                 products = category_products.get("products", None)
                 string += f"     ◦ <i>Категория товара (админка)</i> - {category}\n     ◦ <b>Товары</b>:\n"
                 for product in products:
                     product_name = product.get("model", None)
                     product_category = product.get("category", None)
-                    product_category_name = product_category.get("title", None)
+                    product_category_name = (
+                        product_category.get("title", None)
+                        if product_category
+                        else "Отсутствует"
+                    )
                     product_id = product.get("id", None)
                     product_price = product.get("price", None)
                     string += (
@@ -77,6 +76,7 @@ def send_calc_application(data: dict) -> bool:
             "chat_id": chat.chat_id,
             "text": string,
             "parse_mode": "HTML",
+            "link_preview_options": {"is_disabled": True},
         }
         requests.post(url, json=params)
     return True
@@ -107,6 +107,7 @@ def send_solution_application(data: dict) -> bool:
             "chat_id": chat.chat_id,
             "text": string,
             "parse_mode": "HTML",
+            "link_preview_options": {"is_disabled": True},
         }
         requests.post(url, json=params)
     return True
@@ -148,5 +149,6 @@ def send_file_application(data: dict) -> bool:
                     file_id = data["result"]["document"]["file_id"]
         else:
             params["text"] = string
+            params["link_preview_options"] = {"is_disabled": True}
             response = requests.post(f"{url}/sendMessage", json=params)
     return True

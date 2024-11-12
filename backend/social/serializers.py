@@ -7,6 +7,7 @@ from social.models import (
     OurGuarantees,
     Questions,
     QuestionsCategory,
+    Reviews,
     SocialInfo,
     Subguarantees,
     Team,
@@ -88,3 +89,11 @@ class OurGuaranteeSerializer(serializers.ModelSerializer):
     class Meta:
         model = OurGuarantees
         fields = ("id", "icon", "title", "is_big", "active", "subguarantees")
+
+
+class ReviewsSerialier(serializers.ModelSerializer):
+    """Сериализатор для модели отзывов."""
+
+    class Meta:
+        model = Reviews
+        fields = "__all__"

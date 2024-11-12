@@ -7,7 +7,19 @@ from phonenumber_field.modelfields import PhoneNumberField
 from social.validators import validate_telegram_url, validate_whatsapp_url
 
 
-class QuestionsCategory(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(
+        _("Дата создания"), auto_now_add=True, blank=True, null=True
+    )
+    updated_at = models.DateTimeField(
+        _("Дата обновления"), auto_now=True, blank=True, null=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class QuestionsCategory(BaseModel):
     """
     Модель категории для вопросов.
 
@@ -27,7 +39,7 @@ class QuestionsCategory(models.Model):
         return self.name
 
 
-class Questions(models.Model):
+class Questions(BaseModel):
     """
     Модель вопроса.
 
@@ -54,7 +66,7 @@ class Questions(models.Model):
         return f"{self.question}"
 
 
-class Team(models.Model):
+class Team(BaseModel):
     """
     Модель команды.
 
@@ -80,7 +92,7 @@ class Team(models.Model):
                 raise ValidationError(_("Только одна команда может быть актуальной."))
 
 
-class Employee(models.Model):
+class Employee(BaseModel):
     """
     Модель работника.
 
@@ -115,7 +127,7 @@ class Employee(models.Model):
         return f"{self.first_name}. {self.last_name}"
 
 
-class SocialInfo(models.Model):
+class SocialInfo(BaseModel):
     """
     Модель информации о компании.
 
@@ -167,7 +179,7 @@ class SocialInfo(models.Model):
                 )
 
 
-class OurGuarantees(models.Model):
+class OurGuarantees(BaseModel):
     """
     Модель для 'мы обеспечиваем'.
 
@@ -209,7 +221,7 @@ class OurGuarantees(models.Model):
                     )
 
 
-class Subguarantees(models.Model):
+class Subguarantees(BaseModel):
     """
     Модель подкатегорий гарантии.
 
@@ -241,3 +253,21 @@ class Subguarantees(models.Model):
             not self.guarantee.is_big and text_len >= 60
         ):
             raise ValidationError(_("Недопустимая длина текста."))
+
+
+class Reviews(BaseModel):
+    name = models.CharField(verbose_name=_("Имя"), max_length=100)
+    last_name = models.CharField(verbose_name=_("Фамилия"), max_length=100)
+    title = models.CharField(verbose_name=_("Заголовок"), max_length=100)
+    text = models.TextField(verbose_name=_("Текст"), max_length=2000)
+    image = models.ImageField(
+        verbose_name=_("Аватарка"), upload_to=("media/reviews"), blank=True, null=True
+    )
+
+    class Meta:
+        ordering = ("-created_at",)
+        verbose_name = _("Отзыв")
+        verbose_name_plural = _("Отзывы")
+
+    def __str__(self) -> str:
+        return f"{self.name} {self.last_name}: {self.title}"

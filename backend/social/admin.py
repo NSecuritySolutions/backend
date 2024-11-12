@@ -5,6 +5,7 @@ from social.models import (
     OurGuarantees,
     Questions,
     QuestionsCategory,
+    Reviews,
     SocialInfo,
     Subguarantees,
     Team,
@@ -34,3 +35,4 @@ admin.site.register(Employee)
 admin.site.register(Questions)
 admin.site.register(SocialInfo)
 admin.site.register(QuestionsCategory)
+admin.site.register(Reviews)

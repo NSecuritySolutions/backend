@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from application.models import (
@@ -7,7 +6,7 @@ from application.models import (
     ApplicationWithFile,
     ApplicationWithSolution,
 )
-from product.models import ReadySolution
+from product.models import ProductType, ReadySolution
 from product.serializers import ProductIdSerializer, ReadySolutionsSerializer
 
 
@@ -61,7 +60,7 @@ class OptionJSONSerializer(serializers.Serializer):
 
 
 class CategoryProductsJSONSerializer(serializers.Serializer):
-    category_id = serializers.PrimaryKeyRelatedField(queryset=ContentType.objects.all())
+    category_id = serializers.PrimaryKeyRelatedField(queryset=ProductType.objects.all())
     products = ProductIdSerializer(many=True)
 
 

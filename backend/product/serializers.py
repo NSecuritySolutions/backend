@@ -110,7 +110,6 @@ class OurServiceListSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Register."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -122,7 +121,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CameraSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Camera."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -134,7 +132,6 @@ class CameraSerializer(serializers.ModelSerializer):
 class HDDSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Camera."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -146,7 +143,6 @@ class HDDSerializer(serializers.ModelSerializer):
 class OtherProductSerializer(serializers.ModelSerializer):
     """Сериализатор для модели остального товара."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -158,7 +154,6 @@ class OtherProductSerializer(serializers.ModelSerializer):
 class FACPSerializer(serializers.ModelSerializer):
     """Сериализатор для модели FACP."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -170,7 +165,6 @@ class FACPSerializer(serializers.ModelSerializer):
 class SensorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Sensor."""
 
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -205,14 +199,14 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductIdSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = NewProduct
         fields = ("id",)
 
     def to_internal_value(self, data):
         try:
-            obj = Product.objects.get(id=data["id"])
+            obj = NewProduct.objects.get(id=data["id"])
             return obj.id
-        except Product.DoesNotExist:
+        except NewProduct.DoesNotExist:
             raise serializers.ValidationError(
                 f"Product with ID {data['id']} does not exist."
             )
@@ -293,7 +287,6 @@ class RegisterRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Product с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -309,7 +302,6 @@ class CameraRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Camera с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -325,7 +317,6 @@ class HDDRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели HDD с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -341,7 +332,6 @@ class OtherProductRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели OtherProduct с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -357,7 +347,6 @@ class FACPRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели FACP с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 
@@ -373,7 +362,6 @@ class SensorRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Sensor с properties в виде списка объектов."""
 
     properties = serializers.SerializerMethodField()
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 

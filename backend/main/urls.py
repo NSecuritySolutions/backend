@@ -29,6 +29,7 @@ from product.views import (
 from social.views import (
     OurGuaranteesView,
     QuestionsListView,
+    ReviewsView,
     SocialInfoView,
     TeamListView,
 )
@@ -58,6 +59,7 @@ router_v1.register("questions", QuestionsListView, basename="questions")
 router_v1.register("our-team", TeamListView, basename="our-team")
 router_v1.register("info", SocialInfoView, basename="info")
 router_v1.register("guarantees", OurGuaranteesView, basename="guarantees")
+router_v1.register("reviews", ReviewsView, basename="reviews")
 
 
 urlpatterns_v1 = [

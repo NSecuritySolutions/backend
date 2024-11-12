@@ -3,10 +3,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from social.models import OurGuarantees, QuestionsCategory, SocialInfo, Team
+from social.models import OurGuarantees, QuestionsCategory, Reviews, SocialInfo, Team
 from social.serializers import (
     OurGuaranteeSerializer,
     QuestionsByCategorySerializer,
+    ReviewsSerialier,
     SocialInfoSerializer,
     TeamSerializer,
 )
@@ -48,3 +49,12 @@ class OurGuaranteesView(ListModelMixin, GenericViewSet):
     serializer_class = OurGuaranteeSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("active",)
+
+
+@extend_schema(tags=["Отзывы"])
+class ReviewsView(ListModelMixin, GenericViewSet):
+    """Список гарантий."""
+
+    queryset = Reviews.objects.all()
+    serializer_class = ReviewsSerialier
+    filter_backends = (DjangoFilterBackend,)
