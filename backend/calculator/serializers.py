@@ -71,6 +71,7 @@ class ProductOptionSerializer(serializers.ModelSerializer):
     """Сериализатор для модели опции блока калькулятора."""
 
     dependencies = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductOption
@@ -78,6 +79,11 @@ class ProductOptionSerializer(serializers.ModelSerializer):
 
     def get_dependencies(self, instance: ProductOption) -> bool:
         return instance.dependent.count() > 0
+
+    def get_name(self, instance: ProductOption) -> str:
+        if instance.name == "self":
+            return f"{instance.name}_{instance.product.pk}"
+        return instance.name
 
 
 class ValueOptionSerializer(serializers.ModelSerializer):

@@ -97,6 +97,26 @@ class ManufacturerSerializer(serializers.ModelSerializer):
         fields = ("id", "title")
 
 
+class ProductPropertySerializer(serializers.ModelSerializer):
+    field_name = serializers.CharField(source="property.field_name")
+    name = serializers.CharField(source="property.name")
+
+    class Meta:
+        model = ProductProperty
+        fields = ("field_name", "name", "value")
+
+
+class NewProductSerializer(serializers.ModelSerializer):
+    properties = ProductPropertySerializer(many=True)
+    prices_in_price_lists = PriceSerializer(many=True)
+    category = CategorySerializer()
+    manufacturer = ManufacturerSerializer()
+
+    class Meta:
+        model = NewProduct
+        fields = "__all__"
+
+
 class OurServiceListSerializer(serializers.ModelSerializer):
     """Сериализатор для модели наших услуг."""
 
@@ -215,7 +235,7 @@ class ProductIdSerializer(serializers.ModelSerializer):
 class SolutionToProductSerializer(serializers.ModelSerializer):
     """Сериализатор для промежуточной модели готовое решение - товары"""
 
-    product = ProductSerializer()
+    product = NewProductSerializer()
 
     class Meta:
         model = SolutionToProduct
@@ -254,7 +274,7 @@ class ImageSerializer(serializers.ModelSerializer):
 class OurWorksProductSerializer(serializers.ModelSerializer):
     """Сериализатор для промежуточной модели наши работы - товары"""
 
-    product = ProductSerializer()
+    product = NewProductSerializer()
 
     class Meta:
         model = OurWorksProduct
@@ -399,23 +419,3 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
         elif isinstance(instance, HDD):
             return HDDRetrieveSerializer(instance, context={"request": request}).data
         return None
-
-
-class ProductPropertySerializer(serializers.ModelSerializer):
-    field_name = serializers.CharField(source="property.field_name")
-    name = serializers.CharField(source="property.name")
-
-    class Meta:
-        model = ProductProperty
-        fields = ("field_name", "name", "value")
-
-
-class NewProductSerializer(serializers.ModelSerializer):
-    properties = ProductPropertySerializer(many=True)
-    prices_in_price_lists = PriceSerializer(many=True)
-    category = CategorySerializer()
-    manufacturer = ManufacturerSerializer()
-
-    class Meta:
-        model = NewProduct
-        fields = "__all__"

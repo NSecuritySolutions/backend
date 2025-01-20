@@ -347,7 +347,9 @@ class ProductOption(BlockOption):
     name = models.CharField(
         _("Имя"),
         max_length=40,
-        help_text=_("Имя поля модели"),
+        help_text=_(
+            "Имя поля модели, или 'self' если тут происходит выбор кол-ва товара"
+        ),
     )
     product = models.ForeignKey(
         ProductType,
@@ -402,7 +404,7 @@ class ProductOption(BlockOption):
                 raise ValidationError(
                     _("Опция с данным именем переменной не является числовой опцией.")
                 )
-        if self.product is not None:
+        if self.product is not None and self.name.lower() != "self":
             products = NewProduct.objects.filter(product_type=self.product)
             found = False
             for product in products:
@@ -415,6 +417,25 @@ class ProductOption(BlockOption):
                 raise ValidationError(
                     _("Такого поля у данного вида товара не существует")
                 )
+        if self.product and self.name.lower() == "self":
+            # if self.pk:
+            #     similar = ProductOption.objects.exclude(pk=self.pk).filter(name='self', product=self.product, block=self.block)
+            # else:
+            #     similar = ProductOption.objects.filter(name='self', product=self.product, block=self.block)
+            # if len(similar) != 0:
+            #     raise ValidationError(
+            #         _("Уже существует опция с выбором кол-ва для данной категории товара.")
+            #     )
+            if self.option_type == "radio":
+                choices = [part.strip() for part in self.choices.split(";")]
+                for choice in choices:
+                    if not choice.isdigit():
+                        raise ValidationError(
+                            _(
+                                "При выборе кол-ва товара с возможностью выбора из предложенных "
+                                "вариантов нельзя указвать нечисловые варианты."
+                            )
+                        )
 
     def save(self, *args, **kwargs):
         self.clean()

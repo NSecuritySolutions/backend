@@ -1,5 +1,7 @@
 from django.db.models import QuerySet
 from django_filters import AllValuesMultipleFilter, FilterSet, ModelMultipleChoiceFilter
+from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
 
 from product.models import NewProduct, Product, ProductCategory
 
@@ -16,6 +18,7 @@ class ProductFilter(FilterSet):
         model = Product
         fields = ["manufacturer"]
 
+    @extend_schema_field(serializers.CharField())
     def filter_by_category(self, queryset: QuerySet[Product], name, value):
         categories = set()
         for category in value:
@@ -28,6 +31,7 @@ class ProductFilter(FilterSet):
 
 class NewProductFilter(FilterSet):
     manufacturer = AllValuesMultipleFilter(field_name="manufacturer__title")
+    product_type = AllValuesMultipleFilter(field_name="product_type__name")
     category = ModelMultipleChoiceFilter(
         to_field_name="title",
         queryset=ProductCategory.objects.all(),
@@ -36,8 +40,9 @@ class NewProductFilter(FilterSet):
 
     class Meta:
         model = NewProduct
-        fields = ["manufacturer"]
+        fields = []
 
+    @extend_schema_field(serializers.CharField())
     def filter_by_category(self, queryset: QuerySet[NewProduct], name, value):
         categories = set()
         for category in value:

@@ -477,7 +477,7 @@ class SolutionToProduct(BaseModel):
         _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
     )
     product = models.ForeignKey(
-        Product, on_delete=models.SET_NULL, blank=True, null=True
+        "NewProduct", on_delete=models.SET_NULL, blank=True, null=True
     )
     calculator_block = models.ForeignKey(
         "calculator.CalculatorBlock", on_delete=models.SET_NULL, blank=True, null=True
@@ -609,7 +609,7 @@ class OurWorksProduct(BaseModel):
         _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
     )
     product = models.ForeignKey(
-        Product, on_delete=models.SET_NULL, blank=True, null=True
+        "NewProduct", on_delete=models.SET_NULL, blank=True, null=True
     )
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
