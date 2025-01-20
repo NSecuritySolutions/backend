@@ -774,10 +774,6 @@ class NewProduct(BaseModel):
                 product=self, property=property, defaults={"value": None}
             )
 
-        for price in self.prices_in_price_lists.all():
-            price.price = self.price
-            price.save()
-
 
 class ProductProperty(BaseModel):
     product = models.ForeignKey(

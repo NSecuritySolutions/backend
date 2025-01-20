@@ -4,7 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
-from calculator.validators import validate_latin_underscore
 from product.models import NewProduct, ProductType
 
 
@@ -18,112 +17,6 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
-
-
-class PriceList(BaseModel):
-    """
-    Модель прайс листа.
-
-    Атрибуты:
-        created_at (DateTimeField): Дата создания прайс листа.
-        updated_at (DateTimeField): Дата последнего изменения.
-    """
-
-    created_at = models.DateTimeField(
-        _("Дата создания"), auto_now_add=True, blank=True, null=True
-    )
-    updated_at = models.DateTimeField(
-        _("Дата обновления"), auto_now=True, blank=True, null=True
-    )
-
-    class Meta:
-        verbose_name = _("Прайс лист")
-        verbose_name_plural = _("Прайс листы")
-
-    def __str__(self):
-        return f"{self.pk}. Updated at {self.updated_at}"
-
-
-class PriceListCategory(BaseModel):
-    """
-    Модель катогрии для прайс листа.
-
-    Атрибуты:
-                name (str): Название категории.
-        price_list (ForeignKey): Ссыслка на прайс лист.
-    """
-
-    name = models.CharField(_("Название"), max_length=100)
-    price_list = models.ForeignKey(
-        PriceList,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="categories",
-    )
-
-    class Meta:
-        verbose_name = _("Категория прайс листа")
-        verbose_name_plural = _("Категории прайс листов")
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Price(BaseModel):
-    """
-    Модель цены.
-
-    Атрибуты:
-        price_list_category (ForeignKey): Ссылка на категорию прайс листа.
-        name (str): Название услуги/товара.
-        variable_name (str): Имя переменной в калькуляторе.
-        price (int): Цена услуги/товара.
-        is_show (bool): Флаг отображения цены клиенту.
-    """
-
-    price_list_category = models.ForeignKey(
-        PriceListCategory,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="prices",
-        blank=True,
-    )
-    name = models.CharField("Название услуги/товара")
-    variable_name = models.CharField(
-        _("Переменная"),
-        max_length=200,
-        help_text=_(
-            "Имя переменной в калькуляторе (латинские символы, цифры и нижнее подчеркивание)"
-        ),
-        blank=True,
-        null=True,
-        validators=[validate_latin_underscore],
-    )
-    price = models.IntegerField(_("Цена"), validators=[MinValueValidator(0)])
-    new_product = models.ForeignKey(
-        NewProduct,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text=_("Связать с ценой товара"),
-        related_name="prices_in_price_lists",
-    )
-    is_show = models.BooleanField(
-        _("Показывать клиенту"), help_text=_("Отображать ли эту цену в прайс листе")
-    )
-
-    class Meta:
-        verbose_name = _("Цена")
-        verbose_name_plural = "Цены"
-
-    def __str__(self) -> str:
-        return self.name
-
-    def save(self, *args, **kwargs) -> None:
-        if self.product:
-            self.price = self.product.price
-        return super().save(*args, **kwargs)
 
 
 class Formula(BaseModel):
@@ -160,9 +53,6 @@ class Calculator(BaseModel):
         is_active (bool): Флаг актуальности калькулятора.
     """
 
-    price_list = models.ForeignKey(
-        PriceList, on_delete=models.SET_NULL, blank=True, null=True
-    )
     active = models.BooleanField("Текущий калькулятор", default=False)
 
     class Meta:
@@ -298,7 +188,9 @@ class BlockOption(PolymorphicModel, BaseModel):
         null=True,
         related_name="dependent",
     )
-    depends_on_value = models.CharField(_("Зависит от значения опции"), blank=True)
+    depends_on_value = models.CharField(
+        _("Зависит от значения опции"), blank=True, null=True
+    )
 
     class Meta:
         ordering = ("position",)
@@ -418,14 +310,20 @@ class ProductOption(BlockOption):
                     _("Такого поля у данного вида товара не существует")
                 )
         if self.product and self.name.lower() == "self":
-            # if self.pk:
-            #     similar = ProductOption.objects.exclude(pk=self.pk).filter(name='self', product=self.product, block=self.block)
-            # else:
-            #     similar = ProductOption.objects.filter(name='self', product=self.product, block=self.block)
-            # if len(similar) != 0:
-            #     raise ValidationError(
-            #         _("Уже существует опция с выбором кол-ва для данной категории товара.")
-            #     )
+            if self.pk:
+                similar = ProductOption.objects.exclude(pk=self.pk).filter(
+                    name="self", product=self.product, block=self.block
+                )
+            else:
+                similar = ProductOption.objects.filter(
+                    name="self", product=self.product, block=self.block
+                )
+            if len(similar) != 0:
+                raise ValidationError(
+                    _(
+                        "Уже существует опция с выбором кол-ва для данной категории товара."
+                    )
+                )
             if self.option_type == "radio":
                 choices = [part.strip() for part in self.choices.split(";")]
                 for choice in choices:
@@ -464,14 +362,7 @@ class ValueOption(BlockOption):
     name = models.CharField(
         _("Имя"),
         max_length=40,
-        help_text=_("Имя переменной для формулы"),
-    )
-    price = models.ForeignKey(
-        Price,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text=_("Связать с ценой из прайс листа"),
+        help_text=_("Имя переменной для формул"),
     )
     variability_with_block_amount = models.BooleanField(
         _("Изменяется вместе с кол-вом в блоке"),

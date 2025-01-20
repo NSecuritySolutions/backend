@@ -5,6 +5,3 @@ class CalculatorConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "calculator"
     verbose_name = "Калькулятор"
-
-    def ready(self) -> None:
-        import calculator.signals  # noqa: F401

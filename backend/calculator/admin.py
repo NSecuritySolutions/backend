@@ -11,16 +11,9 @@ from calculator.models import (
     Calculator,
     CalculatorBlock,
     Formula,
-    Price,
-    PriceList,
-    PriceListCategory,
     ProductOption,
     ValueOption,
 )
-
-
-class PriceInline(admin.StackedInline):
-    model = Price
 
 
 @admin.register(ValueOption)
@@ -37,20 +30,6 @@ class ProductOptionAdmin(PolymorphicChildModelAdmin):
 class BlockOptionAdmin(PolymorphicParentModelAdmin):
     base_model = BlockOption
     child_models = (ValueOption, ProductOption)
-
-
-@admin.register(PriceListCategory)
-class PriceListCategoryAdmin(admin.ModelAdmin):
-    inlines = (PriceInline,)
-
-
-class PriceListCategoryInline(admin.StackedInline):
-    model = PriceListCategory
-
-
-@admin.register(PriceList)
-class PriceListAdmin(admin.ModelAdmin):
-    inlines = (PriceListCategoryInline,)
 
 
 class BlockOptionInline(admin.StackedInline):
@@ -83,6 +62,5 @@ class CalculatorAdmin(admin.ModelAdmin):
     inlines = (CalculatorBlockInline,)
 
 
-admin.site.register(Price)
 admin.site.register(Calculation)
 admin.site.register(Formula)

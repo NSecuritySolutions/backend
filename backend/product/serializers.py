@@ -1,7 +1,6 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from calculator.serializers import PriceSerializer
 from main.utils import ParagraphsField
 from product.models import (
     FACP,
@@ -108,7 +107,6 @@ class ProductPropertySerializer(serializers.ModelSerializer):
 
 class NewProductSerializer(serializers.ModelSerializer):
     properties = ProductPropertySerializer(many=True)
-    prices_in_price_lists = PriceSerializer(many=True)
     category = CategorySerializer()
     manufacturer = ManufacturerSerializer()
 

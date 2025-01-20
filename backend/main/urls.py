@@ -16,7 +16,7 @@ from application.views import (
     ApplicationWithSolutionView,
     set_csrf_token,
 )
-from calculator.views import CalculatorView, PriceListView
+from calculator.views import CalculatorView
 from product.views import (
     NewProductListView,
     OurServiceListView,
@@ -47,7 +47,6 @@ router_v1.register(
     "simple-applications", ApplicationWithFileView, basename="file-applications"
 )
 router_v1.register("applications", ApplicationListView, basename="applications")
-router_v1.register("price-list", PriceListView, basename="price-list")
 router_v1.register("calculator", CalculatorView, basename="calculator")
 router_v1.register("products", ProductListView, basename="product")
 router_v1.register("new-products", NewProductListView, basename="new-product")
