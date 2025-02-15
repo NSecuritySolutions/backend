@@ -33,7 +33,7 @@ class ProductOptionSerializer(serializers.ModelSerializer):
         return instance.dependent.count() > 0
 
     def get_name(self, instance: ProductOption) -> str:
-        if instance.name == "self":
+        if instance.name.lower().startswith("self"):
             return f"{instance.name}_{instance.product.pk}"
         return instance.name
 

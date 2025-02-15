@@ -443,8 +443,15 @@ class ReadySolution(BaseModel):
     image = models.ImageField(verbose_name=_("Фотография"), upload_to="media/ready")
     tooltip_text = models.TextField(verbose_name=_("Подсказка"), max_length=1000)
     description = models.TextField(verbose_name=_("Описание"), max_length=5000)
-    price = models.IntegerField(
-        verbose_name=_("Цена"), null=True, blank=True, validators=[MinValueValidator(0)]
+    price = models.DecimalField(
+        verbose_name=_("Корректировка цены"),
+        help_text=_(
+            "Дополнительная сумма к цене оборудования. Может быть отрицательной для скидки."
+        ),
+        default=Decimal(0),
+        max_digits=12,
+        decimal_places=2,
+        blank=True,
     )
     tags = models.ManyToManyField(Tag, verbose_name=_("Тэги"))
 
@@ -454,6 +461,11 @@ class ReadySolution(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+    def save(self, *args, **kwargs):
+        if self.price is None:
+            self.price = Decimal(0)
+        super().save(*args, **kwargs)
 
 
 class SolutionToProduct(BaseModel):
@@ -472,6 +484,9 @@ class SolutionToProduct(BaseModel):
     solution = models.ForeignKey(
         ReadySolution, on_delete=models.CASCADE, related_name="equipment"
     )
+    position = models.IntegerField(
+        _("Позиция в списке"), validators=[MinValueValidator(0)], null=True, blank=True
+    )
     text = models.CharField(_("Текст"), max_length=200, help_text=_("Краткое описание"))
     is_link = models.BooleanField(
         _("Ссылка"), default=False, help_text=_("Отобразить как ссылку на товар")
@@ -485,6 +500,12 @@ class SolutionToProduct(BaseModel):
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
     )
+    show = models.BooleanField(_("Отобразить на сайте"), default=True)
+
+    class Meta:
+        ordering = ("position", "pk")
+        verbose_name = _("Товар к готовому решению")
+        verbose_name_plural = _("Товары к готовым решениям")
 
 
 class OurService(BaseModel):
@@ -573,8 +594,11 @@ class OurWorks(BaseModel):
     time = models.IntegerField(
         verbose_name=_("Затраченное время"), validators=[MinValueValidator(1)]
     )
-    budget = models.IntegerField(
-        verbose_name=_("Бюджет"), validators=[MinValueValidator(0)]
+    budget = models.DecimalField(
+        verbose_name=_("Бюджет"),
+        validators=[MinValueValidator(Decimal(0))],
+        max_digits=12,
+        decimal_places=2,
     )
     area = models.IntegerField(
         verbose_name=_("Площадь работ"), validators=[MinValueValidator(0)]
@@ -586,7 +610,7 @@ class OurWorks(BaseModel):
         verbose_name_plural = _("Примеры работ")
 
     def __str__(self) -> str:
-        return f"{self.title}"
+        return self.title
 
 
 class OurWorksProduct(BaseModel):
@@ -614,6 +638,10 @@ class OurWorksProduct(BaseModel):
     amount = models.IntegerField(
         _("Кол-во"), validators=[MinValueValidator(1)], blank=True, null=True
     )
+
+    class Meta:
+        verbose_name = _("Использованный товар")
+        verbose_name_plural = _("Использованные товары")
 
 
 class TypeProperty(BaseModel):
@@ -652,7 +680,14 @@ class ProductType(BaseModel):
         verbose_name_plural = _("Виды товаров")
 
     def __str__(self):
-        return self.name
+        return f"{self.pk} - {self.name}"
+
+    def clear_unusable_props(self):
+        with transaction.atomic():
+            for prop_for_delete in ProductProperty.objects.filter(
+                product__in=NewProduct.objects.filter(product_type=self.pk),
+            ).exclude(property__in=self.properties.all()):
+                prop_for_delete.delete()
 
 
 class ProductTypeTypeProperty(BaseModel):
@@ -690,6 +725,7 @@ class ProductTypeTypeProperty(BaseModel):
                     property=self.typeproperty,
                     defaults={"value": None},
                 )
+            self.producttype.clear_unusable_props()
 
     def delete(self, *args, **kwargs) -> None:
         super().delete(*args, **kwargs)
@@ -741,8 +777,8 @@ class NewProduct(BaseModel):
     )
 
     class Meta:
-        verbose_name = _("Новый товар")
-        verbose_name_plural = _("Новые товары")
+        verbose_name = _("Товар")
+        verbose_name_plural = _("Товары")
 
     def __str__(self) -> str:
         return self.model
@@ -759,8 +795,6 @@ class NewProduct(BaseModel):
             ):
                 is_product_type_changed = True
 
-        super().save(*args, **kwargs)
-
         if is_product_type_changed:
             new_type_property_ids = set(
                 self.product_type.properties.values_list("id", flat=True)
@@ -768,6 +802,8 @@ class NewProduct(BaseModel):
             ProductProperty.objects.filter(product=self).exclude(
                 property_id__in=new_type_property_ids
             ).delete()
+
+        super().save(*args, **kwargs)
 
         for property in self.product_type.properties.all():
             ProductProperty.objects.get_or_create(
@@ -804,10 +840,10 @@ class ProductProperty(BaseModel):
         return self.value
 
     def clean(self) -> None:
-        if self.property not in self.product.product_type.properties.all():
-            raise ValidationError(
-                f"Атрибут '{self.property.name}' не разрешён для типа товара '{self.product.product_type.name}'."
-            )
+        # if self.property not in self.product.product_type.properties.all():
+        #     raise ValidationError(
+        #         f"Атрибут '{self.property.name}' не разрешён для типа товара '{self.product.product_type.name}'."
+        #     )
         if self.value is not None:
             if self.property.property_type == "integer":
                 if not self.value.isdigit():

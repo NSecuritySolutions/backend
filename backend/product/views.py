@@ -1,4 +1,8 @@
+from decimal import Decimal
+
 import requests
+from django.db.models import F, Sum
+from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework.decorators import api_view
@@ -62,6 +66,7 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(exclude=True)
@@ -71,6 +76,7 @@ class RegisterListView(ListModelMixin, GenericViewSet):
     queryset = Register.objects.all()
     serializer_class = RegisterSerializer
     http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(tags=["Наши услуги"])
@@ -80,6 +86,7 @@ class OurServiceListView(ListModelMixin, GenericViewSet):
     queryset = OurService.objects.all()
     serializer_class = OurServiceListSerializer
     http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(tags=["Наши работы"])
@@ -89,24 +96,31 @@ class OurWorksListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = OurWorks.objects.all()
     serializer_class = OurWorksListSerializer
     http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(tags=["Готовые решения"])
 class ReadySolutionsListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Список готовых решений или объект по id."""
 
-    queryset = ReadySolution.objects.all()
+    queryset = ReadySolution.objects.annotate(
+        equipment_price=Coalesce(
+            Sum(F("equipment__product__price") * F("equipment__amount")), Decimal("0")
+        )
+    ).all()
     serializer_class = ReadySolutionsSerializer
     http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
-@extend_schema(tags=["Готовые решения"])
+@extend_schema(tags=["Тэги"])
 class TagListView(ListModelMixin, GenericViewSet):
-    """Список готовых решений."""
+    """Список тэгов."""
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(exclude=True)
@@ -139,3 +153,4 @@ class NewProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = NewProductFilter
+    ordering_fields = ("pk", "created_at", "updated_at", "model")

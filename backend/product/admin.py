@@ -1,6 +1,5 @@
 from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
-from polymorphic.admin import PolymorphicParentModelAdmin
 
 from product.models import (
     FACP,
@@ -13,7 +12,6 @@ from product.models import (
     OurService,
     OurWorks,
     OurWorksProduct,
-    Product,
     ProductCategory,
     ProductProperty,
     ProductType,
@@ -59,29 +57,42 @@ class SolutionToProductInline(admin.TabularInline):
 class ReadySolutionAdmin(admin.ModelAdmin):
     base_model = ReadySolution
     inlines = (SolutionToProductInline,)
+    readonly_fields = ("equipment_price",)
+
+    def equipment_price(self, obj: ReadySolution):
+        equipment_price = 0
+        for equip in obj.equipment.all():
+            if equip.amount and equip.product and equip.product.price:
+                equipment_price += equip.amount * equip.product.price
+        return equipment_price
+
+    equipment_price.short_description = "Цена оборудования"
 
 
 class OurWorksProductInline(admin.TabularInline):
     model = OurWorksProduct
 
 
+class OurWorksImageInline(admin.TabularInline):
+    model = ImageWorks
+
+
 @admin.register(OurWorks)
 class OurWorksAdmin(admin.ModelAdmin):
     base_model = OurWorks
-    inlines = (OurWorksProductInline,)
+    inlines = (OurWorksProductInline, OurWorksImageInline)
 
 
-@admin.register(Product)
-class ProductAdmin(PolymorphicParentModelAdmin):
-    base_model = Product
-    child_models = (Camera, Register, FACP, Sensor, OtherProduct, HDD)
-    search_fields = ("category__title", "model")
+# @admin.register(Product)
+# class ProductAdmin(PolymorphicParentModelAdmin):
+#     base_model = Product
+#     child_models = (Camera, Register, FACP, Sensor, OtherProduct, HDD)
+#     search_fields = ("category__title", "model")
 
 
 admin.site.register(TypeProperty)
 admin.site.register(OurService)
 admin.site.register(ProductCategory, MPTTModelAdmin)
-admin.site.register(ImageWorks)
 admin.site.register(Manufacturer)
 admin.site.register(Tag)
 admin.site.register(Camera)

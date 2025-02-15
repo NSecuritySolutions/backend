@@ -84,6 +84,7 @@ class CalculatorBlock(BaseModel):
         position (int): Позиция блока в списке.
         title (str): Название блока.
         image (ImageField): Значок блока.
+        main_product (ForeignKey): Главная категория товаров.
         formula (ForeignKey): Ссылка на формулу.
         quantity_selection (bool): Флаг выбора количества товара.
     """
@@ -101,6 +102,16 @@ class CalculatorBlock(BaseModel):
     title = models.CharField(_("Название"), max_length=40)
     image = models.ImageField(
         _("Значок"), upload_to="media/calculator", blank=True, null=True, default=None
+    )
+    main_product = models.ForeignKey(
+        ProductType,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Категория главного товара"),
+        help_text=_(
+            "Если подходящего под условия товара не окажется, то значение всего блока будет 0."
+        ),
+        null=True,
+        blank=True,
     )
     formula = models.ForeignKey(
         Formula, on_delete=models.SET_NULL, blank=True, null=True
@@ -191,6 +202,21 @@ class BlockOption(PolymorphicModel, BaseModel):
     depends_on_value = models.CharField(
         _("Зависит от значения опции"), blank=True, null=True
     )
+    variability_with_block_amount = models.BooleanField(
+        _("Изменяется вместе с кол-вом в блоке)"),
+        help_text=_("<strong>Только если опция числовая</strong>"),
+        default=False,
+    )
+    initial_value = models.CharField(
+        _("Начальное значение"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Если выбрана изменяемость, то это поле может быть только числом (по умолчанию равно 1). "
+            "Иначе тут должно быть соответствующее типу опции значение "
+            "(true, false - для подтверждения, один из вариантов - для выбора)"
+        ),
+    )
 
     class Meta:
         ordering = ("position",)
@@ -210,6 +236,34 @@ class BlockOption(PolymorphicModel, BaseModel):
                 raise ValidationError(
                     _("Опция, от которой зависим, должна быть из текущего блока.")
                 )
+        if self.variability_with_block_amount and self.option_type not in (
+            "number",
+            "counter",
+        ):
+            raise ValidationError(_("Опция должная быть числовой."))
+        if self.initial_value:
+            if (
+                self.option_type in ("number", "counter")
+                and not self.initial_value.isdigit()
+            ):
+                raise ValidationError(_("Начальное значение должно быть числом."))
+            if self.option_type == "radio":
+                is_ok = False
+                for choice in self.choices.split(";"):
+                    if choice.strip() == self.initial_value:
+                        is_ok = True
+                        break
+                if not is_ok:
+                    raise ValidationError(
+                        _(
+                            "Начальное значение должно соответствовать одному из вариантов."
+                        )
+                    )
+            if self.option_type == "checkbox":
+                if self.initial_value.lower() not in ("true", "false"):
+                    raise ValidationError(
+                        _("Начальное значение должно быть либо 'true', либо 'false'.")
+                    )
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -234,13 +288,16 @@ class ProductOption(BlockOption):
         depends_on_value (str): Значение, от которого зависит текущая опция.
         block_amount_undependent (bool): Флаг независимости кол-ва товара для опции от кол-ва в самом блоке.
         amount_depend (str): Название переменной в которой содержится кол-во для товара.
+        variability_with_block_amount (bool): Флаг зависимости значения опции от кол-ва в самом блоке.
+        initial_value (int): Начальное числовое значение.
     """
 
     name = models.CharField(
         _("Имя"),
         max_length=40,
         help_text=_(
-            "Имя поля модели, или 'self' если тут происходит выбор кол-ва товара"
+            "Имя поля модели, или имя начинающееся на 'self' если тут происходит выбор "
+            "кол-ва товара (поле будет называться <strong><данное имя>_&lt;id категории товара></strong>)"
         ),
     )
     product = models.ForeignKey(
@@ -296,7 +353,7 @@ class ProductOption(BlockOption):
                 raise ValidationError(
                     _("Опция с данным именем переменной не является числовой опцией.")
                 )
-        if self.product is not None and self.name.lower() != "self":
+        if self.product is not None and not self.name.lower().startswith("self"):
             products = NewProduct.objects.filter(product_type=self.product)
             found = False
             for product in products:
@@ -309,14 +366,14 @@ class ProductOption(BlockOption):
                 raise ValidationError(
                     _("Такого поля у данного вида товара не существует")
                 )
-        if self.product and self.name.lower() == "self":
+        if self.product and self.name.lower().startswith("self"):
             if self.pk:
                 similar = ProductOption.objects.exclude(pk=self.pk).filter(
-                    name="self", product=self.product, block=self.block
+                    name__istartswith="self", product=self.product, block=self.block
                 )
             else:
                 similar = ProductOption.objects.filter(
-                    name="self", product=self.product, block=self.block
+                    name__istartswith="self", product=self.product, block=self.block
                 )
             if len(similar) != 0:
                 raise ValidationError(
@@ -364,32 +421,32 @@ class ValueOption(BlockOption):
         max_length=40,
         help_text=_("Имя переменной для формул"),
     )
-    variability_with_block_amount = models.BooleanField(
-        _("Изменяется вместе с кол-вом в блоке"),
-        default=False,
-    )
-    initial_value = models.IntegerField(
-        _("Начальное числовое значение"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "Можно оставить пустым для 1 (при условии, что выбрана изменяемость)"
-        ),
-    )
+    # variability_with_block_amount = models.BooleanField(
+    #     _("Изменяется вместе с кол-вом в блоке"),
+    #     default=False,
+    # )
+    # initial_value = models.IntegerField(
+    #     _("Начальное числовое значение"),
+    #     blank=True,
+    #     null=True,
+    #     help_text=_(
+    #         "Можно оставить пустым для 1 (при условии, что выбрана изменяемость)"
+    #     ),
+    # )
 
     class Meta:
         verbose_name = "Опция со значением"
         verbose_name_plural = "Опции со значениями"
 
-    def clean(self) -> None:
-        super().clean()
-        if self.variability_with_block_amount and self.option_type not in (
-            "counter",
-            "number",
-        ):
-            raise ValidationError(
-                _("Изменяемость работает только с числовыми опциями.")
-            )
+    # def clean(self) -> None:
+    #     super().clean()
+    #     if self.variability_with_block_amount and self.option_type not in (
+    #         "counter",
+    #         "number",
+    #     ):
+    #         raise ValidationError(
+    #             _("Изменяемость работает только с числовыми опциями.")
+    #         )
 
     def save(self, *args, **kwargs):
         self.clean()

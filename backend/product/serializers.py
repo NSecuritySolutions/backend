@@ -246,6 +246,9 @@ class ReadySolutionsSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     description = ParagraphsField()
     equipment = SolutionToProductSerializer(many=True)
+    equipment_price = serializers.DecimalField(
+        max_digits=12, decimal_places=2, read_only=True
+    )
 
     class Meta:
         model = ReadySolution
@@ -258,6 +261,7 @@ class ReadySolutionsSerializer(serializers.ModelSerializer):
             "price",
             "tags",
             "equipment",
+            "equipment_price",
         )
 
 
