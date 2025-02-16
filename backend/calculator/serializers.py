@@ -5,18 +5,9 @@ from calculator.models import (
     Calculation,
     Calculator,
     CalculatorBlock,
-    Formula,
     ProductOption,
     ValueOption,
 )
-
-
-class FormulaSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели формулы калькулятора."""
-
-    class Meta:
-        model = Formula
-        fields = "__all__"
 
 
 class ProductOptionSerializer(serializers.ModelSerializer):
@@ -80,7 +71,6 @@ class BlockSerializer(serializers.ModelSerializer):
 
     options = OptionSerializer(many=True)
     calculations = CalculationSerializer(many=True)
-    formula = FormulaSerializer()
 
     class Meta:
         model = CalculatorBlock
@@ -91,6 +81,7 @@ class CalculatorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели калькулятора."""
 
     blocks = BlockSerializer(many=True)
+    price_list = serializers.FileField(source="price_list.file")
 
     class Meta:
         model = Calculator

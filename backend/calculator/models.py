@@ -19,29 +19,15 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Formula(BaseModel):
-    """
-    Модель формулы для калькулятора.
-
-    Атрибуты:
-        name (str): Название формулы.
-        expression (str): Формула в синтаксисе math.js с дополнительными функциями.
-    """
-
-    name = models.CharField(_("Название"), max_length=100)
-    expression = models.TextField(
-        _("Формула"),
-        help_text=_(
-            "Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
-        ),
-    )
+class PriceList(BaseModel):
+    file = models.FileField(_("Файл с прайс листом"), upload_to="media/price_list")
 
     class Meta:
-        verbose_name = _("Формула")
-        verbose_name_plural = _("Формулы")
+        verbose_name = _("Прайс лист")
+        verbose_name_plural = _("Прайс листы")
 
-    def __str__(self) -> str:
-        return self.name
+    def __str__(self):
+        return f"{self.updated_at} - {self.file.name}"
 
 
 class Calculator(BaseModel):
@@ -54,6 +40,9 @@ class Calculator(BaseModel):
     """
 
     active = models.BooleanField("Текущий калькулятор", default=False)
+    price_list = models.ForeignKey(
+        PriceList, on_delete=models.SET_NULL, blank=True, null=True
+    )
 
     class Meta:
         verbose_name = _("Калькулятор")
@@ -113,9 +102,6 @@ class CalculatorBlock(BaseModel):
         null=True,
         blank=True,
     )
-    formula = models.ForeignKey(
-        Formula, on_delete=models.SET_NULL, blank=True, null=True
-    )
     quantity_selection = models.BooleanField(
         verbose_name=_("Выбор кол-ва"),
         default=True,
@@ -139,7 +125,10 @@ class Calculation(BaseModel):
         CalculatorBlock, on_delete=models.CASCADE, related_name="calculations"
     )
     amount = models.TextField(
-        _("Кол-во"), help_text=_("Значение или формула для вычисления значения")
+        _("Кол-во"),
+        help_text=_(
+            "Значение или формула для вычисления значения. Синтаксис math.js + функции:\n1. if(условие, значение при истино, значение при ложно)\n2. str_equals(строка, строка)"
+        ),
     )
     product = models.ForeignKey(
         ProductType,

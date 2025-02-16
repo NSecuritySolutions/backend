@@ -10,7 +10,7 @@ from calculator.models import (
     Calculation,
     Calculator,
     CalculatorBlock,
-    Formula,
+    PriceList,
     ProductOption,
     ValueOption,
 )
@@ -63,4 +63,4 @@ class CalculatorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Calculation)
-admin.site.register(Formula)
+admin.site.register(PriceList)
