@@ -81,7 +81,7 @@ class CalculatorSerializer(serializers.ModelSerializer):
     """Сериализатор для модели калькулятора."""
 
     blocks = BlockSerializer(many=True)
-    price_list = serializers.FileField(source="price_list.file")
+    price_list = serializers.FileField(source="price_list.file", required=False)
 
     class Meta:
         model = Calculator
