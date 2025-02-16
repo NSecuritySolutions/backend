@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
-from product.models import NewProduct, ProductType
+from product.models import ProductType
 
 
 class BaseModel(models.Model):
@@ -354,12 +354,10 @@ class ProductOption(BlockOption):
                     _("Опция с данным именем переменной не является числовой опцией.")
                 )
         if self.product is not None and not self.name.lower().startswith("self"):
-            products = NewProduct.objects.filter(product_type=self.product)
+            product_type = self.product
             found = False
-            for product in products:
-                if self.name in map(
-                    lambda x: x.property.field_name, product.properties.all()
-                ):
+            for property in product_type.properties.all():
+                if self.name == property.field_name:
                     found = True
                     break
             if not found:
