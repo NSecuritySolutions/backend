@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-import requests
+from celery.result import AsyncResult
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django_filters.rest_framework import DjangoFilterBackend
@@ -11,21 +11,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from product.celery_tasks import update_prices
 from product.filters import NewProductFilter, ProductFilter
-from product.models import (
-    FACP,
-    HDD,
-    Camera,
-    NewProduct,
-    OtherProduct,
-    OurService,
-    OurWorks,
-    Product,
-    ReadySolution,
-    Register,
-    Sensor,
-    Tag,
-)
+from product.models import NewProduct, OurService, OurWorks, Product, ReadySolution, Tag
 from product.serializers import (
     CameraRetrieveSerializer,
     FACPRetrieveSerializer,
@@ -37,13 +25,13 @@ from product.serializers import (
     ProductRetrieveSerializer,
     ReadySolutionsSerializer,
     RegisterRetrieveSerializer,
-    RegisterSerializer,
     SensorRetrieveSerializer,
     TagSerializer,
 )
 
 
 @extend_schema(
+    exclude=True,
     tags=["Товары"],
     responses=PolymorphicProxySerializer(
         component_name="Single product",
@@ -66,16 +54,6 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     http_method_names = ("get",)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
-    ordering_fields = ("pk", "created_at", "updated_at")
-
-
-@extend_schema(exclude=True)
-class RegisterListView(ListModelMixin, GenericViewSet):
-    """Список регистраторов."""
-
-    queryset = Register.objects.all()
-    serializer_class = RegisterSerializer
-    http_method_names = ("get",)
     ordering_fields = ("pk", "created_at", "updated_at")
 
 
@@ -123,27 +101,6 @@ class TagListView(ListModelMixin, GenericViewSet):
     ordering_fields = ("pk", "created_at", "updated_at")
 
 
-@extend_schema(exclude=True)
-@api_view(("GET",))
-def api_view_test(request: Request) -> Response:
-    instances = Product.objects.all()
-    queryset: list[Camera | Register | FACP | Sensor | OtherProduct | HDD] = (
-        instances.get_real_instances()
-    )
-    for instance in queryset:
-        if instance.article is None:
-            continue
-        response = requests.get(
-            f"https://b2b.pro-tek.pro/api/v1/product?filters[keyword]={instance.article}"
-        )
-        json = response.json()
-        for item in json["items"]:
-            if item["article"] == instance.article:
-                instance.price = item["price"]["value"]
-    instances.bulk_update(queryset, ["price"])
-    return Response({"detail": "ok"})
-
-
 @extend_schema(tags=["Товары"])
 class NewProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Список товаров."""
@@ -154,3 +111,17 @@ class NewProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = NewProductFilter
     ordering_fields = ("pk", "created_at", "updated_at", "model")
+
+
+@extend_schema(exclude=True)
+@api_view(("GET",))
+def api_view_test(request: Request) -> Response:
+    task = update_prices.delay()
+    return Response({"detail": "ok", "task_id": task.id})
+
+
+@extend_schema(exclude=True)
+@api_view(("GET",))
+def check_task_status(request: Request, task_id: str) -> Response:
+    task_result = AsyncResult(task_id)
+    return Response({"task_id": task_id, "status": task_result.status})

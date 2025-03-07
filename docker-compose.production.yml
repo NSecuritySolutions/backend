@@ -5,6 +5,12 @@ services:
     image: postgres:16-alpine
     volumes:
       - pgdbdata:/var/lib/postgresql/data/
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $POSTGRES_USER -d $POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     env_file: .env
 
   backend:
@@ -15,7 +21,14 @@ services:
       - static:/backend_static
       - media:/code/media
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '0.0.0.0', '8000']
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 10s
     env_file: .env
 
   redis:
@@ -32,8 +45,10 @@ services:
       - media:/code/media:ro
     env_file: .env
     depends_on:
-      - backend
-      - redis
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   # update_prices:
   #   build: ./backend
@@ -56,7 +71,8 @@ services:
     image: natashasolntseva/security_frontend:latest
     env_file: .env
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   nginx:
     restart: always
@@ -70,7 +86,8 @@ services:
       - media:/media/
       - certs:/etc/letsencrypt
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   pgdbdata:

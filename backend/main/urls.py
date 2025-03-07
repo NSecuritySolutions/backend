@@ -25,6 +25,7 @@ from product.views import (
     ReadySolutionsListView,
     TagListView,
     api_view_test,
+    check_task_status,
 )
 from social.views import (
     OurGuaranteesView,
@@ -62,7 +63,8 @@ router_v1.register("reviews", ReviewsView, basename="reviews")
 
 
 urlpatterns_v1 = [
-    path("test", api_view_test),
+    path("test/", api_view_test),
+    path("check/<str:task_id>", check_task_status),
     path("set-csrf-token/", set_csrf_token),
     path("", include(router_v1.urls)),
 ]
