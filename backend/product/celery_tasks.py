@@ -23,7 +23,7 @@ def update_prices() -> bool:
         if instance.article is None:
             continue
         response = requests.get(
-            f"https://b2b.pro-tek.pro/api/v1/product?filters[keyword]=Код:{instance.article}"
+            f"https://b2b.pro-tek.pro/api/v1/product?filters[keyword]=Аналог:{instance.article}"
         )
         json = response.json()
         for item in json["items"]:

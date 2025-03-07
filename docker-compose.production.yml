@@ -42,7 +42,7 @@ services:
     image: aleksey2299/security_backend:latest
     command: celery -A main worker -B -l info
     volumes:
-      - media:/code/media:ro
+      - media:/code/media
     env_file: .env
     depends_on:
       backend:
