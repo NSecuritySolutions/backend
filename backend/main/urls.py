@@ -21,6 +21,7 @@ from product.views import (
     NewProductListView,
     OurServiceListView,
     OurWorksListView,
+    ProductCategoryListView,
     ProductListView,
     ReadySolutionsListView,
     TagListView,
@@ -36,6 +37,7 @@ from social.views import (
 )
 
 router_v1 = routers.DefaultRouter()
+router_v1.register("categories", ProductCategoryListView, basename="categories")
 router_v1.register(
     "calc-applications", ApplicationWithCalcView, basename="calc-applications"
 )

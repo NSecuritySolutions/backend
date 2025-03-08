@@ -3,7 +3,6 @@ from decimal import Decimal
 from celery.result import AsyncResult
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
-from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -13,9 +12,18 @@ from rest_framework.viewsets import GenericViewSet
 
 from product.celery_tasks import update_prices
 from product.filters import NewProductFilter, ProductFilter
-from product.models import NewProduct, OurService, OurWorks, Product, ReadySolution, Tag
+from product.models import (
+    NewProduct,
+    OurService,
+    OurWorks,
+    Product,
+    ProductCategory,
+    ReadySolution,
+    Tag,
+)
 from product.serializers import (
     CameraRetrieveSerializer,
+    CategoryListSerializer,
     FACPRetrieveSerializer,
     HDDRetrieveSerializer,
     NewProductSerializer,
@@ -52,7 +60,6 @@ class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductRetrieveSerializer
     http_method_names = ("get",)
-    filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
     ordering_fields = ("pk", "created_at", "updated_at")
 
@@ -108,9 +115,26 @@ class NewProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = NewProduct.objects.all()
     serializer_class = NewProductSerializer
     http_method_names = ("get",)
-    filter_backends = (DjangoFilterBackend,)
     filterset_class = NewProductFilter
-    ordering_fields = ("pk", "created_at", "updated_at", "model")
+    ordering_fields = (
+        "pk",
+        "created_at",
+        "updated_at",
+        "model",
+        "product_type",
+        "category",
+    )
+
+
+@extend_schema(tags=["Категории"])
+class ProductCategoryListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """Список категорий продукции."""
+
+    queryset = ProductCategory.objects.all()
+    serializer_class = CategoryListSerializer
+    http_method_names = ("get",)
+    ordering_fields = ("pk", "created_at", "updated_at", "title")
+    filterset_fields = ("parent__title", "title")
 
 
 @extend_schema(exclude=True)

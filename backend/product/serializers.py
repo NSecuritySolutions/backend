@@ -421,3 +421,13 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
         elif isinstance(instance, HDD):
             return HDDRetrieveSerializer(instance, context={"request": request}).data
         return None
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели категории товаров."""
+
+    children = CategorySerializer(many=True)
+
+    class Meta:
+        model = ProductCategory
+        fields = ("id", "title", "children")
