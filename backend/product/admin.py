@@ -2,13 +2,9 @@ from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 
 from product.models import (
-    FACP,
-    HDD,
-    Camera,
     ImageWorks,
     Manufacturer,
     NewProduct,
-    OtherProduct,
     OurService,
     OurWorks,
     OurWorksProduct,
@@ -17,8 +13,6 @@ from product.models import (
     ProductType,
     ProductTypeTypeProperty,
     ReadySolution,
-    Register,
-    Sensor,
     SolutionToProduct,
     Tag,
     TypeProperty,
@@ -83,21 +77,8 @@ class OurWorksAdmin(admin.ModelAdmin):
     inlines = (OurWorksProductInline, OurWorksImageInline)
 
 
-# @admin.register(Product)
-# class ProductAdmin(PolymorphicParentModelAdmin):
-#     base_model = Product
-#     child_models = (Camera, Register, FACP, Sensor, OtherProduct, HDD)
-#     search_fields = ("category__title", "model")
-
-
 admin.site.register(TypeProperty)
 admin.site.register(OurService)
 admin.site.register(ProductCategory, MPTTModelAdmin)
 admin.site.register(Manufacturer)
 admin.site.register(Tag)
-admin.site.register(Camera)
-admin.site.register(Register)
-admin.site.register(FACP)
-admin.site.register(Sensor)
-admin.site.register(OtherProduct)
-admin.site.register(HDD)

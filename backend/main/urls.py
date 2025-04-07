@@ -22,7 +22,6 @@ from product.views import (
     OurServiceListView,
     OurWorksListView,
     ProductCategoryListView,
-    ProductListView,
     ReadySolutionsListView,
     TagListView,
     api_view_test,
@@ -51,7 +50,6 @@ router_v1.register(
 )
 router_v1.register("applications", ApplicationListView, basename="applications")
 router_v1.register("calculator", CalculatorView, basename="calculator")
-router_v1.register("products", ProductListView, basename="product")
 router_v1.register("new-products", NewProductListView, basename="new-product")
 router_v1.register("ready-solutions", ReadySolutionsListView, basename="ready")
 router_v1.register("solutions-tags", TagListView, basename="solution-tags")
@@ -80,8 +78,6 @@ urlpatterns_api = [
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("application/", ApplicationView.as_view()),
-    # path("application/<int:id>/", ApplicationView.as_view()),
     path("api/", include(urlpatterns_api)),
 ]
 

@@ -3,7 +3,7 @@ from decimal import Decimal
 from celery.result import AsyncResult
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
-from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.request import Request
@@ -11,57 +11,23 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from product.celery_tasks import update_prices
-from product.filters import NewProductFilter, ProductFilter
+from product.filters import NewProductFilter
 from product.models import (
     NewProduct,
     OurService,
     OurWorks,
-    Product,
     ProductCategory,
     ReadySolution,
     Tag,
 )
 from product.serializers import (
-    CameraRetrieveSerializer,
     CategoryListSerializer,
-    FACPRetrieveSerializer,
-    HDDRetrieveSerializer,
     NewProductSerializer,
-    OtherProductRetrieveSerializer,
     OurServiceListSerializer,
     OurWorksListSerializer,
-    ProductRetrieveSerializer,
     ReadySolutionsSerializer,
-    RegisterRetrieveSerializer,
-    SensorRetrieveSerializer,
     TagSerializer,
 )
-
-
-@extend_schema(
-    exclude=True,
-    tags=["Товары"],
-    responses=PolymorphicProxySerializer(
-        component_name="Single product",
-        serializers=[
-            CameraRetrieveSerializer,
-            RegisterRetrieveSerializer,
-            FACPRetrieveSerializer,
-            SensorRetrieveSerializer,
-            OtherProductRetrieveSerializer,
-            HDDRetrieveSerializer,
-        ],
-        resource_type_field_name="polymorphic_ctype",
-    ),
-)
-class ProductListView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
-    """Список товаров."""
-
-    queryset = Product.objects.all()
-    serializer_class = ProductRetrieveSerializer
-    http_method_names = ("get",)
-    filterset_class = ProductFilter
-    ordering_fields = ("pk", "created_at", "updated_at")
 
 
 @extend_schema(tags=["Наши услуги"])

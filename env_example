@@ -1,4 +1,14 @@
-POSTGRES_DB=video.store
-POSTGRES_USER=video.storeuser
-POSTGRES_PASSWORD=admin123
-POSTGRES_HOST=db
+POSTGRES_DB=test
+POSTGRES_USER=test
+POSTGRES_PASSWORD=test
+POSTGRES_HOST=test
+
+ALLOWED_HOSTS=test.ru localhost 127.0.0.1 backend
+
+GET_CERTS=True
+CERTBOT_EMAIL=test@gmail.com
+DOMAIN=test.ru
+
+BOT_TOKEN=1234567890ZXCVBNM
+
+BASE_URL=https://test.ru

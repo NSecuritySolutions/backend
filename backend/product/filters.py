@@ -3,30 +3,7 @@ from django_filters import AllValuesMultipleFilter, FilterSet, ModelMultipleChoi
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from product.models import NewProduct, Product, ProductCategory
-
-
-class ProductFilter(FilterSet):
-    manufacturer = AllValuesMultipleFilter(field_name="manufacturer__title")
-    category = ModelMultipleChoiceFilter(
-        to_field_name="title",
-        queryset=ProductCategory.objects.all(),
-        method="filter_by_category",
-    )
-
-    class Meta:
-        model = Product
-        fields = ["manufacturer"]
-
-    @extend_schema_field(serializers.CharField())
-    def filter_by_category(self, queryset: QuerySet[Product], name, value):
-        categories = set()
-        for category in value:
-            categories.update(category.get_descendants(include_self=True))
-
-        if categories:
-            return queryset.filter(category__in=categories)
-        return queryset
+from product.models import NewProduct, ProductCategory
 
 
 class NewProductFilter(FilterSet):
